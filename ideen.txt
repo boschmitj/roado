@@ -10,3 +10,6 @@ was sonst noch cool ist und in weiter Zukunft
 - Unterkunftsweiterleitung zu Booking.com oder sowas
 - Vorschläge für Routen von KI, bekannte Routen irgendwoher scrapen als Basis für eigene
 - komoot replica für itineraries machen
+
+- fitness Daten laden (von Radfahrt) um dann kleine Analyse zu erhalten (topspeed, durchschnitt, ...)
+
