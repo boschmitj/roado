@@ -1,4 +1,4 @@
-package com.roado.demo.Model;
+package com.roado.demo.DTOs;
 
 import java.time.Duration;
 import java.time.LocalDate;
