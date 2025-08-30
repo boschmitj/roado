@@ -1,20 +1,21 @@
-version: "3.9"
 services:
   db:
     image: postgres:15
-    container_name: roado-db
+    container_name: roado_db
+    restart: always
     environment:
       POSTGRES_USER: guest
       POSTGRES_PASSWORD: password
       POSTGRES_DB: roado_db
     ports:
-      - "5431:5432" # host:container
-    networks:
-      - roado-net
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
     build: ./backend/demo
-    container_name: raado-backend
+    container_name: roado_backend
+    restart: always
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/roado_db
       SPRING_DATASOURCE_USERNAME: guest
@@ -23,8 +24,16 @@ services:
       - "8080:8080"
     depends_on:
       - db
-    networks:
-      - roado-net
 
-networks:
-  roado-net:
+  frontend:
+    build: ./frontend
+    container_name: roado_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+
+volumes:
+  postgres_data:
