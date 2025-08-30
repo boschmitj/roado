@@ -76,7 +76,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install & run frontend tests
-        working-directory: ./frontend
+        working-directory: frontend
         run: |
           npm ci
           npm test
