@@ -12,4 +12,5 @@ was sonst noch cool ist und in weiter Zukunft
 - komoot replica für itineraries machen
 
 - fitness Daten laden (von Radfahrt) um dann kleine Analyse zu erhalten (topspeed, durchschnitt, ...)
+- auf Karte/bei Navigation (nach Filter ausgewählte) Orte in der Nähe sehen, zur Route hinzufügen können. bpsw. Lebensmittel, Werkstatt, etc.
 
