@@ -37,13 +37,11 @@ public class Activity {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @Column(name = "user_id")
-    private Long user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true) // can be optional, if no route is present. 
     @JoinColumn(name = "route_id")
-    @Column(name = "route_id")
-    private Long route;
+    private Route route;
 
     @Column(name = "activity_type")
     @Enumerated(EnumType.STRING)
