@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef } from "react";
 import { Map, MapStyle, config, helpers } from "@maptiler/sdk";
+
+import "@maptiler/sdk/dist/maptiler-sdk.css"; // importing the CSS for the geocoding control
 import "../map/mapstyle.css"; // importing my "mapstyle.css" for styling
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm" // API for MapTiler FIXME: temporary
@@ -41,7 +43,6 @@ const MapComponent: React.FC = () => {
         });
     }, []);
 
-    
 
     return <div id="map" ref={mapContainer} />;
 };
