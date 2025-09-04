@@ -5,8 +5,10 @@ import { Map, MapStyle, config, helpers } from "@maptiler/sdk";
 
 import "@maptiler/sdk/dist/maptiler-sdk.css"; // importing the CSS for the geocoding control
 import "../map/mapstyle.css"; // importing my "mapstyle.css" for styling
+import { initialize } from "next/dist/server/lib/render-server";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm" // API for MapTiler FIXME: temporary
+
 
 const MapComponent: React.FC = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
