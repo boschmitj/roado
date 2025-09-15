@@ -1,6 +1,11 @@
 package com.roado.demo.Service;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpRequest;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.roado.demo.DTOs.RouteDTO;
@@ -17,6 +22,9 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final UserService userService;
     private final RouteMapper routeMapper;
+
+    @Value("${OPENROUTESEVICES_API_KEY}")
+    private String OPENROUTESEVICES_API_KEY; 
 
     public RouteService(RouteRepository routeRepository, 
                         UserService userService,
@@ -55,6 +63,51 @@ public class RouteService {
             routeRepository.save(route);
         }
         return routeDTO;
+    }
+
+
+    //Not done yet, trying to fetch from open route services 
+    // somth like this
+    // Client client = ClientBuilder.newClient();
+    // Entity<String> payload = Entity.json({"coordinates":[[8.681495,49.41461],[8.686507,49.41943],[8.687872,49.420318]]});
+    // Response response = client.target("https://api.openrouteservice.org/v2/directions/cycling-road/geojson")
+    //   .request()
+    //   .header("Authorization", "your-api-key")
+    //   .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
+    //   .header("Content-Type", "application/json; charset=utf-8")
+    //   .post(payload);
+
+    // System.out.println("status: " + response.getStatus());
+    // System.out.println("headers: " + response.getHeaders());
+    // System.out.println("body:" + response.readEntity(String.class));
+
+    public String calculateRouteGeoJson(String waypoints) {
+        String encodedCoords = encodeWaypoints(waypoints);
+
+        HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(encodedCoords);
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(new URI("routeCalcEndpointORC"))
+                .POST(bodyPublisher)
+                .build();
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    private String encodeWaypoints(String waypoints) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[")
+        for (String coordPair : waypoints.split("|")) {
+            sb.append("[" + coordPair + "],");
+        }
+        sb.replace(sb.length()-1, sb.length(), "]");
+
+        return sb.toString();
+     
     }
 
     

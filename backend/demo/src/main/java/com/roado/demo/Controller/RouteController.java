@@ -63,6 +63,14 @@ public class RouteController {
         }
     }
 
+    @PostMapping("/calcRouteGeoJson")
+    public ResponseEntity<?> calculateGeoJson(@RequestBody String waypoints) {
+        String geoJson = routeService.calculateRouteGeoJson(waypoints);
+        //TODO: process POST request
+        return (ResponseEntity<?>) ResponseEntity.ok();
+    }
+    
+
     
     // only for testing and filling the database rn
     @PostMapping("/addRoutes")
