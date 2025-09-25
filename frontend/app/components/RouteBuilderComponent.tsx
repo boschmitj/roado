@@ -2,11 +2,13 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
-import { Map, MapStyle, helpers } from "@maptiler/sdk";
+import { Map, MapStyle, helpers, config } from "@maptiler/sdk";
 
 // interface RouteGeoJson {
 
 // }
+
+config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
 const RouteBuilderComponent: React.FC = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -16,6 +18,7 @@ const RouteBuilderComponent: React.FC = () => {
     
     useEffect(() => {
         if (mapContainer.current && !mapRef.current) {
+            
             mapRef.current = new Map({
                 container: mapContainer.current,
                 style: MapStyle.OUTDOOR,
@@ -26,23 +29,30 @@ const RouteBuilderComponent: React.FC = () => {
             mapRef.current.on("click", (e) => {
                 const {lng, lat} = e.lngLat;
                 setStops((prev) => [...prev, [lng, lat]]);
+                console.log("Clicked on the map on point " + lng + ", " + lat);
             });
         }
+
     });
 
     useEffect(() => {
         if (stops.length > 1) {
             const fetchRoute = async () => {
                 try {
-                    const coordsParam = stops.map(([lng, lat]) => `${lng},${lat}`).join('|');
-                    const response = await fetch("http:localhost/route/calcRouteGeoJson", {
+                    //const coordsParam = stops.map(([lng, lat]) => `${lng},${lat}`).join(',');
+                    console.log(JSON.stringify(stops));
+                    const response = await fetch("http://localhost:8080/route/calcRouteGeoJson", {
                         method: 'POST',
-                        'body' : coordsParam,
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        'body' : JSON.stringify({coordinates: stops}),
                     });
                     if (!response.ok) {
                         throw new Error("An error occured: " + response.status);
                     }
                     const routeGeoJson = await response.json();
+                    console.log(`Fetched the following route ${routeGeoJson}`);
                     setRouteGeoJson(routeGeoJson);
                 } catch (err) {
                     console.error(err);

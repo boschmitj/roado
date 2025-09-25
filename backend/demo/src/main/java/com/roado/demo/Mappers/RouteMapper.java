@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 
 import com.roado.demo.DTOs.RouteDTO;
 import com.roado.demo.Model.Route;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RouteMapper {

@@ -3,7 +3,7 @@ package com.roado.demo.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.roado.demo.DTOs.CoordinateDTO;
 import com.roado.demo.DTOs.RouteDTO;
 import com.roado.demo.Service.RouteService;
 
@@ -64,10 +64,14 @@ public class RouteController {
     }
 
     @PostMapping("/calcRouteGeoJson")
-    public ResponseEntity<?> calculateGeoJson(@RequestBody String waypoints) {
+    public ResponseEntity<?> calculateGeoJson(@RequestBody CoordinateDTO coordinateDTO) {
+        List<List<Double>> waypoints = coordinateDTO.getCoordinates();
         String geoJson = routeService.calculateRouteGeoJson(waypoints);
-        //TODO: process POST request
-        return (ResponseEntity<?>) ResponseEntity.ok();
+        if (geoJson != null) {
+             return (ResponseEntity<?>) ResponseEntity.ok(geoJson);
+        }
+        return ResponseEntity.badRequest().body("An error occured while trying to create a route");
+       
     }
     
 

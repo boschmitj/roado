@@ -3,11 +3,18 @@ package com.roado.demo.Service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roado.demo.DTOs.RouteDTO;
 import com.roado.demo.Mappers.RouteMapper;
 import com.roado.demo.Model.Route;
@@ -15,8 +22,10 @@ import com.roado.demo.Model.User;
 import com.roado.demo.Repository.RouteRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class RouteService {
 
     private final RouteRepository routeRepository;
@@ -81,34 +90,54 @@ public class RouteService {
     // System.out.println("headers: " + response.getHeaders());
     // System.out.println("body:" + response.readEntity(String.class));
 
-    public String calculateRouteGeoJson(String waypoints) {
-        String encodedCoords = encodeWaypoints(waypoints);
+    public String calculateRouteGeoJson(List<List<Double>> waypoints) {
 
-        HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(encodedCoords);
+        log.info("Calculating route...");
+        log.info("Waypoints are " + waypoints);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String coordinates;
         try {
+            coordinates = objectMapper.writeValueAsString(Map.of("coordinates", waypoints));
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(coordinates);
+        
+        try {
+            log.info("Sending request to ORS with API key: " + OPENROUTESEVICES_API_KEY);
+
             HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(new URI("routeCalcEndpointORC"))
+                .uri(new URI("https://api.openrouteservice.org/v2/directions/cycling-road/geojson"))
                 .POST(bodyPublisher)
+                .header("Authorization", OPENROUTESEVICES_API_KEY)
+                .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
+                .header("Content-Type", "application/json; charset=utf-8")
                 .build();
-        } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            
+            HttpResponse<String> response = client.send(httpRequest, BodyHandlers.ofString());
+            String route = response.body();
+            log.info("Calculated route " + route);
+            return route;
+            
+        } catch (Exception e) {
+            return null;
         }
-
-        return "";
     }
 
-    private String encodeWaypoints(String waypoints) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[")
-        for (String coordPair : waypoints.split("|")) {
-            sb.append("[" + coordPair + "],");
-        }
-        sb.replace(sb.length()-1, sb.length(), "]");
+    // private String encodeWaypoints(String waypoints) {
+    //     StringBuilder sb = new StringBuilder();
+    //     sb.append("[")
+    //     for (String coordPair : waypoints.split("|")) {
+    //         sb.append("[" + coordPair + "],");
+    //     }
+    //     sb.replace(sb.length()-1, sb.length(), "]");
 
-        return sb.toString();
+    //     return sb.toString();
      
-    }
+    // }
 
     
 }
