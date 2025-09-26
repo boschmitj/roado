@@ -2,7 +2,10 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
-import { Map, MapStyle, helpers, config } from "@maptiler/sdk";
+import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
+import { FeatureCollection, Geometry, GeoJsonProperties } from "geojson";
+
+import '@maptiler/sdk/dist/maptiler-sdk.css';
 
 // interface RouteGeoJson {
 
@@ -10,16 +13,32 @@ import { Map, MapStyle, helpers, config } from "@maptiler/sdk";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
+interface Stop {
+    id: number,
+    coordinates: [number, number],
+}
+
 const RouteBuilderComponent: React.FC = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
-    const mapRef = useRef<Map | null>(null);
-    const [stops, setStops] = useState<[number, number][]>([]);
-    const [routeGeoJson, setRouteGeoJson] = useState<any>(null);
+    const mapRef = useRef<MtMap | null>(null);
+    const markersRef = useRef<Map<number, Marker>>(new Map());
+    const polylineRef = useRef<any>(null);
+    const [stops, setStops] = useState<Stop[]>([]);
+    const [routeGeoJson, setRouteGeoJson] = useState<string | FeatureCollection<Geometry, GeoJsonProperties> | null >(null);
+    
+
+    function removeMarker(id: number) {
+        markersRef.current.get(id)?.remove();
+        setStops((prev) => prev.filter((stop) => stop.id !== id));
+        markersRef.current.delete(id);
+        console.log("Removed marker with id " + id);
+    }   
     
     useEffect(() => {
         if (mapContainer.current && !mapRef.current) {
+            console.log("Initializing map");
             
-            mapRef.current = new Map({
+            mapRef.current = new MtMap({
                 container: mapContainer.current,
                 style: MapStyle.OUTDOOR,
                 center: [11, 50],
@@ -28,31 +47,59 @@ const RouteBuilderComponent: React.FC = () => {
 
             mapRef.current.on("click", (e) => {
                 const {lng, lat} = e.lngLat;
-                setStops((prev) => [...prev, [lng, lat]]);
+                const id = Date.now();
+                
+                setStops((prev) => [...prev, { id, coordinates: [lng, lat]}]);
                 console.log("Clicked on the map on point " + lng + ", " + lat);
+                const marker: Marker = new Marker()
+                    .setLngLat([lng, lat])
+                    .addTo(mapRef.current!);
+
+                
+
+                marker.getElement().addEventListener("click", (e) => {
+                    e.stopPropagation(); // prevents map click
+                    console.log("This marker was clicked!", marker);
+                    removeMarker(id);
+                });
+                    
+
+                markersRef.current.set(id, marker);
+                
             });
         }
+        // return (() => {
+        //     mapRef.current?.off;
+        // })
 
-    });
+
+    }, []);
 
     useEffect(() => {
+        if (stops.length < 2) {
+            setRouteGeoJson(null); 
+            console.log("Not enough stops to calculate a route:", routeGeoJson);
+            return;
+        }
         if (stops.length > 1) {
             const fetchRoute = async () => {
                 try {
-                    //const coordsParam = stops.map(([lng, lat]) => `${lng},${lat}`).join(',');
-                    console.log(JSON.stringify(stops));
+                    
+                    const coordinates = stops.map(stop => stop.coordinates);
+                    console.log(JSON.stringify(coordinates));
                     const response = await fetch("http://localhost:8080/route/calcRouteGeoJson", {
                         method: 'POST',
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        'body' : JSON.stringify({coordinates: stops}),
+                        'body' : JSON.stringify({coordinates}),
                     });
                     if (!response.ok) {
                         throw new Error("An error occured: " + response.status);
                     }
                     const routeGeoJson = await response.json();
-                    console.log(`Fetched the following route ${routeGeoJson}`);
+                    console.log(routeGeoJson);
+                    console.log(`Fetched the following route ${JSON.stringify(routeGeoJson)}`);
                     setRouteGeoJson(routeGeoJson);
                 } catch (err) {
                     console.error(err);
@@ -64,19 +111,43 @@ const RouteBuilderComponent: React.FC = () => {
 
 
     useEffect(() => {
-        if(mapRef.current && routeGeoJson) {
-            helpers.addPolyline(mapRef.current, {
-                data: routeGeoJson,
-                outline: true,
-                outlineWidth: 3,
-                lineWidth: 3,
-                outlineColor: "#61337dad",
-            })
-        }
-    }, [routeGeoJson]);
+        if(!mapRef.current) return;
 
-    return <div ref={mapContainer} style={{width: "100%", height: "500px"}} />;
+        ["route-line", "route-line_outline"].forEach((layerId) => {
+            if (mapRef.current!.getLayer(layerId)) {
+                mapRef.current!.removeLayer(layerId);
+            }
+            if (mapRef.current!.getSource(layerId)) {
+                mapRef.current!.removeSource(layerId);
+            }
+        });
+        
+        if(stops.length > 1 && routeGeoJson) {
+            // create a new polyline if there are at least 2 stops
+            // works because new polyline is created after each update to stops/routeGeoJson
+            // and old polyline is removed above
+            polylineRef.current = helpers.addPolyline(mapRef.current, {
+                data: routeGeoJson,
+                layerId: "route-line",
+                outline: true,
+                outlineWidth: 6,
+                lineWidth: 3,
+                outlineColor: "#ff00b3ff",
+                outlineBlur: 10,
+                lineColor: "#ffffff",
+            })
+        } else {
+            polylineRef.current = null;
+        }
+
+
+    }, [routeGeoJson, stops]);
+
+    return <div id="map-container" ref={mapContainer} />;
+
 
 };
 
 export default RouteBuilderComponent;
+
+
