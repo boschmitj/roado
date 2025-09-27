@@ -15,7 +15,7 @@ interface Stop {
     coordinates: [number, number],
 }
 
-const RouteBuilderComponent: React.FC = () => {7
+const RouteBuilderComponent: React.FC = () => {
     // refs for map container, map instance, markers, polyline
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
@@ -139,7 +139,9 @@ const RouteBuilderComponent: React.FC = () => {7
                 outlineColor: "#ff00b3ff",
                 outlineBlur: 10,
                 lineColor: "#ffffff",
-            })
+            });
+
+            
         } else {
             polylineRef.current = null;
         }
