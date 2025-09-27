@@ -34,6 +34,7 @@ const RouteBuilderComponent: React.FC = () => {
         console.log("Removed marker with id " + id);
     }   
     
+    // effect which runs once to initialize map, set up click handler to add marker
     useEffect(() => {
         if (mapContainer.current && !mapRef.current) {
             console.log("Initializing map");
@@ -68,13 +69,13 @@ const RouteBuilderComponent: React.FC = () => {
                 
             });
         }
-        // return (() => {
-        //     mapRef.current?.off;
-        // })
+        
 
 
     }, []);
 
+
+    // effect which runs when stops changes to fetch new routeGeoJson
     useEffect(() => {
         if (stops.length < 2) {
             setRouteGeoJson(null); 
@@ -110,9 +111,12 @@ const RouteBuilderComponent: React.FC = () => {
     }, [stops]);
 
 
+    // effect which runs when routeGeoJson changes to update polyline on map
+    // removes oold polyline and adds new one
     useEffect(() => {
         if(!mapRef.current) return;
 
+        // remove old polyline if it exists
         ["route-line", "route-line_outline"].forEach((layerId) => {
             if (mapRef.current!.getLayer(layerId)) {
                 mapRef.current!.removeLayer(layerId);
@@ -143,6 +147,7 @@ const RouteBuilderComponent: React.FC = () => {
 
     }, [routeGeoJson, stops]);
 
+    // render the map container, which the map refers to on initialization
     return <div id="map-container" ref={mapContainer} />;
 
 
