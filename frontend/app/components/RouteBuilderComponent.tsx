@@ -7,22 +7,22 @@ import { FeatureCollection, Geometry, GeoJsonProperties } from "geojson";
 
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 
-// interface RouteGeoJson {
-
-// }
-
 config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
+// innterface used for the stops state
 interface Stop {
     id: number,
     coordinates: [number, number],
 }
 
-const RouteBuilderComponent: React.FC = () => {
+const RouteBuilderComponent: React.FC = () => {7
+    // refs for map container, map instance, markers, polyline
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
     const markersRef = useRef<Map<number, Marker>>(new Map());
     const polylineRef = useRef<any>(null);
+
+    // state for stops and routeGeoJson
     const [stops, setStops] = useState<Stop[]>([]);
     const [routeGeoJson, setRouteGeoJson] = useState<string | FeatureCollection<Geometry, GeoJsonProperties> | null >(null);
     
