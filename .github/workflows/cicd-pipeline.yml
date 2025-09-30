@@ -19,6 +19,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
           POSTGRES_DB: roado_test
+          
         ports:
           - 5432:5432
         options: >-
@@ -52,6 +53,7 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/roado_test
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: password
+          OPENROUTESEVICES_API_KEY: ${{ secrets.OPENROUTESERVICE_API_KEY }}
 
   # -------------------------
   # 2) run frontend tests (every push / PR)
