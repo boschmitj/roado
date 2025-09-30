@@ -20,7 +20,7 @@ const RouteBuilderComponent: React.FC = () => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
     const markersRef = useRef<Map<number, Marker>>(new Map());
-    const polylineRef = useRef<any>(null);
+    const polylineRef = useRef<unknown | null>(null);
 
     // state for stops and routeGeoJson
     const [stops, setStops] = useState<Stop[]>([]);
