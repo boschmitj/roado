@@ -15,7 +15,73 @@ interface Stop {
     coordinates: [number, number],
 }
 
-const RouteBuilderComponent: React.FC = () => {
+interface RouteSteps {
+    distance: number,
+    duration: number,
+    type: number,
+    instruction: string,
+    name: string,
+    way_points: number[],
+}
+
+interface RouteSegment {
+    distance: number,
+    duration: number,
+    steps: RouteSteps[],
+}
+
+interface RouteSummary {
+    distance: number,
+    duration: number,
+}
+
+interface RouteProperties {
+    segments: RouteSegment[];
+    way_points: number[];
+    summary: RouteSummary;
+}
+
+type RouteGeoJson = FeatureCollection<Geometry, RouteProperties>;
+
+// read-only
+interface RouteViewerProps {
+    routeGeoJson: RouteGeoJson | null;
+}
+
+// read&write
+interface RouteBuilderProps extends RouteViewerProps {
+    setRouteGeoJson: React.Dispatch<React.SetStateAction< RouteGeoJson | null>>,
+}
+
+
+
+
+const RouteParentComponent: React.FC = () => {
+    const [routeGeoJson, setRouteGeoJson] = useState<  RouteGeoJson | null >(null);
+
+    return (
+        <>
+        <RouteBuilderComponent routeGeoJson={routeGeoJson} setRouteGeoJson={setRouteGeoJson} />
+        <RouteInfoComponent routeGeoJson={routeGeoJson} />
+        </>
+    )
+}
+
+const RouteInfoComponent = ({routeGeoJson} : RouteViewerProps) => {
+    const summary = routeGeoJson?.features[0].properties.summary;
+    console.log(routeGeoJson);
+    const distance = summary?.distance;
+    const duration = summary?.duration;
+    return (
+        <div>
+            <p style={{color :"black"}}>Distance: {distance}m</p>
+            <p style={{color : "black"}}>Duration: {duration}s</p>
+        </div>
+    )
+}
+
+
+const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRouteGeoJson}) => {
     // refs for map container, map instance, markers, polyline
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
@@ -24,7 +90,6 @@ const RouteBuilderComponent: React.FC = () => {
 
     // state for stops and routeGeoJson
     const [stops, setStops] = useState<Stop[]>([]);
-    const [routeGeoJson, setRouteGeoJson] = useState<string | FeatureCollection<Geometry, GeoJsonProperties> | null >(null);
     
 
     function removeMarker(id: number) {
@@ -155,6 +220,6 @@ const RouteBuilderComponent: React.FC = () => {
 
 };
 
-export default RouteBuilderComponent;
+export default RouteParentComponent;
 
 

@@ -1,4 +1,4 @@
-import RouteBuilderComponent from "../components/RouteBuilderComponent";
+import RouteParentComponent from "../components/RouteBuilderComponent";
 import "../map/mapstyle.css"; 
 
 export default function Home() {
@@ -6,7 +6,7 @@ export default function Home() {
         <>
             <h1>Welcome to the Home Page</h1>
             <p>This is my current map</p>
-            <RouteBuilderComponent />
+            <RouteParentComponent />
         </>
     )
 }
