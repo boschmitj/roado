@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@RequiredArgsConstructor
+@Builder
 @Table(name = "routes")
 public class Route {
 
@@ -51,6 +52,9 @@ public class Route {
 
     @Column(name = "elevation_profile")
     private String elevationProfile;
+
+    @Column(name = "duration_s")
+    private Long durationS;
 
     @OneToMany(mappedBy = "route")
     private List<Activity> activities = new ArrayList<>();

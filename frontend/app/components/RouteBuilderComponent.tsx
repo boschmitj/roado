@@ -57,12 +57,13 @@ interface RouteBuilderProps extends RouteViewerProps {
 
 
 const RouteParentComponent: React.FC = () => {
-    const [routeGeoJson, setRouteGeoJson] = useState<  RouteGeoJson | null >(null);
+    const [routeGeoJson, setRouteGeoJson] = useState< RouteGeoJson | null >(null);
 
     return (
         <>
-        <RouteBuilderComponent routeGeoJson={routeGeoJson} setRouteGeoJson={setRouteGeoJson} />
-        <RouteInfoComponent routeGeoJson={routeGeoJson} />
+            <RouteBuilderComponent routeGeoJson={routeGeoJson} setRouteGeoJson={setRouteGeoJson} />
+            <RouteInfoComponent routeGeoJson={routeGeoJson} />
+            <RouteConfirmComponent routeGeoJson={routeGeoJson}/>
         </>
     )
 }
@@ -79,6 +80,71 @@ const RouteInfoComponent = ({routeGeoJson} : RouteViewerProps) => {
         </div>
     )
 }
+
+const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
+
+    const [routeName, setRouteName] = useState("");
+
+
+    const summary = routeGeoJson?.features[0].properties.summary;
+    console.log(routeGeoJson);
+    const distanceM = summary?.distance;
+    const durationS = summary?.duration;
+    const createdBy = 1;
+    const name = "Kleine Testrunde";
+    const geoData = JSON.stringify(routeGeoJson);
+    const elevationProfile = null;
+    const sendRoute = async () => {
+        try {
+            console.log(JSON.stringify({
+                   createdBy,
+                   name,
+                   geoData,
+                   distanceM,
+                   elevationProfile,
+                   durationS, 
+                }));
+            const response = await fetch("http://127.0.0.1:8080/route/addRoute", {
+                method: "POST",
+                headers: {
+                    'Content-Type' : 'application/json',
+                },
+                body: JSON.stringify({
+                   createdBy,
+                   name,
+                   geoData,
+                   distanceM,
+                   elevationProfile,
+                   durationS, 
+                }),
+            });
+            
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    return (
+        <>
+            <button onClick={sendRoute}>Save route</button>
+        </>
+    )
+}
+
+interface RouteNameInputProps {
+    routeName: string;
+    setRouteName: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const RouteNameInput: React.FC<RouteNameInputProps> = ({ routeName, setRouteName }) => {
+    return (
+        <input
+            type="text"
+            value={routeName}
+            onChange={e => setRouteName(e.target.value)}
+            placeholder="Enter route name"
+        />
+    );
+};
 
 
 const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRouteGeoJson}) => {
