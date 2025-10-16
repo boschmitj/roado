@@ -58,6 +58,7 @@ interface RouteBuilderProps extends RouteViewerProps {
 
 const RouteParentComponent: React.FC = () => {
     const [routeGeoJson, setRouteGeoJson] = useState< RouteGeoJson | null >(null);
+    
 
     return (
         <>
@@ -84,6 +85,7 @@ const RouteInfoComponent = ({routeGeoJson} : RouteViewerProps) => {
 const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
 
     const [routeName, setRouteName] = useState("");
+    const [showInput, setShowInput] = useState(false);
 
 
     const summary = routeGeoJson?.features[0].properties.summary;
@@ -91,10 +93,17 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
     const distanceM = summary?.distance;
     const durationS = summary?.duration;
     const createdBy = 1;
-    const name = "Kleine Testrunde";
+    const name = routeName;
     const geoData = JSON.stringify(routeGeoJson);
     const elevationProfile = null;
     const sendRoute = async () => {
+        if (!routeName) {
+            console.log("Route name is empty");
+            return;
+        } else if (!routeGeoJson) {
+            console.log("No route to save");
+            return;
+        }
         try {
             console.log(JSON.stringify({
                    createdBy,
@@ -125,7 +134,15 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
     }
     return (
         <>
-            <button onClick={sendRoute}>Save route</button>
+            <button onClick={() => setShowInput(true)}>Save route</button>
+            { 
+                showInput ? ( <RouteNameInputComponent 
+                    routeName={routeName} 
+                    setRouteName={setRouteName}
+                    onConfirm={sendRoute}
+                    onCancel={() => setShowInput(false)}
+                /> ): null
+            }
         </>
     )
 }
@@ -133,16 +150,24 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
 interface RouteNameInputProps {
     routeName: string;
     setRouteName: React.Dispatch<React.SetStateAction<string>>;
+    onConfirm: () => void;
+    onCancel: () => void;
 }
 
-const RouteNameInput: React.FC<RouteNameInputProps> = ({ routeName, setRouteName }) => {
+const RouteNameInputComponent: React.FC<RouteNameInputProps> = ({ routeName, setRouteName, onConfirm, onCancel }) => {
     return (
-        <input
-            type="text"
-            value={routeName}
-            onChange={e => setRouteName(e.target.value)}
-            placeholder="Enter route name"
-        />
+        <>
+            <input
+                type="text"
+                value={routeName}
+                onChange={e => setRouteName(e.target.value)}
+                placeholder="Enter route name"
+            />
+    
+            <button onClick={onConfirm}>Confirm</button>
+            <button onClick={onCancel}>Cancel</button>
+        </>
+        
     );
 };
 

@@ -104,7 +104,7 @@ public class RouteService {
         HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(coordinates);
         
         try {
-            log.info("Sending request to ORS with API key: " + OPENROUTESEVICES_API_KEY);
+            
 
             HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(new URI("https://api.openrouteservice.org/v2/directions/cycling-road/geojson"))
