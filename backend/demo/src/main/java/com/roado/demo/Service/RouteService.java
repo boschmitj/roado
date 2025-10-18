@@ -71,22 +71,6 @@ public class RouteService {
         return routeDTO;
     }
 
-
-    //Not done yet, trying to fetch from open route services 
-    // somth like this
-    // Client client = ClientBuilder.newClient();
-    // Entity<String> payload = Entity.json({"coordinates":[[8.681495,49.41461],[8.686507,49.41943],[8.687872,49.420318]]});
-    // Response response = client.target("https://api.openrouteservice.org/v2/directions/cycling-road/geojson")
-    //   .request()
-    //   .header("Authorization", "your-api-key")
-    //   .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
-    //   .header("Content-Type", "application/json; charset=utf-8")
-    //   .post(payload);
-
-    // System.out.println("status: " + response.getStatus());
-    // System.out.println("headers: " + response.getHeaders());
-    // System.out.println("body:" + response.readEntity(String.class));
-
     public String calculateRouteGeoJson(List<List<Double>> waypoints) {
 
         log.info("Calculating route...");
@@ -95,7 +79,7 @@ public class RouteService {
         ObjectMapper objectMapper = new ObjectMapper();
         String coordinates;
         try {
-            coordinates = objectMapper.writeValueAsString(Map.of("coordinates", waypoints));
+            coordinates = objectMapper.writeValueAsString(Map.of("coordinates", waypoints, "elevation", true));
         } catch (JsonProcessingException e) {
             return null;
         }

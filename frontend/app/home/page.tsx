@@ -1,12 +1,13 @@
 import RouteParentComponent from "../components/RouteBuilderComponent";
 import "../map/mapstyle.css"; 
+import "./home.css";
 
 export default function Home() {
     return (
         <>
-            <h1>Welcome to the Home Page</h1>
-            <p>This is my current map</p>
-            <RouteParentComponent />
+            <main className="home-main">
+                <RouteParentComponent />
+            </main>
         </>
     )
 }
