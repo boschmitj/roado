@@ -165,23 +165,16 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
             console.error(error);
         }
     }
-    return (
-        <div className="createRoute-section">
-            {/* <Button onClick={() => setShowInput(true)} className="button-dark">Create route</Button>
-            { 
-                showInput && ( <RouteNameInputComponent 
+    return (routeGeoJson && (
+            <div className="createRoute-section">
+                
+                <RouteNameInputComponent 
                     routeName={routeName} 
                     setRouteName={setRouteName}
                     onConfirm={sendRoute}
-                    onCancel={() => setShowInput(false)}
-                /> )
-            } */}
-            <RouteNameInputComponent 
-                routeName={routeName} 
-                setRouteName={setRouteName}
-                onConfirm={sendRoute}
-            />
-        </div>
+                />
+            </div>
+        )
     )
 }
 
