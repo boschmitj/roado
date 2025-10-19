@@ -1,14 +1,18 @@
 package com.roado.demo.Controller;
 
 import java.net.ResponseCache;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.roado.demo.DTOs.UserDTO;
+import com.roado.demo.Model.User;
 import com.roado.demo.Service.UserService;
 
 @RestController
@@ -21,14 +25,20 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<User> authenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    @GetMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody UserDTO user) {
-        try {
-            UserDTO result = userService.addUser(user);
-            return ResponseEntity.ok(result.toString());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        User currentUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(currentUser);
     }
+
+    @GetMapping("/")
+    public ResponseEntity<List<User>> allUsers() {
+        List <User> users = userService.allUsers();
+
+        return ResponseEntity.ok(users);
+    }
+
 }
