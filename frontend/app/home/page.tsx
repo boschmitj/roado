@@ -1,11 +1,13 @@
-import MapComponent from "../components/MapComponent";
+import RouteParentComponent from "../components/RouteBuilderComponent";
+import "../map/mapstyle.css"; 
+import "./home.css";
 
 export default function Home() {
     return (
-        <div>
-            <h1>Welcome to the Home Page</h1>
-            <p>This is my current map</p>
-            <MapComponent />
-        </div>
+        <>
+            <main className="home-main">
+                <RouteParentComponent />
+            </main>
+        </>
     )
 }

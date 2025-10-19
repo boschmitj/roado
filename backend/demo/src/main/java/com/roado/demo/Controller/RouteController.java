@@ -3,7 +3,7 @@ package com.roado.demo.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.roado.demo.DTOs.CoordinateDTO;
 import com.roado.demo.DTOs.RouteDTO;
 import com.roado.demo.Service.RouteService;
 
@@ -63,10 +63,22 @@ public class RouteController {
         }
     }
 
+    @PostMapping("/calcRouteGeoJson")
+    public ResponseEntity<?> calculateGeoJson(@RequestBody CoordinateDTO coordinateDTO) {
+        List<List<Double>> waypoints = coordinateDTO.getCoordinates();
+        String geoJson = routeService.calculateRouteGeoJson(waypoints);
+        if (geoJson != null) {
+             return (ResponseEntity<?>) ResponseEntity.ok(geoJson);
+        }
+        return ResponseEntity.badRequest().body("An error occured while trying to create a route");
+       
+    }
+    
+
     
     // only for testing and filling the database rn
     @PostMapping("/addRoutes")
-    public ResponseEntity<?> addRoutes(@RequestBody List<RouteDTO> routeDTOList) {
+    public ResponseEntity<String> addRoutes(@RequestBody List<RouteDTO> routeDTOList) {
         List<RouteDTO> addedRoutes = new ArrayList<>();
         for (RouteDTO routeDTO : routeDTOList) {
             try {
@@ -74,20 +86,17 @@ public class RouteController {
                 if (result != null) {
                     addedRoutes.add(result);
                 } else {
-                    return ResponseEntity.badRequest().build();
+                    return ResponseEntity.badRequest().body("Failed to add route " + routeDTO.toString());
                 }
             } catch (EntityNotFoundException enfe) {
                 return ResponseEntity.badRequest().body("The route user could not be found" + enfe.getMessage());
-            } catch (IllegalArgumentException iae) {
-                return ResponseEntity.badRequest().body("The route id must be null" + iae.getMessage());
             }
+        
         }
         if (addedRoutes.size() > 0) {
             return ResponseEntity.ok("Succeffully added routes: \n" + addedRoutes);
         } else {
             return ResponseEntity.badRequest().build();
         }
-    }
-
-    
+    }    
 }
