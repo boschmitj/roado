@@ -54,6 +54,8 @@ jobs:
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: password
           OPENROUTESEVICES_API_KEY: ${{ secrets.OPENROUTESERVICE_API_KEY }}
+          security.jwt.secret-key: ${{ secrets.SECRET_KEY }}
+          security.jwt.expiration-time: ${{ secrets.KEY_EXPIRATION }}
 
   # -------------------------
   # 2) run frontend tests (every push / PR)
