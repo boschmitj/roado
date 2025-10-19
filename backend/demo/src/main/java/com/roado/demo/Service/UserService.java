@@ -1,5 +1,8 @@
 package com.roado.demo.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.roado.demo.DTOs.UserDTO;
@@ -23,9 +26,12 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public UserDTO addUser(UserDTO user) throws Exception{
-        User newUser = userMapper.toEntity(user);
-        User savedUser = userRepository.save(newUser);
-        return userMapper.toDto(savedUser);
+
+    public List<User> allUsers() {
+        List<User> users = new ArrayList<>();
+
+        userRepository.findAll().forEach(users::add);
+
+        return users;
     }
 }

@@ -1,22 +1,38 @@
 package com.roado.demo.Mappers;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+
+import org.springframework.stereotype.Component;
 
 import com.roado.demo.DTOs.UserDTO;
 import com.roado.demo.Model.User;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+@Component
+public class UserMapper {
 
-    @Mapping(source = "id", target = "userId")
-    UserDTO toDto(User user);
+    public UserDTO toDto(User user) {
+        if ( user == null ) {
+            return null;
+        }
 
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "activities", ignore = true)
-    @Mapping(target = "routes", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(source = "userId", target = "id")
-    User toEntity(UserDTO userDTO);
+        UserDTO userDTO = new UserDTO();
 
+        userDTO.setUserId( user.getId() );
+        userDTO.setNickname( user.getNickname() );
+        userDTO.setEmail( user.getEmail() );
+
+        return userDTO;
+    }
+
+    public User toEntity(UserDTO userDTO) {
+        if ( userDTO == null ) {
+            return null;
+        }
+
+        User user = new User();
+
+        user.setId( userDTO.getUserId() );
+        user.setEmail( userDTO.getEmail() );
+
+        return user;
+    }
 }
