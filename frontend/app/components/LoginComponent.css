@@ -8,3 +8,39 @@
   left: 0;
   right: 0;
 }
+
+.toggle-buttons__login {
+  display: flex;
+  flex-direction: row;
+  /* column-gap: 10%; */
+  justify-content: center;
+  height: 40px;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+
+.toggle-buttons__login button {
+  width: 50%;
+}
+
+button {
+  cursor: pointer;
+  background-color: #BBDAA4;
+  color: #3b3b3b;
+}
+
+.secondary {
+  background-color: white;
+  color: #BBDAA4;
+}
+
+.heading__login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  font-size: 40px;
+}
