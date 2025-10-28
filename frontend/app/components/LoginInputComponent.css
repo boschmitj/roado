@@ -18,7 +18,7 @@ label {
   position: absolute;
   top: 36.6666666667px;
   color: rgba(255, 255, 255, 0.5);
-  font: 400 36.6666666667px Roboto;
+  font: 400 36.6666666667px Arial;
   cursor: text;
   transition: 0.25s ease;
 }
@@ -36,7 +36,7 @@ input {
 }
 input:valid ~ label {
   top: 0;
-  font: 700 22px Roboto;
+  font: 700 22px Arial;
   color: rgba(255, 255, 255, 0.5);
 }
 input:focus {
@@ -44,7 +44,7 @@ input:focus {
 }
 input:focus ~ label {
   top: 0;
-  font: 700 22px Roboto;
+  font: 700 22px Arial;
   color: #2196f3;
 }
 input:focus ~ .bar:before {

@@ -10,9 +10,9 @@
 }
 
 .toggle-buttons__login {
+  position: relative;
   display: flex;
   flex-direction: row;
-  /* column-gap: 10%; */
   justify-content: center;
   height: 40px;
   width: 100%;
@@ -21,19 +21,48 @@
   overflow: hidden;
 }
 
+.highlight-bar {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  
+  transition: transform 0.3s ease;
+}
+
+.toggle-buttons__login.sign-up-active .highlight-bar {
+  transform: translateX(100%);
+  background-color: #BBDAA4;
+}
+
+.toggle-buttons__login.sign-in-active .highlight-bar {
+  transform: translateX(0);
+  background-color: #BBDAA4;
+}
+
 
 .toggle-buttons__login button {
+  z-index: 1;
   width: 50%;
+  height: 100%;
 }
+
+
+
+
 
 button {
   cursor: pointer;
-  background-color: #BBDAA4;
+  background: none;
   color: #3b3b3b;
+  
 }
 
+
 .secondary {
-  background-color: white;
+  background: none;
   color: #BBDAA4;
 }
 
@@ -43,4 +72,5 @@ button {
   align-items: center;
   margin-bottom: 40px;
   font-size: 40px;
+  
 }

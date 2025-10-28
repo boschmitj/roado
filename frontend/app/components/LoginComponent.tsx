@@ -12,7 +12,8 @@ const LoginComponent : React.FC = () => {
             <div className="heading__login">
                 <h2>{isSignUp ? "Sign up" : "Sign in"} here</h2>
             </div>
-            <div className="toggle-buttons__login">
+            <div className={`toggle-buttons__login ${isSignUp ? "sign-up-active" : "sign-in-active"}`}>
+                <div className="highlight-bar"></div>
                 <Button
                     variant={!isSignUp ? "primary" : "secondary"}
                     onClick={() => setIsSignUp(false)}
