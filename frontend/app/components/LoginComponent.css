@@ -1,12 +1,15 @@
 .centered {
   width: 550px;
-  height: 110px;
-  margin: auto;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .toggle-buttons__login {
@@ -19,6 +22,11 @@
   margin-bottom: 20px;
   border-radius: 8px;
   overflow: hidden;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
 .highlight-bar {
@@ -68,7 +76,7 @@ button {
 
 .heading__login {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   margin-bottom: 40px;
   font-size: 40px;
