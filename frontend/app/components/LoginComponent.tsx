@@ -84,7 +84,7 @@ const LoginComponent : React.FC = () => {
                 <LoginInputComponent id="email" type="email" required text="Email" onChange={handleChange} value={formData.email}/>
                 <LoginInputComponent id="password" type="password" required text="Password" onChange={handleChange} value={formData.password}/>   
 
-                <Button type="submit">{isSignUp ? "Sign Up" : "Sign In"}</Button> 
+                <Button id="submit-button" type="submit">{isSignUp ? "Sign Up" : "Sign In"}</Button> 
             </form>
         </div>
     )

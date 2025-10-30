@@ -1,5 +1,5 @@
 .centered {
-  width: 550px;
+  width: 25%;
   position: absolute;
   
 }
@@ -12,12 +12,21 @@
   min-height: 100vh;
 }
 
+
+.login-container {
+  border: 2px solid #d4dbce;
+  box-shadow: 0 0 20px 12px #d4dbce;
+  padding: 3em 2em;
+  border-radius: 50px;
+}
+
 .toggle-buttons__login {
   position: relative;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  height: 40px;
+  padding: 0.5em 0;
+  font-size: 1.5em;
   width: 100%;
   margin-bottom: 20px;
   border-radius: 8px;
@@ -81,4 +90,15 @@ button {
   margin-bottom: 40px;
   font-size: 40px;
   
+}
+
+#submit-button {
+  background-color: #BBDAA4;
+  color: balck;
+  border: none;
+  padding: 0.5em 2em;
+  border-radius: 5px;
+  font-size: 1.5em;
+  width: 100%;
+  margin-top: 20px;
 }
