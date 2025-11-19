@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { Map, MapStyle, config, helpers } from "@maptiler/sdk";
 import "../map/mapstyle.css"; // importing my "mapstyle.css" for styling
-
+import axios from "../api/axios";
 config.apiKey = "jgADwIPnUzhtC93OwbQm" // API for MapTiler FIXME: temporary
 
 const MapComponent: React.FC = () => {
@@ -22,11 +22,11 @@ const MapComponent: React.FC = () => {
         //just for testing
         mapRef.current?.on("load", async () => {
             try {
-                const response = await fetch("http://localhost:8080/route/routeGeoJson?id=1");
-                if (!response.ok) {
+                const response = await axios.get("http://localhost:8080/route/routeGeoJson?id=1");
+                if (response.status !== 200) {
                     throw new Error("Network response was not ok");
                 }
-                const routeGeoJson = await response.json();
+                const routeGeoJson = await response.data;
 
                 await helpers.addPolyline(mapRef.current!, {
                     data: routeGeoJson,

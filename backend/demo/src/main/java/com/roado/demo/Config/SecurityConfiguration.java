@@ -29,50 +29,6 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // http
-        //     .csrf(csrf -> csrf.disable())
-        //     .authorizeHttpRequests(auth -> auth
-        //         .requestMatchers("/auth/**", "/oauth2/**").permitAll()
-        //         .anyRequest().authenticated()
-        //     )
-            
-        //     .formLogin(form -> form
-        //         .loginPage("/login")
-        //         .defaultSuccessUrl("/home", true)
-        //         .permitAll()
-        //     )
-            
-        //     .oauth2Login(oauth -> oauth
-        //         .loginPage("/login")
-        //         .successHandler(oAuthSuccessHandler)
-        //     )
-        //     .authenticationProvider(authenticationProvider)
-        //     .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        //     // logout??
-        // return http.build();
-        // http
-        //     .csrf(csrf -> csrf.disable())
-        //     .authorizeHttpRequests(auth -> auth
-        //         .requestMatchers("/login/**", "/oauth2/**", "/register/**", "/public/**").permitAll()
-        //         .anyRequest().authenticated()
-        //     )
-        //     .formLogin(form -> form
-        //         .loginPage("/login")
-        //         .defaultSuccessUrl("/home", true)
-        //         .permitAll()
-        //     )
-        //     .oauth2Login(oauth -> oauth
-        //         .loginPage("/login")
-        //         .successHandler(oAuthSuccessHandler)
-        //     )
-        //     .logout(logout -> logout
-        //         .logoutUrl("/logout")
-        //         .logoutSuccessUrl("/")
-        //         .deleteCookies("JWT_TOKEN")
-        //         .permitAll()
-        //     );
-        // return http.build();
 
         http
         .csrf(AbstractHttpConfigurer::disable)
@@ -85,7 +41,6 @@ public class SecurityConfiguration {
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .oauth2Login(oauth -> oauth
-            .loginPage("/login")
             .successHandler(oAuthSuccessHandler)
         )
         .logout(logout -> logout
@@ -104,12 +59,12 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:8000", "http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET","POST"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
-
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        // configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
         source.registerCorsConfiguration("/**",configuration);
 
         return source;

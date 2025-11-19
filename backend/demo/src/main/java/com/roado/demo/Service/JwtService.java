@@ -41,19 +41,27 @@ public class JwtService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, ACCESS_TOKEN_EXPIRATION);
+        return buildToken(new HashMap<>(Map.of("token_type", "access")), userDetails, ACCESS_TOKEN_EXPIRATION);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, REFRESH_TOKEN_EXPIRATION);
+        return buildToken(new HashMap<>(Map.of("token_type", "refresh")), userDetails, REFRESH_TOKEN_EXPIRATION);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    public long getExpirationTime() {
-        return jwtExpiration;
+    // public long getExpirationTime(String token) {
+    //     return extractExpiration(token).getTime();
+    // }
+
+    public long getAccessTokenExpirationTime() {
+        return ACCESS_TOKEN_EXPIRATION;
+    }
+
+    public long getRefreshTokenExpirationTime() {
+        return REFRESH_TOKEN_EXPIRATION;
     }
 
     private String buildToken(
@@ -98,5 +106,9 @@ public class JwtService {
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractTokenType(String jwt) {
+        return extractClaim(jwt, claims -> claims.get("type", String.class));
     }
 }

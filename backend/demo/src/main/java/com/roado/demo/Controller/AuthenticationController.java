@@ -35,12 +35,17 @@ public class AuthenticationController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-        User registeredUser = authenticationService.signup(registerUserDto);
+    public ResponseEntity<?> register(@RequestBody RegisterUserDto registerUserDto, HttpServletResponse response) {
+        User registeredUser = authenticationService.signUpAndAuthenticate(registerUserDto);
 
-        // TODO: mby implement autologin when signing up
+        UserDetails userDetails = (UserDetails) registeredUser;
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        return ResponseEntity.ok(registeredUser);
+        response.addCookie(jwtCookieService.createAccessTokenCookie(accessToken));
+        response.addCookie(jwtCookieService.createRefreshTokenCookie(refreshToken));
+        
+        return ResponseEntity.ok(Map.of("message", "Registration + login successful"));
     }
 
     @PostMapping("/login")
@@ -55,19 +60,15 @@ public class AuthenticationController {
         response.addCookie(jwtCookieService.createAccessTokenCookie(accessToken));
         response.addCookie(jwtCookieService.createRefreshTokenCookie(refreshToken));
 
-        // LoginResponse loginResponse = new LoginResponse();
-        //     loginResponse.setToken(jwtToken);
-        //     loginResponse.setExpiresIn(jwtService.getExpirationTime());
-
-        
-
         return ResponseEntity.ok(Map.of("message", "Login successful"));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@CookieValue(name = "REFRESH_TOKEN", required = false) String refreshToken,   
                                             HttpServletResponse response) {
-        if (refreshToken == null | refreshToken.isEmpty()) {
+        if (refreshToken == null || 
+            refreshToken.isEmpty() || 
+            !"refresh".equals(jwtService.extractTokenType(refreshToken))) {
             return ResponseEntity.status(401).body("No refresh token provided");
         }
 
@@ -79,7 +80,7 @@ public class AuthenticationController {
         }
         
         if (!jwtService.isTokenValid(refreshToken, userDetails)) {
-            return ResponseEntity.status(401).body("Invalid refresh token")
+            return ResponseEntity.status(401).body("Invalid refresh token");
         }
 
         String newAccessToken = jwtService.generateAccessToken(userDetails);

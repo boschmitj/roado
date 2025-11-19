@@ -9,6 +9,7 @@ import Input from "./Input";
 
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import './RouteBuilderComponent.css'
+import axios from "../api/axios";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
@@ -138,28 +139,19 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
             return;
         }
         try {
-            console.log(JSON.stringify({
-                   createdBy,
-                   name,
-                   geoData,
-                   distanceM,
-                   elevationProfile,
-                   durationS, 
-                }));
-            const response = await fetch("http://127.0.0.1:8080/route/addRoute", {
-                method: "POST",
-                headers: {
-                    'Content-Type' : 'application/json',
-                },
-                body: JSON.stringify({
-                   createdBy,
-                   name,
-                   geoData,
-                   distanceM,
-                   elevationProfile,
-                   durationS, 
-                }),
-            });
+            const body = {
+                createdBy,
+                name,
+                geoData,
+                distanceM,
+                elevationProfile,
+                durationS,
+            }
+            console.log("Sending " + JSON.stringify(body));
+            const response = await axios.post("http://localhost:8080/route/addRoute", 
+                body,
+                { headers: { "Content-Type" : "application/json"} },
+            );
             
         } catch (error) {
             console.error(error);
@@ -187,6 +179,7 @@ interface RouteNameInputProps {
 const RouteNameInputComponent: React.FC<RouteNameInputProps> = ({
   routeName,
   setRouteName,
+  onConfirm,
 }) => {
   return (
     <>
@@ -196,6 +189,7 @@ const RouteNameInputComponent: React.FC<RouteNameInputProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRouteName(e.target.value)}
         placeholder="Enter route name"
         dataTitle="Save route"
+        onConfirm={onConfirm}
       />
     </>
   );
@@ -273,19 +267,18 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
                         "coordinates": coordinates,
                         "elevation": true
                     }
-                    const response = await fetch("http://localhost:8080/route/calcRouteGeoJson", {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        'body' : JSON.stringify(body),
-                    });
+                    console.log(body);
+                    console.log(JSON.stringify(body));
+                    const response = await axios.post("http://localhost:8080/route/calcRouteGeoJson", 
+                        body,
+                        { headers: { "Content-Type" : "application/json"} }                  
+                    );
 
-                    if (!response.ok) {
-                        throw new Error("An error occured: " + response.status);
+                    if (response.status !== 200) {
+                        throw new Error("An error occurred: " + response.status);
                     }
 
-                    const routeGeoJson = await response.json();
+                    const routeGeoJson = response.data;
                     console.log(routeGeoJson);
                     console.log(`Fetched the following route ${JSON.stringify(routeGeoJson)}`);
                     setRouteGeoJson(routeGeoJson);

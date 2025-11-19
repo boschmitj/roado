@@ -52,8 +52,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         response.addCookie(jwtCookieService.createAccessTokenCookie(accessToken));
         response.addCookie(jwtCookieService.createRefreshTokenCookie(refreshToken));
+        // this.setDefaultTargetUrl("http://localhost:3000/home");
 
-        getRedirectStrategy().sendRedirect(request, response, "/home");
+        getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000/home");
         
     } 
     

@@ -31,12 +31,17 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User signup(RegisterUserDto input) {
+    public User signUpAndAuthenticate(RegisterUserDto input) {
         User user = new User();
             user.setNickname(input.getNickname());
             user.setEmail(input.getEmail());
             user.setPassword(passwordEncoder.encode(input.getPassword()));
         
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return userRepository.save(user);
     }
 

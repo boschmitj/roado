@@ -14,6 +14,7 @@ interface InputProps {
   placeholder?: string;
   type?: string;
   dataTitle?: string;
+  onConfirm: () => void;
 }
 
 
@@ -22,7 +23,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 
-const Input: React.FC<InputProps> = ({ value, onChange, placeholder, type = "text", dataTitle }) => {
+const Input: React.FC<InputProps> = ({ value, onChange, placeholder, type = "text", dataTitle, onConfirm }) => {
   return (
     <>
       <input className="c-checkbox" type="checkbox" id="checkbox" />
@@ -37,7 +38,7 @@ const Input: React.FC<InputProps> = ({ value, onChange, placeholder, type = "tex
             required
           />
           <label className="c-form__buttonLabel" htmlFor="checkbox">
-            <button className="c-form__button" type="button">
+            <button className="c-form__button" type="button" onClick={onConfirm}>
               Send
             </button>
           </label>
