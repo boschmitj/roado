@@ -38,7 +38,10 @@ const Input: React.FC<InputProps> = ({ value, onChange, placeholder, type = "tex
             required
           />
           <label className="c-form__buttonLabel" htmlFor="checkbox">
-            <button className="c-form__button" type="button" onClick={onConfirm}>
+            <button className="c-form__button" type="button" onClick={e => {
+              e.stopPropagation();
+              onConfirm();
+            }}>
               Send
             </button>
           </label>

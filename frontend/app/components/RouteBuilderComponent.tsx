@@ -130,7 +130,9 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
     const name = routeName;
     const geoData = JSON.stringify(routeGeoJson);
     const elevationProfile = null;
+
     const sendRoute = async () => {
+        alert("trying")
         if (!routeName) {
             console.log("Route name is empty");
             return;
@@ -148,7 +150,7 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
                 durationS,
             }
             console.log("Sending " + JSON.stringify(body));
-            const response = await axios.post("http://localhost:8080/route/addRoute", 
+            const response = await axios.post("/route/addRoute", 
                 body,
                 { headers: { "Content-Type" : "application/json"} },
             );
@@ -157,6 +159,8 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
             console.error(error);
         }
     }
+
+
     return (routeGeoJson && (
             <div className="createRoute-section">
                 
