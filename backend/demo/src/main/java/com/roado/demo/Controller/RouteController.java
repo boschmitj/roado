@@ -66,9 +66,9 @@ public class RouteController {
     @PostMapping("/calcRouteGeoJson")
     public ResponseEntity<?> calculateGeoJson(@RequestBody CoordinateDTO coordinateDTO) {
         List<List<Double>> waypoints = coordinateDTO.getCoordinates();
-        String geoJson = routeService.calculateRouteGeoJson(waypoints);
+        String geoJson = routeService.calculateRouteGeoJson(waypoints, coordinateDTO.getElevation());
         if (geoJson != null) {
-             return (ResponseEntity<?>) ResponseEntity.ok(geoJson);
+            return (ResponseEntity<?>) ResponseEntity.ok(geoJson);
         }
         return ResponseEntity.badRequest().body("An error occured while trying to create a route");
        

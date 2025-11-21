@@ -71,7 +71,7 @@ public class RouteService {
         return routeDTO;
     }
 
-    public String calculateRouteGeoJson(List<List<Double>> waypoints) {
+    public String calculateRouteGeoJson(List<List<Double>> waypoints, Boolean elevation) {
 
         log.info("Calculating route...");
         log.info("Waypoints are " + waypoints);
@@ -79,7 +79,7 @@ public class RouteService {
         ObjectMapper objectMapper = new ObjectMapper();
         String coordinates;
         try {
-            coordinates = objectMapper.writeValueAsString(Map.of("coordinates", waypoints, "elevation", true));
+            coordinates = objectMapper.writeValueAsString(Map.of("coordinates", waypoints, "elevation", elevation));
         } catch (JsonProcessingException e) {
             return null;
         }

@@ -3,6 +3,7 @@ package com.roado.demo.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.roado.demo.DTOs.UserDTO;
@@ -33,5 +34,9 @@ public class UserService {
         userRepository.findAll().forEach(users::add);
 
         return users;
+    }
+
+    public UserDetails loadUserByUsername(String email) {
+        return (UserDetails) userRepository.findByEmail(email).orElse(null);
     }
 }

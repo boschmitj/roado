@@ -3,6 +3,8 @@ package com.roado.demo.Service;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,24 +31,36 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User signup(RegisterUserDto input) {
+    public User signUpAndAuthenticate(RegisterUserDto input) {
         User user = new User();
             user.setNickname(input.getNickname());
             user.setEmail(input.getEmail());
             user.setPassword(passwordEncoder.encode(input.getPassword()));
         
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return savedUser;
     }
 
+
     public User authenticate(LoginUserDto input) {
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getEmail(),
                         input.getPassword()
                 )
         );
 
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         return userRepository.findByEmail(input.getEmail())
                 .orElseThrow();
     }
+
+    
 }

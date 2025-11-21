@@ -24,6 +24,9 @@ public class JwtService {
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
+    private final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000L;
+    private final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000L;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -37,12 +40,28 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    public String generateAccessToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(Map.of("token_type", "access")), userDetails, ACCESS_TOKEN_EXPIRATION);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(Map.of("token_type", "refresh")), userDetails, REFRESH_TOKEN_EXPIRATION);
+    }
+
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
-    public long getExpirationTime() {
-        return jwtExpiration;
+    // public long getExpirationTime(String token) {
+    //     return extractExpiration(token).getTime();
+    // }
+
+    public long getAccessTokenExpirationTime() {
+        return ACCESS_TOKEN_EXPIRATION;
+    }
+
+    public long getRefreshTokenExpirationTime() {
+        return REFRESH_TOKEN_EXPIRATION;
     }
 
     private String buildToken(
@@ -52,10 +71,12 @@ public class JwtService {
     ) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .claims()
+                    .add(extraClaims)
+                    .subject(userDetails.getUsername())
+                    .issuedAt(new Date(System.currentTimeMillis()))
+                    .expiration(new Date(System.currentTimeMillis() + expiration))
+                .and()
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -85,5 +106,9 @@ public class JwtService {
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractTokenType(String jwt) {
+        return extractClaim(jwt, claims -> claims.get("token_type", String.class));
     }
 }
