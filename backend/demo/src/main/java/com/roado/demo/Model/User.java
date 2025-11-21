@@ -39,7 +39,7 @@ public class User implements UserDetails {
     @Column(name = "nickname", unique = true)
     private String nickname;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @CreationTimestamp
@@ -53,6 +53,12 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "provider")
+    private String provider;
+
+    @Column(name = "signup_method")
+    private String method;
+    
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<Activity> activities = new ArrayList<>();
 
