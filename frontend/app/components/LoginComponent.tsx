@@ -5,9 +5,11 @@ import "./LoginComponent.css";
 import "../styles/googleButton.css";
 import Button from "./Button";
 import axios from "../api/axios";
+import { useRouter } from "next/navigation";
 
 const LoginComponent : React.FC = () => {
 
+    const router = useRouter();
 
     const [isSignUp, setIsSignUp] = useState(false);
     const [formData, setFormData] = useState({
@@ -19,7 +21,7 @@ const LoginComponent : React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
-        console.log(id, ": ",value);
+        // console.log(id, ": ",value);
         setFormData(prev => ({
             ...prev, 
             [id]: value
@@ -33,6 +35,7 @@ const LoginComponent : React.FC = () => {
                 const registerUser: RegisterUserDTO = formData;
                 console.log(registerUser);
                 const response = await axios.post("/auth/register", JSON.stringify(registerUser));
+                router.push("/home");
             } catch (error) {
                 
             }
@@ -46,6 +49,7 @@ const LoginComponent : React.FC = () => {
                 };
                 console.log(loginUser);
                 const response = await axios.post("/auth/login", JSON.stringify(loginUser));
+                router.push("/home");
             } catch (error) {
 
             }

@@ -17,7 +17,7 @@
 
 .login-container {
   border: 2px solid #d4dbce;
-  box-shadow: 0 0 20px 12px #d4dbce;
+  box-shadow: 0 0 20px 4px #d4dbce;
   padding: 3em 2em;
   border-radius: 50px;
 }

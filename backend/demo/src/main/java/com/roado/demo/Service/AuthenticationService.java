@@ -37,12 +37,14 @@ public class AuthenticationService {
             user.setEmail(input.getEmail());
             user.setPassword(passwordEncoder.encode(input.getPassword()));
         
+        User savedUser = userRepository.save(user);
+
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return userRepository.save(user);
+        return savedUser;
     }
 
 
