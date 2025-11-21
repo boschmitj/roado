@@ -15,7 +15,7 @@ export default function Home() {
             try {
                 console.log("Trying to fetch /user");
                 const response = await axios.get("/user/me");
-                console.log("got user: " + response);
+                console.log("got user: " + JSON.stringify(response.data));
             } catch (error)
             {
                 console.error(error);

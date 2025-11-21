@@ -9,18 +9,20 @@ const api: AxiosInstance = axios.create({
     },
 });
 
+console.log("api axios instance created - registering response interceptor"); // debug
 api.interceptors.response.use(
-    (response : AxiosResponse) => response,
+    (response: AxiosResponse) => response,
     async (error: AxiosError) => {
+        console.log("response interceptor fired"); // debug
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
-
+        console.log("Got response with status: " + error.response?.status);
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 console.log("Making reqest to refresh");
                 await axios.post(
-                    "http://localhost:8080/auth/refresh",
+                    "http://localhost:8080/auth/refresh",   //this isnt fired!!!
                     {},
                     { withCredentials: true } 
                 );

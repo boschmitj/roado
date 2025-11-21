@@ -32,7 +32,7 @@ const LoginComponent : React.FC = () => {
             try {
                 const registerUser: RegisterUserDTO = formData;
                 console.log(registerUser);
-                const response = await axios.post("http://localhost:8080/auth/register", JSON.stringify(registerUser));
+                const response = await axios.post("/auth/register", JSON.stringify(registerUser));
             } catch (error) {
                 
             }
@@ -45,7 +45,7 @@ const LoginComponent : React.FC = () => {
                     password,
                 };
                 console.log(loginUser);
-                const response = await axios.post("http://localhost:8080/auth/login", JSON.stringify(loginUser));
+                const response = await axios.post("/auth/login", JSON.stringify(loginUser));
             } catch (error) {
 
             }

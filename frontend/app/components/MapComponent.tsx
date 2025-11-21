@@ -22,7 +22,7 @@ const MapComponent: React.FC = () => {
         //just for testing
         mapRef.current?.on("load", async () => {
             try {
-                const response = await axios.get("http://localhost:8080/route/routeGeoJson?id=1");
+                const response = await axios.get("/route/routeGeoJson?id=1");
                 if (response.status !== 200) {
                     throw new Error("Network response was not ok");
                 }

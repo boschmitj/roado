@@ -109,6 +109,6 @@ public class JwtService {
     }
 
     public String extractTokenType(String jwt) {
-        return extractClaim(jwt, claims -> claims.get("type", String.class));
+        return extractClaim(jwt, claims -> claims.get("token_type", String.class));
     }
 }

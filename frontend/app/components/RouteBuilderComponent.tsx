@@ -273,7 +273,7 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
                     }
                     console.log(body);
                     console.log(JSON.stringify(body));
-                    const response = await axios.post("http://localhost:8080/route/calcRouteGeoJson", 
+                    const response = await axios.post("/route/calcRouteGeoJson", 
                         body,
                         { headers: { "Content-Type" : "application/json"} }                  
                     );

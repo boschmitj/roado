@@ -23,10 +23,12 @@ import com.roado.demo.Service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequestMapping("/auth")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
     private final JwtService jwtService;
     
@@ -67,10 +69,13 @@ public class AuthenticationController {
     public ResponseEntity<?> refreshToken(@CookieValue(name = "REFRESH_TOKEN", required = false) String refreshToken,   
                                             HttpServletResponse response) {
         if (refreshToken == null || 
-            refreshToken.isEmpty() || 
-            !"refresh".equals(jwtService.extractTokenType(refreshToken))) {
+            refreshToken.isEmpty() ||
+            !("refresh".equals(jwtService.extractTokenType(refreshToken)))
+        ) {
             return ResponseEntity.status(401).body("No refresh token provided");
         }
+
+        log.info((jwtService.extractTokenType(refreshToken)));
 
         String username = jwtService.extractUsername(refreshToken);
         UserDetails userDetails = userService.loadUserByUsername(username);  // need to change back to cast (UserDetails)?
