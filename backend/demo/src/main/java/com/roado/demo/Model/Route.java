@@ -56,8 +56,14 @@ public class Route {
     @Column(name = "elevation_profile")
     private String elevationProfile;
 
+    @Column(name = "elevation_gain")
+    private Long elevationGain;
+
     @Column(name = "duration_s")
     private Long durationS;
+
+    @Column(name = "svg_preview", columnDefinition = "TEXT")
+    private String svgPreview;
 
     @OneToMany(mappedBy = "route")
     private List<Activity> activities = new ArrayList<>();

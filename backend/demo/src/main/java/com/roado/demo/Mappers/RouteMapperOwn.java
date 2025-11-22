@@ -25,6 +25,8 @@ public class RouteMapperOwn {
             .distanceM(route.getDistanceM())
             .elevationProfile(route.getElevationProfile())
             .durationS(route.getDurationS())
+            .svgPreview(route.getSvgPreview())
+            .elevationGain(route.getElevationGain())
             .build();
     }
 
@@ -37,6 +39,8 @@ public class RouteMapperOwn {
             .elevationProfile(routeDTO.getElevationProfile())
             .geoData(routeDTO.getGeoData())
             .name(routeDTO.getName())
+            .svgPreview(routeDTO.getSvgPreview())
+            .elevationGain(routeDTO.getElevationGain())
             .build();
     }
 }

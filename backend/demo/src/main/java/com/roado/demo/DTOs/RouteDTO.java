@@ -11,4 +11,6 @@ public class RouteDTO {
     private Long distanceM;
     private String elevationProfile;
     private Long durationS;
+    private String svgPreview;
+    private Long elevationGain;
 }

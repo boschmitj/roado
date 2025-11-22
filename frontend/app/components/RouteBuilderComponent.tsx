@@ -3,13 +3,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
-import { FeatureCollection, Geometry, GeoJsonProperties } from "geojson";
+import { FeatureCollection, Geometry, GeoJsonProperties, Feature, LineString } from "geojson";
 import Button from "./Button";
 import Input from "./Input";
 
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import './RouteBuilderComponent.css'
 import axios from "../api/axios";
+import { generateRoutePreviewSvg } from "@/utils/routePreview";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
@@ -126,10 +127,16 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
     console.log(routeGeoJson);
     const distanceM = summary?.distance;
     const durationS = summary?.duration;
-    const createdBy = 1;
     const name = routeName;
     const geoData = JSON.stringify(routeGeoJson);
     const elevationProfile = null;
+
+    const geometry = routeGeoJson?.features[0].geometry;
+    const elevations = (geometry?.type === "LineString") 
+        ? geometry.coordinates.map(coord => coord[2]) 
+        : [];
+    const elevationGain = computeElevationTotal(elevations);
+
 
     const sendRoute = async () => {
         alert("trying")
@@ -141,13 +148,18 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
             return;
         }
         try {
+            const geom = routeGeoJson.features[0].geometry as LineString;
+            const coordsForPreview = geom.coordinates.map(([lng, lat]) => ({ lat, lng }));
+
+            const svgPreview = generateRoutePreviewSvg(coordsForPreview);
             const body = {
-                createdBy,
                 name,
                 geoData,
                 distanceM,
                 elevationProfile,
                 durationS,
+                svgPreview,
+                elevationGain
             }
             console.log("Sending " + JSON.stringify(body));
             const response = await axios.post("/route/addRoute", 
