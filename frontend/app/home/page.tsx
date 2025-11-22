@@ -6,6 +6,7 @@ import "./home.css";
 import { useEffect } from "react";
 import axios from "../api/axios";
 
+
 export default function Home() {
 
     const router = useRouter();
