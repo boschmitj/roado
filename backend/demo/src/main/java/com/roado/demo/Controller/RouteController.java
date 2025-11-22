@@ -3,8 +3,11 @@ package com.roado.demo.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nimbusds.jose.proc.SecurityContext;
 import com.roado.demo.DTOs.CoordinateDTO;
 import com.roado.demo.DTOs.RouteDTO;
+import com.roado.demo.Model.User;
+import com.roado.demo.Service.AuthenticationService;
 import com.roado.demo.Service.RouteService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -12,9 +15,13 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,8 +32,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class RouteController {
 
     private RouteService routeService;
+    private AuthenticationService authenticationService;
 
-    public RouteController(RouteService routeService) {
+    public RouteController(RouteService routeService, AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
         this.routeService = routeService;
     }
 
@@ -52,12 +61,9 @@ public class RouteController {
     public ResponseEntity<?> addRoute(@RequestBody RouteDTO routeDTO) {
         try {
             RouteDTO result = routeService.addRoute(routeDTO);
-            if (result == null) {
-                return ResponseEntity.badRequest().build();
-            }
             return ResponseEntity.ok("Succeffully added route: \n" + result);
-        } catch (EntityNotFoundException enfe) {
-            return ResponseEntity.badRequest().body("The route user could not be found" + enfe.getMessage());
+        } catch (AuthenticationException enfe) {
+            return ResponseEntity.badRequest().body(enfe.getMessage());
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.badRequest().body("The route id must be null" + iae.getMessage());
         }
@@ -99,4 +105,20 @@ public class RouteController {
             return ResponseEntity.badRequest().build();
         }
     }    
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllRoutesForUser() {
+        try {
+            User user = authenticationService.getAuthenticatedUser();
+            List<RouteDTO> routes =  routeService.getRoutesForUser(user);
+            return ResponseEntity.ok(routes);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Unauthorized: " +  e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+        }
+    }
+    
 }

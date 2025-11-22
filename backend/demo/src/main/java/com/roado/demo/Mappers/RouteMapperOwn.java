@@ -20,7 +20,6 @@ public class RouteMapperOwn {
 
     public RouteDTO toRouteDTO(Route route) {
         return RouteDTO.builder()
-            .createdBy(route.getCreatedBy().getId())
             .name(route.getName())
             .geoData(route.getGeoData())
             .distanceM(route.getDistanceM())
@@ -29,10 +28,10 @@ public class RouteMapperOwn {
             .build();
     }
 
-    public Route toRoute(RouteDTO routeDTO) {
+    public Route toRoute(RouteDTO routeDTO, Long createdBy) {
         System.out.println(routeDTO.getGeoData() == null ? "GeoJson ist null" : routeDTO.getGeoData());
         return Route.builder()
-            .createdBy(userRepository.findById(routeDTO.getCreatedBy()).orElseThrow(() -> new IllegalArgumentException("Der Nutzer wurde nicht gefunden")))
+            .createdBy(userRepository.findById(createdBy).orElseThrow(() -> new IllegalArgumentException("Der Nutzer wurde nicht gefunden")))
             .distanceM(routeDTO.getDistanceM())
             .durationS(routeDTO.getDurationS())
             .elevationProfile(routeDTO.getElevationProfile())
