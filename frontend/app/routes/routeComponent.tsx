@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export interface route {
-    routeName: string,
+    name: string,
     geoData: string
     distanceM: number,
     durationS: number,
@@ -20,27 +20,27 @@ export interface route {
 
 
 
-export function RouteCard({ routeName, distanceM, durationS, geoData, elevationGain, svgPreview } : route) {
+export function RouteCard({ name, distanceM, durationS, geoData, elevationGain, svgPreview } : route) {
 
     const calculateDistance = (distance : number) : number | string => {
         if (distance < 1000) {
-            return distance;
+            return distance + "m";
         }
-        return (distance / 1000).toFixed(1);
+        return (distance / 1000).toFixed(1) + "km";
     }
 
     const calculateDuration = (duration : number) : string => {
         if (duration < 60) return duration + "s";
         if (duration < 3600) return Math.floor(duration / 60) + "min";
-        if (duration < 86400) return Math.floor(duration / 3600) + "h " + duration % 3600 + "m";
+        if (duration < 86400) return Math.floor(duration / 3600) + "h " + duration % 60 + "m";
         return Math.floor(duration / 86400) + "d " + (duration % 86400) + "h";
     }
 
 
     return (
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-lg">
             <CardHeader>
-                <CardTitle className="text-black">{ routeName }</CardTitle>
+                <CardTitle className="text-black">{ name }</CardTitle>
                 <CardAction>
                     <Button variant="default">
                         Navigate
@@ -50,7 +50,7 @@ export function RouteCard({ routeName, distanceM, durationS, geoData, elevationG
             <CardContent>
                 <span><p>{ calculateDistance(distanceM) }</p></span>
                 <span><p>{ calculateDuration(durationS) }</p></span>
-                <span><p>{ elevationGain }</p></span>
+                <span><p>{ elevationGain + "m" }</p></span>
                 <span dangerouslySetInnerHTML={{__html: svgPreview }}></span> 
             </CardContent>
 

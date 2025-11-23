@@ -2,7 +2,10 @@ import { RouteOverview } from "./routeOverviewComponent"
 export default function page() {
     return (
         <>
-            <RouteOverview/>
+            <div className="flex justify-center mt-4">
+                <RouteOverview/>
+            </div>
+            
         </>
     )
 }

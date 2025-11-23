@@ -1,8 +1,10 @@
 "use client";
 
 import { RouteCard, route } from "./routeComponent";
+import { Stack } from "@/components/own/Stack";
 import axios from "../api/axios";
 import { useEffect, useState } from "react";
+
 
 export function RouteOverview() {
     const [routes, setRoutes] = useState<route[]>([]);
@@ -27,9 +29,11 @@ export function RouteOverview() {
 
     return (
         <>
-            {routes.map((r) => (
-                <RouteCard key={r.routeName} {...r} />
-            ))}
+            <Stack>
+                {routes.map((r) => (
+                    <RouteCard key={r.name} {...r} />
+                ))}
+            </Stack>
         </>
     )
 }
