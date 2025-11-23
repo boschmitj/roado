@@ -8,6 +8,7 @@ import {
     CardTitle, // Name der Route
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Router from "next/router";
 
 export interface route {
     name: string,
@@ -37,12 +38,16 @@ export function RouteCard({ name, distanceM, durationS, geoData, elevationGain, 
     }
 
 
+    // TODO add routeId to the DTO? 
+    // THen use it here to navigate the specific route
+    const id = 5;
+
     return (
         <Card className="w-full max-w-lg">
             <CardHeader>
                 <CardTitle className="text-black">{ name }</CardTitle>
                 <CardAction>
-                    <Button variant="default">
+                    <Button variant="default" onClick={() => Router.push(`/navigate/${id}`)}> 
                         Navigate
                     </Button>
                 </CardAction>
