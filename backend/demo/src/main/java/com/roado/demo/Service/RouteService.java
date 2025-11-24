@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
 import com.roado.demo.Mappers.RouteMapperOwn;
@@ -110,10 +111,10 @@ public class RouteService {
         }
     }
 
-    public List<RouteDTO> getRoutesForUser(User user) throws Exception{
+    public List<GetRouteDTO> getRoutesForUser(User user) throws Exception{
 
-        List<RouteDTO> routes = routeRepository.findAllByCreatedBy(user)
-            .stream().map(r -> routeMapper.toRouteDTO(r)).toList();
+        List<GetRouteDTO> routes = routeRepository.findAllByCreatedBy(user)
+            .stream().map(r -> routeMapper.toGetRouteDTO(r)).toList();
 
         if (routes.isEmpty()) {
             throw new Exception("No routes found");

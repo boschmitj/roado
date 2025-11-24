@@ -31,7 +31,7 @@ export function RouteOverview() {
         <>
             <Stack>
                 {routes.map((r) => (
-                    <RouteCard key={r.name} {...r} />
+                    <RouteCard key={r.id} {...r} />
                 ))}
             </Stack>
         </>

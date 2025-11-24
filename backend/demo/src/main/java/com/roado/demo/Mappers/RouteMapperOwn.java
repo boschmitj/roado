@@ -4,6 +4,7 @@ import java.beans.JavaBean;
 
 import org.springframework.stereotype.Component;
 
+import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 import com.roado.demo.Model.Route;
 import com.roado.demo.Repository.UserRepository;
@@ -27,6 +28,19 @@ public class RouteMapperOwn {
             .durationS(route.getDurationS())
             .svgPreview(route.getSvgPreview())
             .elevationGain(route.getElevationGain())
+            .build();
+    }
+
+    public GetRouteDTO toGetRouteDTO(Route route) {
+        return GetRouteDTO.builder()
+                .id(route.getRouteId())
+                .name(route.getName())
+                .geoData(route.getGeoData())
+                .distanceM(route.getDistanceM())
+                .elevationGain(route.getElevationGain())
+                .elevationProfile(route.getElevationProfile())
+                .svgPreview(route.getSvgPreview())
+                .durationS(route.getDurationS())
             .build();
     }
 

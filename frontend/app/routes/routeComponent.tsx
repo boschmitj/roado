@@ -8,9 +8,10 @@ import {
     CardTitle, // Name der Route
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Router from "next/router";
+import { useRouter } from "next/navigation";
 
 export interface route {
+    id: number,
     name: string,
     geoData: string
     distanceM: number,
@@ -21,7 +22,7 @@ export interface route {
 
 
 
-export function RouteCard({ name, distanceM, durationS, geoData, elevationGain, svgPreview } : route) {
+export function RouteCard({ id, name, distanceM, durationS, geoData, elevationGain, svgPreview } : route) {
 
     const calculateDistance = (distance : number) : number | string => {
         if (distance < 1000) {
@@ -37,17 +38,18 @@ export function RouteCard({ name, distanceM, durationS, geoData, elevationGain, 
         return Math.floor(duration / 86400) + "d " + (duration % 86400) + "h";
     }
 
+    const router = useRouter();
+
 
     // TODO add routeId to the DTO? 
     // THen use it here to navigate the specific route
-    const id = 5;
-
+    
     return (
         <Card className="w-full max-w-lg">
             <CardHeader>
                 <CardTitle className="text-black">{ name }</CardTitle>
                 <CardAction>
-                    <Button variant="default" onClick={() => Router.push(`/navigate/${id}`)}> 
+                    <Button variant="default" onClick={() => router.push(`/navigate/${id}`)}> 
                         Navigate
                     </Button>
                 </CardAction>

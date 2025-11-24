@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nimbusds.jose.proc.SecurityContext;
 import com.roado.demo.DTOs.CoordinateDTO;
+import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 import com.roado.demo.Model.User;
 import com.roado.demo.Service.AuthenticationService;
@@ -110,7 +111,7 @@ public class RouteController {
     public ResponseEntity<?> getAllRoutesForUser() {
         try {
             User user = authenticationService.getAuthenticatedUser();
-            List<RouteDTO> routes =  routeService.getRoutesForUser(user);
+            List<GetRouteDTO> routes =  routeService.getRoutesForUser(user);
             return ResponseEntity.ok(routes);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
