@@ -219,6 +219,7 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
     const mapRef = useRef<MtMap | null>(null);
     const markersRef = useRef<Map<number, Marker>>(new Map());
     const polylineRef = useRef<unknown | null>(null);
+    const [position, setPosition] = useState< [number, number] | null >(null);
 
     // state for stops and routeGeoJson
     const [stops, setStops] = useState<Stop[]>([]);
@@ -231,16 +232,41 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
         console.log("Removed marker with id " + id);
     }   
     
+    useEffect(() => {
+        console.log("Trying to get location")
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const coords : [ number, number ] = [
+                    pos.coords.longitude,
+                    pos.coords.latitude
+                ];
+                console.log(coords);
+                setPosition(coords); 
+            },
+            (err) => {
+                // TODO: do a Toast here
+                console.log("Could not get location", err);
+            }, 
+            
+        );
+    }, []);
+
+    useEffect(() => {
+        if (!mapRef.current || !position) return;
+        const map = mapRef.current;
+        map.setCenter(position);
+    }, [position]);
+
     // effect which runs once to initialize map, set up click handler to add marker
     useEffect(() => {
         if (mapContainer.current && !mapRef.current) {
             console.log("Initializing map");
-            
+            console.log("Position is " + position);
             mapRef.current = new MtMap({
                 container: mapContainer.current,
                 style: MapStyle.OUTDOOR,
-                center: [11, 50],
-                zoom: 3,
+                center: position ?? [11, 50], // 12.325727835509175, 51.3200760306479
+                zoom: 18,
             });
 
             mapRef.current.on("click", (e) => {
