@@ -10,15 +10,25 @@ config.apiKey = "jgADwIPnUzhtC93OwbQm";
 
 interface RouteNavigationProps {
     id: number;
+    position: [number, number] | null;
+    setPosition: (pos: [number, number]) => void;
+    routeGeoJson: string;
+    setRouteGeoJson: (geoJson: string) => void;
+    speed: number | null;
+    setSpeed: (speed: number | null) => void;
 }
 
-export default function RouteNavigation ({id} : RouteNavigationProps) {
-    const routeId = id;
 
-    const [position, setPosition] = useState< [number, number] | null >(null);
-    const [speed, setSpeed] = useState <number | null>(null);
+
+export default function RouteNavigation (props: RouteNavigationProps) {
+    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, speed, setSpeed } = props;
+
+    // const routeId = id;
+
+    // const [position, setPosition] = useState< [number, number] | null >(null);
+    // const [speed, setSpeed] = useState <number | null>(null);
     const [heading, setHeading] = useState <number | null> (null);
-    const [routeGeoJson, setRouteGeoJson] = useState <string> ("");
+    // const [routeGeoJson, setRouteGeoJson] = useState <string> ("");
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
     const markerRef = useRef<Marker | null> (null);
@@ -56,6 +66,7 @@ export default function RouteNavigation ({id} : RouteNavigationProps) {
                     throw new Error("Fehler beim Laden der Route");
                 }
                 setRouteGeoJson(response.data);
+                console.log(response.data);
             } catch (error) {
                 console.log("Could not get RouteGeoJson", error)
             }
@@ -125,19 +136,6 @@ export default function RouteNavigation ({id} : RouteNavigationProps) {
 
     }, [routeGeoJson])
 
-    // // update the map whenever position has changed
-    // useEffect(() => {
-    //     if (!position || !mapRef.current || !markerRef.current || !heading) return;
-    //     markerRef.current.setLngLat(position);
-    //     mapRef.current.setCenter(position);
-    //     mapRef.current.setBearing(heading);
-    // }, [position])
-
-    
-
-    
-
-    return <div id="map-container" ref={mapContainer} style={{ width: "100%", height: 500 }}/>;
-
+    return <div id="map-container" ref={mapContainer} style={{ width: "70%", height: "80vh" }}/>;
 
 }
