@@ -5,6 +5,7 @@ import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import '@/app/components/RouteBuilderComponent.css'
 import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
+import useRouteSimulation from "./simulateRouteHook";
 
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm";
@@ -34,7 +35,12 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     const mapRef = useRef<MtMap | null>(null);
     const markerRef = useRef<Marker | null> (null);
 
+    const simulating = true;
+
     
+    if (simulating) {
+        useRouteSimulation(routeGeoJson!, setPosition, 1);
+    }
     // instantiate the geolocation watcher with callback function
     useEffect(() => {
         const watcher = navigator.geolocation.watchPosition(
@@ -45,7 +51,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
                 ];
                 setSpeed(pos.coords.speed);
                 setHeading(pos.coords.heading);
-                setPosition(coords); 
+                if (!simulating) setPosition(coords); 
 
             },
             (err) => {
