@@ -57,7 +57,7 @@ export function InstructionComponent ({type, duration, instruction, nextDistance
                     }
                 </CardTitle>
                 <CardDescription>
-                    <p>Next in {computeDistanceString(nextDistance)}</p>
+                    <p>Next in {computeDistanceString(nextDistance + distanceLeft)}</p>
                 </CardDescription>
                 </CardHeader>
             <CardContent>

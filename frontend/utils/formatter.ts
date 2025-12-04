@@ -15,7 +15,7 @@ export function computeDistanceString(distance : number) {
     if (distance > 1000) {
         distanceString = (distance / 1000).toFixed(1) + "km"
     } else if (distance > 0) {
-        distanceString = distance + "m"
+        distanceString = Math.round(distance) + "m"
     } else return null;
     return distanceString;
 }
