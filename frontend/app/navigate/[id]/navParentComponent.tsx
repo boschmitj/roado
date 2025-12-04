@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import RouteNavigation from "./routeNavigationMapComponent";
-import { Instruction } from "./turnByTurnNavComponent";
+import { Instruction, InstructionComponent, Step } from "./turnByTurnNavComponent";
+import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
+import { LineString, Position } from "geojson"
+import haversine from "@/utils/haversine";
 
 interface NavParentComponentProps {
     id: number;
@@ -8,31 +11,87 @@ interface NavParentComponentProps {
 
 export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [position, setPosition] = useState< [number, number] | null >(null);
-    const [routeGeoJson, setRouteGeoJson] = useState <string> ("");
+    const [routeGeoJson, setRouteGeoJson] = useState <RouteGeoJson | null> (null);
     const [speed, setSpeed] = useState <number | null>(null);
     const [nextInstruction, setNextInstruction] = useState <Instruction | null> (null);
+    const [steps, setSteps] = useState <Step[] | null> (null);
+    const [coords, setCoords] = useState <Position[] | null> (null);
+    const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
+    const [distanceLeft, setDistanceLeft] = useState<number> (Infinity);
+
+    function advanceStep() {
+        setCurrentStepIndex(i => i + 1);
+    }
 
     useEffect(() => {
-        setNextInstruction(calculateInstruction(routeGeoJson));
+        if (!routeGeoJson) return;
+        setSteps(extractSteps(routeGeoJson));
+        setCoords(extractCoords(routeGeoJson))
     }, [routeGeoJson])
 
+    useEffect(() => {
+        if (!steps || steps.length === 0) return;
+        
+    }, [steps])
+
+    useEffect(() => {
+        if (!steps || !coords || !position) return;
+        const currentStep = steps[currentStepIndex];
+        const start = currentStep.way_points[0];
+        const end = currentStep.way_points[1];
+        const stepCoords = coords.slice(start, end + 1);
+        const [lng, lat] = stepCoords.at(-1)!
+        const distance = haversine(position, [lng, lat]);
+
+        const threshold = 7
+        setDistanceLeft(distance);
+        if (distance < threshold) {
+            console.log("advancing");
+            advanceStep();
+        }
+    }, [position])
+
     return (
-        <RouteNavigation
-                id={id}
-                position={position}
-                setPosition={setPosition}
-                routeGeoJson={routeGeoJson}
-                setRouteGeoJson={setRouteGeoJson}
-                speed={speed}
-                setSpeed={setSpeed}
-        />
+        <>
+            {(distanceLeft < 70) && steps && currentStepIndex < steps.length &&
+                <InstructionComponent
+                    {...steps[currentStepIndex]}
+                    distanceLeft={distanceLeft}
+                    nextDistance={steps[currentStepIndex + 1]?.distance ?? 0}
+                />
+            }
+            <RouteNavigation
+                    id={id}
+                    position={position}
+                    setPosition={setPosition}
+                    routeGeoJson={routeGeoJson}
+                    setRouteGeoJson={setRouteGeoJson}
+                    speed={speed}
+                    setSpeed={setSpeed}
+            />
+        </>
     );
 }
 
 
+function extractCoords(routeGeoJson : RouteGeoJson) {
+    const coords : Position[] = []
+    routeGeoJson.features.forEach(f => {
+        const geometry = f.geometry as LineString;
+        coords.push(...geometry.coordinates);
+    });
+    return coords;
+}
 
-function calculateInstruction(routeGeoJson : string) {
-    //TODO: extrahiere hier steps aus JSON: features[0].properties.segments[x].steps
-    // Gib routeGeoJson den richtigen Typ, um auslesen möglich zu machen
-    return null;
+function extractSteps(routeGeoJson : RouteGeoJson) {
+    const steps: Step[] = [];
+    routeGeoJson.features.forEach((f) => {
+        f.properties.segments.forEach((s) => {
+            s.steps.forEach((step) => {
+                if (step.distance === 0 && step.duration === 0 && step.type === 10) return;
+                steps.push(step);
+            })
+        })
+    })
+    return steps;
 }

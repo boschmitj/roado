@@ -4,6 +4,7 @@ import axios from "@/app/api/axios";
 import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import '@/app/components/RouteBuilderComponent.css'
+import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
 
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm";
@@ -12,8 +13,8 @@ interface RouteNavigationProps {
     id: number;
     position: [number, number] | null;
     setPosition: (pos: [number, number]) => void;
-    routeGeoJson: string;
-    setRouteGeoJson: (geoJson: string) => void;
+    routeGeoJson: RouteGeoJson |  null;
+    setRouteGeoJson: (geoJson: RouteGeoJson | null) => void;
     speed: number | null;
     setSpeed: (speed: number | null) => void;
 }
@@ -98,7 +99,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
         } else {
             markerRef.current.setLngLat(position);
         }
-        mapRef.current.setCenter(position);
+        mapRef.current.easeTo({ center: position, duration: 400});
         if (heading != null) {
             mapRef.current.setBearing(heading)
         }

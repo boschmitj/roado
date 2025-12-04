@@ -11,6 +11,7 @@ import '@maptiler/sdk/dist/maptiler-sdk.css';
 import './RouteBuilderComponent.css'
 import axios from "../api/axios";
 import { generateRoutePreviewSvg } from "@/utils/routePreview";
+import { computeDistanceString, computeDurationString } from "@/utils/formatter";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
@@ -46,7 +47,7 @@ interface RouteProperties {
     summary: RouteSummary;
 }
 
-type RouteGeoJson = FeatureCollection<Geometry, RouteProperties>;
+export type RouteGeoJson = FeatureCollection<Geometry, RouteProperties>;
 
 // read-only
 interface RouteViewerProps {
@@ -377,29 +378,6 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
 };
 
 export default RouteParentComponent;
-
-
-function computeDurationString(duration: number) {
-    let durationString;
-    if (duration > 3600) {
-        durationString = Math.floor(duration / 3600) + "h" + Math.round(duration) % 60 + "min";
-    } else if (duration > 60) {
-        durationString = Math.round(duration / 60) + "min";
-    } else if (duration > 0) {
-        durationString = duration + "s";
-    } else return null;
-    return durationString;
-}
-
-function computeDistanceString(distance : number) {
-    let distanceString;
-    if (distance > 1000) {
-        distanceString = (distance / 1000).toFixed(1) + "km"
-    } else if (distance > 0) {
-        distanceString = distance + "m"
-    } else return null;
-    return distanceString;
-}
 
 function computeElevationTotal(elevations : number[]) {
     let threshold = 2;
