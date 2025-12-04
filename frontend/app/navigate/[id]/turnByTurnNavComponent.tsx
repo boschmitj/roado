@@ -45,28 +45,32 @@ interface InstructionComponentProps extends Step {
     distanceLeft: number,
     nextDistance: number,
     nextInstruction: string,
-    nextType: number
+    nextType: number,
+    onClose: () => void;
 }
 
-export function InstructionComponent ({type, nextInstruction, nextType, instruction, nextDistance, distanceLeft} : InstructionComponentProps) {
+export function InstructionComponent ({type, nextInstruction, nextType, instruction, nextDistance, distanceLeft, onClose} : InstructionComponentProps) {
     return (
-        <Card className="min-w-2xs max-w-2xl w-md">
-            <CardHeader>
-                <CardTitle>
-                    {formatInstruction(instruction, type)}
-                </CardTitle>
-                <CardDescription>
-                    <p>Next {formatInstruction(nextInstruction, nextType)} in {computeDistanceString(nextDistance + distanceLeft)}</p>
-                </CardDescription>
+        <div className="absolute z-10 top-2 left-1/2 -translate-x-1/2 w-sm">
+            <Card className="min-w-2xs max-w-2xl w-sm relative">
+                <CardHeader>
+                    <CardTitle className="font-bold">
+                        {formatInstruction(instruction, type)}
+                    </CardTitle>
+                    <CardDescription>
+                        <p>Next {formatInstruction(nextInstruction, nextType)} in {computeDistanceString(nextDistance + distanceLeft)}</p>
+                    </CardDescription>
+                    <img src={`/images/nav_icons/${type}.svg`} className="h-38 absolute right-2"/>
+
                 </CardHeader>
-            <CardContent>
-                <p>{instruction}</p>
-                <p className="text-xl font-extrabold">{Math.round(distanceLeft) + "m"}</p>
-                <img src={`@/images/${type}`}/>
-            </CardContent>
-            <CardFooter>
-                <Button variant="outline">Close</Button>
-            </CardFooter>
-        </Card>
+                <CardContent>   
+                    <p>{instruction}</p>
+                    <p className="text-4xl font-extrabold ">{Math.round(distanceLeft) + "m"}</p>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline" onClick={onClose}>Close</Button>
+                </CardFooter>
+            </Card>
+        </div>
     );
 }

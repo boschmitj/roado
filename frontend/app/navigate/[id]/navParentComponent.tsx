@@ -13,11 +13,11 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [position, setPosition] = useState< [number, number] | null >(null);
     const [routeGeoJson, setRouteGeoJson] = useState <RouteGeoJson | null> (null);
     const [speed, setSpeed] = useState <number | null>(null);
-    const [nextInstruction, setNextInstruction] = useState <Instruction | null> (null);
     const [steps, setSteps] = useState <Step[] | null> (null);
     const [coords, setCoords] = useState <Position[] | null> (null);
     const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
     const [distanceLeft, setDistanceLeft] = useState<number> (Infinity);
+    const [showInstruction, setShowInstruction] = useState<boolean> (true);
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -30,9 +30,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     }, [routeGeoJson])
 
     useEffect(() => {
-        if (!steps || steps.length === 0) return;
-        
-    }, [steps])
+        setShowInstruction(true);
+    }, [currentStepIndex])
 
     useEffect(() => {
         if (!steps || !coords || !position) return;
@@ -53,13 +52,14 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
 
     return (
         <>
-            {(distanceLeft < 70) && steps && currentStepIndex < steps.length &&
+            {showInstruction && (distanceLeft < 70) && steps && currentStepIndex < steps.length &&
                 <InstructionComponent
                     {...steps[currentStepIndex]}
                     distanceLeft={distanceLeft}
                     nextDistance={steps[currentStepIndex + 1]?.distance ?? 0}
                     nextInstruction={steps[currentStepIndex + 1]?.instruction ?? ""}
                     nextType={steps[currentStepIndex + 1]?.type ?? 0}
+                    onClose={() => setShowInstruction(false)}
                 />
             }
             <RouteNavigation
