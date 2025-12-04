@@ -19,3 +19,12 @@ export function computeDistanceString(distance : number) {
     } else return null;
     return distanceString;
 }
+
+export function formatInstruction(instruction : string, type : number) {
+    const threeWordInstructionTypes = [2,3,4,5,11] //mby 7, 8, and 12, 13 too
+    if (threeWordInstructionTypes.includes(type)) {
+        return instruction.split(" ").splice(0, 2).join(" ");
+    } 
+    return instruction.split(" ").splice(0,3).join(" ");
+                    
+}

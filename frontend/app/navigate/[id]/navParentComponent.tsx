@@ -58,6 +58,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     {...steps[currentStepIndex]}
                     distanceLeft={distanceLeft}
                     nextDistance={steps[currentStepIndex + 1]?.distance ?? 0}
+                    nextInstruction={steps[currentStepIndex + 1]?.instruction ?? ""}
+                    nextType={steps[currentStepIndex + 1]?.type ?? 0}
                 />
             }
             <RouteNavigation

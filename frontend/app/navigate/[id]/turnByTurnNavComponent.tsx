@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { computeDistanceString } from "@/utils/formatter";
+import { computeDistanceString, formatInstruction } from "@/utils/formatter";
 import { extractEtag } from "next/dist/server/image-optimizer";
+import { format } from "path";
 
 export interface Instruction {
     type: TurnType,
@@ -43,21 +44,19 @@ export enum TurnType {
 interface InstructionComponentProps extends Step {
     distanceLeft: number,
     nextDistance: number,
+    nextInstruction: string,
+    nextType: number
 }
 
-export function InstructionComponent ({type, duration, instruction, nextDistance, distanceLeft} : InstructionComponentProps) {
-    const threeWordInstructionTypes = [2,3,4,5,11] //mby 7, 8, and 12, 13 too
+export function InstructionComponent ({type, nextInstruction, nextType, instruction, nextDistance, distanceLeft} : InstructionComponentProps) {
     return (
         <Card className="min-w-2xs max-w-2xl w-md">
             <CardHeader>
                 <CardTitle>
-                    {threeWordInstructionTypes.includes(type) ? 
-                        instruction.split(" ").splice(0, 2).join(" ") :
-                        instruction.split(" ").splice(0,3).join(" ")    
-                    }
+                    {formatInstruction(instruction, type)}
                 </CardTitle>
                 <CardDescription>
-                    <p>Next in {computeDistanceString(nextDistance + distanceLeft)}</p>
+                    <p>Next {formatInstruction(nextInstruction, nextType)} in {computeDistanceString(nextDistance + distanceLeft)}</p>
                 </CardDescription>
                 </CardHeader>
             <CardContent>
