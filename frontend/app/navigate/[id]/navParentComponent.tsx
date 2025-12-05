@@ -4,6 +4,7 @@ import { Instruction, InstructionComponent, Step } from "./turnByTurnNavComponen
 import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
 import { LineString, Position } from "geojson"
 import haversine from "@/utils/haversine";
+import { TrackingComponent } from "./trackingComponent";
 
 interface NavParentComponentProps {
     id: number;
@@ -18,6 +19,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
     const [distanceLeft, setDistanceLeft] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
+    const [postitionList, setPositionList] = useState<[number, number][]> ([]);
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -50,6 +52,12 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         }
     }, [position])
 
+    useEffect(() => {
+        if (position) {
+            setPositionList([...postitionList, position])
+        }
+    }, [position])
+
     return (
         <>
             {showInstruction && (distanceLeft < 70) && steps && currentStepIndex < steps.length &&
@@ -71,6 +79,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     speed={speed}
                     setSpeed={setSpeed}
             />
+            <TrackingComponent />
         </>
     );
 }
