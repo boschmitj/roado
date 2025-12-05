@@ -35,7 +35,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     const mapRef = useRef<MtMap | null>(null);
     const markerRef = useRef<Marker | null> (null);
 
-    const simulating = true;
+    const simulating = false;
 
     
     if (simulating) {
