@@ -1,3 +1,4 @@
+import { StatisticsComponent } from "@/components/own/StatisticsComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCountdown } from "@/hooks/use-countdown";
@@ -35,6 +36,7 @@ export function TrackingComponent({positionList, speed} : TrackingComponentProps
                 </CardHeader>
                 <CardContent>
                     {/* TODO: Show Speed, avg. Spped, Duration, Distance here */}
+                    {/* Statistics Component goes here */}
                 </CardContent>
             </Card>
         </>
