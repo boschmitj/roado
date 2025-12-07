@@ -1,14 +1,14 @@
 import { computeDistanceNumber, computeDistanceString, computeDistanceUnit, formatDuration } from "@/utils/formatter"
 import { ReactNode } from "react"
 
-interface StatisticsComponentProps {
+export interface StatisticsComponentProps {
     currSpeed: number,
     avgSpeed: number,
     duration: number,
     distance: number,
     distanceLeft?: number,
 }
-export function StatisticsComponent ({currSpeed, avgSpeed, duration, distanceLeft, distance} : StatisticsComponentProps) {
+export function StatisticsComponent ({currSpeed, avgSpeed, duration, distance, distanceLeft} : StatisticsComponentProps) {
     return (
         <div className="grid grid-cols-2 gap-4">
             <StatisticComponent>
