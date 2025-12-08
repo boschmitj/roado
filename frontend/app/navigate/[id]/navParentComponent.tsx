@@ -23,7 +23,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [isPaused, setIsPaused] = useState<boolean>(false);
     const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
     const [currDistance, setCurrDistance] = useState<number> (0);
-    const totalDistance = useRef<number>();
+    const totalDistance = useRef<number>(0);
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
