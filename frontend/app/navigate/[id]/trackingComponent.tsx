@@ -9,10 +9,12 @@ import { RouteControls } from "./routeControls";
 interface TrackingComponentProps {
     position : [number, number],
     speed: number,
-    distanceLeft? : number
+    distanceLeft? : number,
+    isPaused: boolean,
+    setIsPaused: (input: boolean) => void,
 }
 
-export function TrackingComponent({position, speed, distanceLeft} : TrackingComponentProps) {
+export function TrackingComponent({position, speed, distanceLeft, isPaused, setIsPaused} : TrackingComponentProps) {
     const [positionList, setPositionList] = useState<[number, number][]>([]);
     const [currentDistance, setCurrentDistance] = useState<number> (0);
     const [speedList, setSpeedList] = useState<number[]>([]);
@@ -66,6 +68,8 @@ export function TrackingComponent({position, speed, distanceLeft} : TrackingComp
                         onPause={stopCountdown} 
                         onStart={startCountdown} 
                         onFinish={resetCountdown}
+                        isPaused={isPaused}
+                        setIsPaused={setIsPaused}
                     />
                 </CardContent>
             </Card>

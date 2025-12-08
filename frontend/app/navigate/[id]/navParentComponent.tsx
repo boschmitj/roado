@@ -20,6 +20,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [distanceLeft, setDistanceLeft] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
     const [postitionList, setPositionList] = useState<[number, number][]> ([]);
+    const [isPaused, setIsPaused] = useState<boolean>(false);
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -78,8 +79,16 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     setRouteGeoJson={setRouteGeoJson}
                     speed={speed}
                     setSpeed={setSpeed}
+                    isPaused={isPaused}
             />
-            <TrackingComponent />
+            {position && speed && 
+            <TrackingComponent 
+                position={position}
+                speed={speed}
+                distanceLeft={distanceLeft}
+                isPaused={isPaused}
+                setIsPaused={setIsPaused}
+            /> }
         </>
     );
 }

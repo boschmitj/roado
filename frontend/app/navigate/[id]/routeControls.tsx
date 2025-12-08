@@ -5,10 +5,12 @@ interface RouteControlsProps {
     onPause : () => void;
     onFinish : () => void,
     onStart : () => void,
+    isPaused : boolean,
+    setIsPaused: (input: boolean) => void,
 }
 
-export function RouteControls ({onPause, onFinish, onStart} : RouteControlsProps) {
-    const [isPaused, setIsPaused] = useState<Boolean>(false);
+export function RouteControls ({onPause, onFinish, onStart, isPaused, setIsPaused} : RouteControlsProps) {
+    
 
     function start () {
         onStart();

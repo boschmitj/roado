@@ -18,12 +18,13 @@ interface RouteNavigationProps {
     setRouteGeoJson: (geoJson: RouteGeoJson | null) => void;
     speed: number | null;
     setSpeed: (speed: number | null) => void;
+    isPaused: boolean;
 }
 
 
 
 export default function RouteNavigation (props: RouteNavigationProps) {
-    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, speed, setSpeed } = props;
+    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, speed, setSpeed, isPaused} = props;
 
     // const routeId = id;
 
@@ -34,6 +35,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
     const markerRef = useRef<Marker | null> (null);
+    const watcherRef = useRef<number | null>(null);
 
     const simulating = false;
 
@@ -49,10 +51,11 @@ export default function RouteNavigation (props: RouteNavigationProps) {
                     pos.coords.longitude,
                     pos.coords.latitude
                 ];
-                setSpeed(pos.coords.speed);
-                setHeading(pos.coords.heading);
-                if (!simulating) setPosition(coords); 
-
+                if (!isPaused) {
+                    setSpeed(pos.coords.speed);
+                    setHeading(pos.coords.heading);
+                    if (!simulating) setPosition(coords); 
+                }
             },
             (err) => {
                 // TODO: do a Toast here
@@ -60,6 +63,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
             }, 
             {enableHighAccuracy : true}
         );
+        watcherRef.current = watcher;
 
         return () => navigator.geolocation.clearWatch(watcher);
     }, []);
