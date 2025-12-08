@@ -1,6 +1,6 @@
 import { StatisticsComponent } from "@/components/own/StatisticsComponent";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCountdown } from "@/hooks/use-countdown";
 import haversine from "@/utils/haversine";
 import { useEffect, useState } from "react";
@@ -12,18 +12,19 @@ interface TrackingComponentProps {
     distanceLeft? : number,
     isPaused: boolean,
     setIsPaused: (input: boolean) => void,
+    currDistance: number,
+    setCurrDistance: (input: number) => void,
 }
 
-export function TrackingComponent({position, speed, distanceLeft, isPaused, setIsPaused} : TrackingComponentProps) {
+export function TrackingComponent({position, speed, distanceLeft, isPaused, setIsPaused, currDistance, setCurrDistance} : TrackingComponentProps) {
     const [positionList, setPositionList] = useState<[number, number][]>([]);
-    const [currentDistance, setCurrentDistance] = useState<number> (0);
     const [speedList, setSpeedList] = useState<number[]>([]);
     const [avgSpeed, setAvgSpeed] = useState<number> (0);
     
 
     useEffect(() => {
         if (positionList.length < 2) return;
-        setCurrentDistance(currentDistance + haversine(positionList[-1], positionList[-2]));
+        setCurrDistance(currDistance + haversine(positionList.at(-1)!, positionList.at(-2)!));
     }, [positionList])
 
     
@@ -51,28 +52,33 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
 
     return (
         <>
-            <Card>
-                <CardHeader>
-                    <Button onClick={startCountdown}>Start</Button>
-                    <Button onClick={stopCountdown}>Stop</Button>
-                </CardHeader>
-                <CardContent>
-                    <StatisticsComponent 
-                        currSpeed={speed}
-                        avgSpeed={avgSpeed}
-                        distance={currentDistance}
-                        duration={count}
-                        distanceLeft={distanceLeft}
-                    />
-                    <RouteControls 
-                        onPause={stopCountdown} 
-                        onStart={startCountdown} 
-                        onFinish={resetCountdown}
-                        isPaused={isPaused}
-                        setIsPaused={setIsPaused}
-                    />
-                </CardContent>
-            </Card>
+            <div className="absolute z-10 top-2 left-1/2 -translate-x-1/2 w-sm">
+                <Card className="min-w-2xs max-w-2xl w-sm relative">
+                    <CardHeader>
+                        <CardTitle>
+                            <p className="font-bold text-xl">
+                                Statistics
+                            </p>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <StatisticsComponent 
+                            currSpeed={speed}
+                            avgSpeed={avgSpeed}
+                            distance={currDistance}
+                            duration={count}
+                            distanceLeft={distanceLeft}
+                        />
+                        <RouteControls 
+                            onPause={stopCountdown} 
+                            onStart={startCountdown} 
+                            onFinish={resetCountdown}
+                            isPaused={isPaused}
+                            setIsPaused={setIsPaused}
+                        />
+                    </CardContent>
+                </Card>
+            </div>
         </>
     )
 }

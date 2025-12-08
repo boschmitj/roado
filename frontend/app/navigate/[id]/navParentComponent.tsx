@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RouteNavigation from "./routeNavigationMapComponent";
 import { Instruction, InstructionComponent, Step } from "./turnByTurnNavComponent";
 import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
@@ -21,6 +21,9 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
     const [postitionList, setPositionList] = useState<[number, number][]> ([]);
     const [isPaused, setIsPaused] = useState<boolean>(false);
+    const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
+    const [currDistance, setCurrDistance] = useState<number> (0);
+    const totalDistance = useRef<number>();
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -30,7 +33,19 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         if (!routeGeoJson) return;
         setSteps(extractSteps(routeGeoJson));
         setCoords(extractCoords(routeGeoJson))
+        setDistanceLeftTotal(getTotalDistance(routeGeoJson) - currDistance);
     }, [routeGeoJson])
+
+    function getTotalDistance(routeGeoJson: RouteGeoJson) {
+        const summary = routeGeoJson?.features[0].properties.summary;
+        const distance = summary.distance ?? 0;
+        totalDistance.current = distance;
+        return distance;
+    }
+
+    useEffect(() => {
+        setDistanceLeft(totalDistance.current - currDistance)
+    }, [currDistance])
 
     useEffect(() => {
         setShowInstruction(true);
@@ -57,6 +72,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         if (position) {
             setPositionList([...postitionList, position])
         }
+        console.log("Position is: " + position + ", speed: " + speed);
     }, [position])
 
     return (
@@ -81,16 +97,22 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     setSpeed={setSpeed}
                     isPaused={isPaused}
             />
-            {position && speed && 
+            {position &&  
             <TrackingComponent 
                 position={position}
-                speed={speed}
-                distanceLeft={distanceLeft}
+                speed={speed ?? 0}
+                distanceLeft={distanceLeftTotal}
                 isPaused={isPaused}
                 setIsPaused={setIsPaused}
+                currDistance={currDistance}
+                setCurrDistance={setCurrDistance}
             /> }
         </>
     );
+}
+
+function getTotalDistance(routeGeoJson: RouteGeoJson) {
+    
 }
 
 
