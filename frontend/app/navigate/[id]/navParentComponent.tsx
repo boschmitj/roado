@@ -20,7 +20,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [distanceLeft, setDistanceLeft] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
     const [postitionList, setPositionList] = useState<[number, number][]> ([]);
-    const [isPaused, setIsPaused] = useState<boolean>(false);
+    const [isPaused, setIsPaused] = useState<boolean>(true);
     const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
     const [currDistance, setCurrDistance] = useState<number> (0);
     const totalDistance = useRef<number>(0);

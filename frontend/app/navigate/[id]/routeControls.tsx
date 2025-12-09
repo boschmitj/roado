@@ -24,15 +24,17 @@ export function RouteControls ({onPause, onFinish, onStart, isPaused, setIsPause
     
     return (
         <>
-            {isPaused && <Button variant="default" size="icon" className="rounded-full" onClick={start}>
-                <img src="/images/routeControls/start.svg"/>
-            </Button>}
-            {isPaused && <Button variant="outline" size="icon" className="rounded-full" onClick={onFinish}>
-                <img src="/images/routeControls/finish.svg"/>
-            </Button>}
-            {!isPaused && <Button variant="default" size="icon" className="rounded-full" onClick={pause}> 
-                <img src="images/routeControls/pause.svg"/>
-            </Button>}
+            <div className="flex flex-row gap-6 justify-center w-full">
+                {isPaused && <Button variant="secondary" size="icon-2xl" className="rounded-full p-2" onClick={start}>
+                    <img src="/images/routeControls/start.svg"/>
+                </Button>}
+                {isPaused && <Button variant="secondary" size="icon-2xl" className="rounded-full p-2" onClick={onFinish}>
+                    <img src="/images/routeControls/finish.svg"/>
+                </Button>}
+                {!isPaused && <Button variant="secondary" size="icon-2xl" className="rounded-full p-2" onClick={pause}> 
+                    <img src="/images/routeControls/pause.svg"/>
+                </Button>}
+            </div>
         </>
     )
 }

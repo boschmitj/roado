@@ -51,11 +51,13 @@ export default function RouteNavigation (props: RouteNavigationProps) {
                     pos.coords.longitude,
                     pos.coords.latitude
                 ];
-                if (!isPaused) {
+                if (!isPaused && pos.coords.speed) {
                     setSpeed(pos.coords.speed);
-                    setHeading(pos.coords.heading);
-                    if (!simulating) setPosition(coords); 
                 }
+                
+                setHeading(pos.coords.heading);
+                if (!simulating) setPosition(coords); 
+                
             },
             (err) => {
                 // TODO: do a Toast here

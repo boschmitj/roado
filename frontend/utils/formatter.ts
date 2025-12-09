@@ -30,6 +30,7 @@ export function computeDistanceNumber(distance: number) {
     return distanceNumber;
 }
 
+
 export function computeDistanceUnit(distance: number) {
     let unit;
     if (distance > 1000) {
@@ -50,6 +51,11 @@ export function formatDuration(seconds: number): string {
   const ss = String(secs).padStart(2, "0");
 
   return `${hh}:${mm}:${ss}`;
+}
+
+export function getHours(seconds: number): number {
+    const hrs = seconds/3600;
+    return hrs;
 }
 
 

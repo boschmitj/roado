@@ -5,6 +5,11 @@ import { useCountdown } from "@/hooks/use-countdown";
 import haversine from "@/utils/haversine";
 import { useEffect, useState } from "react";
 import { RouteControls } from "./routeControls";
+import { getHours } from "@/utils/formatter";
+import { get } from "http";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence, distance } from "framer-motion";
+import { getgid } from "process";
 
 interface TrackingComponentProps {
     position : [number, number],
@@ -20,25 +25,55 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
     const [positionList, setPositionList] = useState<[number, number][]>([]);
     const [speedList, setSpeedList] = useState<number[]>([]);
     const [avgSpeed, setAvgSpeed] = useState<number> (0);
-    
+    const [backgroundDistance, setBackgroundDistance] = useState<number> (0);
+    const [statisticsShown, setStatisticsShown] = useState<boolean> (true);
 
     useEffect(() => {
         if (positionList.length < 2) return;
-        setCurrDistance(currDistance + haversine(positionList.at(-1)!, positionList.at(-2)!));
+        if (!isPaused) {
+            setCurrDistance(currDistance + haversine(positionList.at(-1)!, positionList.at(-2)!));
+        } else {
+            setBackgroundDistance(backgroundDistance + haversine(positionList.at(-1)!, positionList.at(-2)!))
+        }
     }, [positionList])
 
-    
+    useEffect(() => {
+        if (isPaused) {
+            setCurrDistance(currDistance + backgroundDistance);
+            setBackgroundDistance(0);
+        }
+    }, [isPaused])
 
     useEffect(() => {
         setPositionList([...positionList, position]);
     }, [position])
 
     useEffect(() => {
-        setSpeedList([...speedList, speed]);
-        setAvgSpeed(speedList.reduce((prev, curr) => {
-            return prev + curr
-        }, 0));
-    }, [speed])
+        const updated = [...speedList, speed];
+        console.log(updated)
+        if (!isPaused) setSpeedList(updated);
+
+        let averageSpeed;
+        if (!avgSpeed && !speed && count) {
+            
+            const hours = getHours(count);
+            averageSpeed = Math.round(((currDistance / 1000) / hours) * 10) / 10;
+            console.log(hours);
+            console.log("Im here 1: avgSpeed: " + averageSpeed);   
+        } else {
+            averageSpeed = computeAverageSpeedOngoing(
+                updated.length,
+                avgSpeed,
+                speed
+            )
+        }
+        
+        if (!count) {
+            setAvgSpeed(averageSpeed)
+        } else {
+            setAvgSpeed(isNaN(averageSpeed) ? 0 : averageSpeed)
+        }
+    }, [speed, currDistance])
 
     const [count, { startCountdown, stopCountdown, resetCountdown }] =
     useCountdown({
@@ -52,23 +87,35 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
 
     return (
         <>
-            <div className="absolute z-10 top-2 left-1/2 -translate-x-1/2 w-sm">
+            <div className="absolute z-10 bottom-2 left-1/2 -translate-x-1/2 w-sm">
+                <Button variant="ghost" size="icon" onClick={() => setStatisticsShown(!statisticsShown)} className="absolute z-11 top-2 right-2">
+                    {statisticsShown && <ChevronDown />}
+                    {!statisticsShown && <ChevronUp />}
+                    {/* Maybe animate this too.. -> only one Chevron which is flipped*/}
+                </Button>
                 <Card className="min-w-2xs max-w-2xl w-sm relative">
-                    <CardHeader>
-                        <CardTitle>
-                            <p className="font-bold text-xl">
-                                Statistics
-                            </p>
-                        </CardTitle>
-                    </CardHeader>
                     <CardContent>
-                        <StatisticsComponent 
-                            currSpeed={speed}
-                            avgSpeed={avgSpeed}
-                            distance={currDistance}
-                            duration={count}
-                            distanceLeft={distanceLeft}
-                        />
+                        <AnimatePresence initial={false}>
+                            {statisticsShown && (
+                                <motion.div 
+                                    key="stats"
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                                    className="overflow-hidden"
+                                >
+                                    <StatisticsComponent 
+                                        currSpeed={speed}
+                                        avgSpeed={avgSpeed}
+                                        distance={currDistance}
+                                        duration={count}
+                                        distanceLeft={distanceLeft}
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                        
                         <RouteControls 
                             onPause={stopCountdown} 
                             onStart={startCountdown} 
@@ -81,4 +128,8 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
             </div>
         </>
     )
+}
+
+function computeAverageSpeedOngoing(n: number, avgSpeed: number, currSpeed: number) {
+    return avgSpeed + (currSpeed - avgSpeed) / n;
 }
