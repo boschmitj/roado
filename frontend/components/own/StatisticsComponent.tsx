@@ -18,11 +18,11 @@ export function StatisticsComponent ({currSpeed, avgSpeed, duration, distance, d
                 <BigSmallTextComponent textLarge={computeDistanceNumber(distance)} textSmall={computeDistanceUnit(distance)}/>
             </StatisticComponent>
             <StatisticComponent>
-                <BigSmallTextComponent textLarge={avgSpeed} textSmall={"⌀" + "km/h"}/>
+                <BigSmallTextComponent textLarge={Math.round(avgSpeed * 10) / 10} textSmall={"⌀" + "km/h"}/>
             </StatisticComponent>
             <StatisticComponent>
                 <span className="text-4xl font-bold">
-                    {formatDuration(duration)}
+                    {formatDuration(duration)}  
                 </span>
             </StatisticComponent>
             { 
