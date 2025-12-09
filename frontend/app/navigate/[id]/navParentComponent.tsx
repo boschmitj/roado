@@ -17,7 +17,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [steps, setSteps] = useState <Step[] | null> (null);
     const [coords, setCoords] = useState <Position[] | null> (null);
     const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
-    const [distanceLeft, setDistanceLeft] = useState<number> (Infinity);
+    const [distanceLeftToNextStop, setDistanceLeftToNextStop] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
     const [postitionList, setPositionList] = useState<[number, number][]> ([]);
     const [isPaused, setIsPaused] = useState<boolean>(true);
@@ -37,6 +37,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     }, [routeGeoJson])
 
     function getTotalDistance(routeGeoJson: RouteGeoJson) {
+        if (totalDistance.current) return totalDistance.current;
         const summary = routeGeoJson?.features[0].properties.summary;
         const distance = summary.distance ?? 0;
         totalDistance.current = distance;
@@ -44,7 +45,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     }
 
     useEffect(() => {
-        setDistanceLeft(totalDistance.current - currDistance)
+        // setDistanceLeftToNextStop(totalDistance.current - currDistance);
+        setDistanceLeftTotal(totalDistance.current - currDistance);
     }, [currDistance])
 
     useEffect(() => {
@@ -61,7 +63,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         const distance = haversine(position, [lng, lat]);
 
         const threshold = 7
-        setDistanceLeft(distance);
+        setDistanceLeftToNextStop(distance);
         if (distance < threshold) {
             console.log("advancing");
             advanceStep();
@@ -71,16 +73,17 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     useEffect(() => {
         if (position) {
             setPositionList([...postitionList, position])
+
         }
         console.log("Position is: " + position + ", speed: " + speed);
     }, [position])
 
     return (
         <>
-            {showInstruction && (distanceLeft < 70) && steps && currentStepIndex < steps.length &&
+            {showInstruction && (distanceLeftToNextStop < 70) && steps && currentStepIndex < steps.length &&
                 <InstructionComponent
                     {...steps[currentStepIndex]}
-                    distanceLeft={distanceLeft}
+                    distanceLeft={distanceLeftToNextStop}
                     nextDistance={steps[currentStepIndex + 1]?.distance ?? 0}
                     nextInstruction={steps[currentStepIndex + 1]?.instruction ?? ""}
                     nextType={steps[currentStepIndex + 1]?.type ?? 0}
@@ -109,10 +112,6 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
             /> }
         </>
     );
-}
-
-function getTotalDistance(routeGeoJson: RouteGeoJson) {
-    
 }
 
 

@@ -9,6 +9,7 @@ export interface StatisticsComponentProps {
     distanceLeft?: number,
 }
 export function StatisticsComponent ({currSpeed, avgSpeed, duration, distance, distanceLeft} : StatisticsComponentProps) {
+    console.log("Distance left: " + distanceLeft);
     return (
         <div className="grid grid-cols-2 gap-4">
             <StatisticComponent>

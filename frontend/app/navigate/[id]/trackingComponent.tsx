@@ -28,6 +28,23 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
     const [backgroundDistance, setBackgroundDistance] = useState<number> (0);
     const [statisticsShown, setStatisticsShown] = useState<boolean> (true);
 
+    const [stopwatch, { startCountdown, stopCountdown, resetCountdown }] =
+    useCountdown({
+      countStart: 0,
+      intervalMs: 1000,
+      isIncrement: true,
+      countStop: Infinity,
+    });
+
+    const [backgroundStopwatch, { startCountdown: startBackgroundCountdown, stopCountdown: stopBackgroundCountdown, resetCountdown: resetBackgroundCountdown }] =
+    useCountdown({
+      countStart: 0,
+      intervalMs: 1000,
+      isIncrement: true,
+      countStop: Infinity,
+    });
+    
+
     useEffect(() => {
         if (positionList.length < 2) return;
         if (!isPaused) {
@@ -38,14 +55,19 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
     }, [positionList])
 
     useEffect(() => {
-        if (isPaused) {
+        if (!isPaused) {
+            stopBackgroundCountdown();
             setCurrDistance(currDistance + backgroundDistance);
             setBackgroundDistance(0);
+        } else {
+            // resetBackgroundCountdown();
+            startBackgroundCountdown();
         }
     }, [isPaused])
 
     useEffect(() => {
         setPositionList([...positionList, position]);
+        console.log("Background Distance is: " + backgroundDistance);
     }, [position])
 
     useEffect(() => {
@@ -54,12 +76,11 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
         if (!isPaused) setSpeedList(updated);
 
         let averageSpeed;
-        if (!avgSpeed && !speed && count) {
-            
-            const hours = getHours(count);
+        if (updated.filter((s) => s !== 0).length === 0 && stopwatch) {
+            const hours = getHours(stopwatch + backgroundStopwatch);
             averageSpeed = Math.round(((currDistance / 1000) / hours) * 10) / 10;
-            console.log(hours);
-            console.log("Im here 1: avgSpeed: " + averageSpeed);   
+            setAvgSpeed(averageSpeed)
+            return;
         } else {
             averageSpeed = computeAverageSpeedOngoing(
                 updated.length,
@@ -68,22 +89,12 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
             )
         }
         
-        if (!count) {
+        if (!stopwatch) {
             setAvgSpeed(averageSpeed)
         } else {
             setAvgSpeed(isNaN(averageSpeed) ? 0 : averageSpeed)
         }
     }, [speed, currDistance])
-
-    const [count, { startCountdown, stopCountdown, resetCountdown }] =
-    useCountdown({
-      countStart: 0,
-      intervalMs: 1000,
-      isIncrement: true,
-      countStop: Infinity,
-    });
-
-
 
     return (
         <>
@@ -109,7 +120,7 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
                                         currSpeed={speed}
                                         avgSpeed={avgSpeed}
                                         distance={currDistance}
-                                        duration={count}
+                                        duration={stopwatch}
                                         distanceLeft={distanceLeft}
                                     />
                                 </motion.div>

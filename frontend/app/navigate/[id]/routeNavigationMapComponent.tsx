@@ -37,7 +37,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     const markerRef = useRef<Marker | null> (null);
     const watcherRef = useRef<number | null>(null);
 
-    const simulating = false;
+    const simulating = true;
 
     
     if (simulating) {
