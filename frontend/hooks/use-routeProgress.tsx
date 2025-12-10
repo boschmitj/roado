@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { Map as MtMap, helpers } from "@maptiler/sdk";
 import { coordsToGeoJson } from "@/utils/geoJsonTools";
 
-const OFF_ROUTE_THRESHOLD = 20;
-const WINDOW_SIZE = 3;
-const HYSTERISIS_COUNT = 3;
+const OFF_ROUTE_THRESHOLD = 30;
+const BACKWARD_WINDOW_SIZE = 2;
+const FORWARD_WINDOW_SIZE = 6;
+const HYSTERISIS_COUNT = 2;
 
 export default function useRouteProgress(
     routeCoords: [number, number][], 
@@ -21,6 +22,7 @@ export default function useRouteProgress(
     const consecutiveRef = useRef({on: 0, off: 0});
     const completedOffRouteSegmentsRef = useRef<[number, number][]>([]);
     const lastPositionRef = useRef<string>("");
+    const lastIndex = useRef<number>(0);
 
     const completeLayerId = "route-completed";
     const remainingLayerId = "route-remaining";
@@ -34,8 +36,17 @@ export default function useRouteProgress(
         if (posKey === lastPositionRef.current) return;
         lastPositionRef.current = posKey;
 
-        const start = Math.max(snappedIndex - WINDOW_SIZE, 0);
-        const end = Math.min(snappedIndex + WINDOW_SIZE + 1, routeCoords.length);
+        let start;
+        let end;
+
+        if (consecutiveRef.current.off !== 0 && consecutiveRef.current.off % 10 === 0) {
+            start = 0;
+            end = routeCoords.length;
+        } else {
+            start = Math.max(snappedIndex - BACKWARD_WINDOW_SIZE, 0);
+            end = Math.min(snappedIndex + FORWARD_WINDOW_SIZE + 1, routeCoords.length);
+        }
+
         const windowCoords = routeCoords.slice(start, end);
 
         const line = lineString(windowCoords);
@@ -46,12 +57,24 @@ export default function useRouteProgress(
         const projected: [number, number] = nearest.geometry.coordinates as [number, number];
         const globalIndex = start + localIndex;
 
+        let distanceToNextPoint = Infinity;
+        if (globalIndex + 1 < routeCoords.length) {
+            const nextPoint = routeCoords[globalIndex + 1];
+            const dx = (nextPoint[0] - position[0]) * 111320 * Math.cos(position[1] * Math.PI / 180);
+            const dy = (nextPoint[1] - position[1]) * 110540;
+            distanceToNextPoint = Math.sqrt(dx * dx + dy * dy);
+        }
+
+        const adaptiveThreshold = distanceToNextPoint > 30 ? OFF_ROUTE_THRESHOLD * 1.5 : OFF_ROUTE_THRESHOLD;
+
+        console.log(JSON.stringify(routeCoords.slice(75, 94)));
+
 
         let newSnappedIndex = snappedIndex;
         let newSnappedPoint = snappedPoint;
         let newIsOffRoute = isOffRoute;
 
-        if (dist <= OFF_ROUTE_THRESHOLD) {
+        if (dist <= adaptiveThreshold) {
             consecutiveRef.current.on += 1;
             consecutiveRef.current.off = 0;
             
@@ -64,14 +87,14 @@ export default function useRouteProgress(
                 newSnappedPoint = projected;
             }
         } else {
-            console.log("Predicting off Route.");
-            console.log("Dist: " + dist + ", position: " + position[0]+","+position[1]);
-            console.log("Nearest: " + nearest);
+            // console.log("Predicting off Route.");
+            // console.log("Dist: " + dist + ", position: " + position[0]+","+position[1]);
+            // console.log("Nearest: " + nearest);
+            // console.log("Found index " + globalIndex);
             consecutiveRef.current.off += 1;
             consecutiveRef.current.on = 0;
             
             if (consecutiveRef.current.off >= HYSTERISIS_COUNT) {
-                console.log("Off Route");
                 newIsOffRoute = true;
             }
         }
@@ -114,6 +137,7 @@ export default function useRouteProgress(
         if (!map.isStyleLoaded()) return;
 
         if (newIsOffRoute) {
+
             console.log("Currently off route, removing " + offRouteLayerId);
             offRouteRef.current.push(position);
             
@@ -143,6 +167,8 @@ export default function useRouteProgress(
 
             // Gefahrene Route (completed) - grau/gestrichelt
             
+            if(globalIndex < lastIndex.current) return;
+            lastIndex.current = globalIndex;
 
             // Verbleibende Route (remaining) - pink/original
             safeRemoveLayer(remainingLayerId);
