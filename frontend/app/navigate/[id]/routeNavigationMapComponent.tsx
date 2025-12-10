@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import axios from "@/app/api/axios";
-import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
+import { Map as MtMap, MapStyle, helpers, config, Marker, Feature,} from "@maptiler/sdk";
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import '@/app/components/RouteBuilderComponent.css'
 import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
 import useRouteSimulation from "./simulateRouteHook";
-
+import { lineString, nearestPointOnLine } from "@turf/turf";
+import { extractCoords } from "@/utils/geoJsonTools";
+import { Step } from "./turnByTurnNavComponent";
+import { Position } from "geojson";
+import useRouteProgress from "@/hooks/use-routeProgress";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm";
 
@@ -16,26 +20,47 @@ interface RouteNavigationProps {
     setPosition: (pos: [number, number]) => void;
     routeGeoJson: RouteGeoJson |  null;
     setRouteGeoJson: (geoJson: RouteGeoJson | null) => void;
+    steps: Step[] | null;
+    currentStepIndex: number
     speed: number | null;
     setSpeed: (speed: number | null) => void;
     isPaused: boolean;
+    coords: Position[] | null;
+}
+
+enum RoutingState {
+    ON_ROUTE,
+    OFF_ROUTE,
+    RETURNING,
 }
 
 
 
 export default function RouteNavigation (props: RouteNavigationProps) {
-    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, speed, setSpeed, isPaused} = props;
+    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, steps, currentStepIndex, setSpeed, isPaused, coords} = props;
 
-    // const routeId = id;
-
-    // const [position, setPosition] = useState< [number, number] | null >(null);
-    // const [speed, setSpeed] = useState <number | null>(null);
     const [heading, setHeading] = useState <number | null> (null);
-    // const [routeGeoJson, setRouteGeoJson] = useState <string> ("");
+    const [routingState, setRoutingState] = useState<RoutingState | null> (null);
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
     const markerRef = useRef<Marker | null> (null);
     const watcherRef = useRef<number | null>(null);
+    const line = useRef<ReturnType<typeof lineString> | null>(null);
+
+    useRouteProgress((coords as [number, number][]) ?? [], mapRef.current, position ?? undefined)
+    
+    useEffect(() => {
+        if (!routeGeoJson || !coords) return;
+        line.current = lineString(coords);
+    }, [routeGeoJson, coords]);
+
+    function getProjection(userLng: number, userLat: number) {
+        return nearestPointOnLine(
+            line.current!,
+            [userLng, userLat],
+            { units: "meters"},
+        );
+    }  
 
     const simulating = true;
 
@@ -117,6 +142,10 @@ export default function RouteNavigation (props: RouteNavigationProps) {
         }
     }, [position, heading])
 
+    useEffect(() => {
+
+    }, [position])
+
 
     // useEffect when routeGeoJson has changed --> fetch has been successful
     // display the rote on map
@@ -152,3 +181,5 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     return <div id="map-container" ref={mapContainer} style={{ width: "70%", height: "80vh" }}/>;
 
 }
+
+

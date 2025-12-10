@@ -96,9 +96,12 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     setPosition={setPosition}
                     routeGeoJson={routeGeoJson}
                     setRouteGeoJson={setRouteGeoJson}
+                    steps={steps}
+                    currentStepIndex={currentStepIndex}
                     speed={speed}
                     setSpeed={setSpeed}
                     isPaused={isPaused}
+                    coords={coords}
             />
             {position &&  
             <TrackingComponent 
