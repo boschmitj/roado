@@ -149,34 +149,34 @@ export default function RouteNavigation (props: RouteNavigationProps) {
 
     // useEffect when routeGeoJson has changed --> fetch has been successful
     // display the rote on map
-    useEffect(() => {
-        if (!mapRef.current || !routeGeoJson) return;
-        const map = mapRef.current;
+    // useEffect(() => {
+    //     if (!mapRef.current || !routeGeoJson) return;
+    //     const map = mapRef.current;
 
-        console.log("RouteGeoJson is: ");
-        console.log(JSON.stringify(routeGeoJson));
-        const addPolylne = () => helpers.addPolyline(map, {
-            data: routeGeoJson,
-            layerId: "route-line",
-            outline: true,
-            outlineWidth: 6,
-            lineWidth: 3,
-            outlineColor: "#ff00b3ff",
-            outlineBlur: 10,
-            lineColor: "#ffffff",
-        })
+    //     console.log("RouteGeoJson is: ");
+    //     console.log(JSON.stringify(routeGeoJson));
+    //     const addPolylne = () => helpers.addPolyline(map, {
+    //         data: routeGeoJson,
+    //         layerId: "route-line",
+    //         outline: true,
+    //         outlineWidth: 6,
+    //         lineWidth: 3,
+    //         outlineColor: "#ff00b3ff",
+    //         outlineBlur: 10,
+    //         lineColor: "#ffffff",
+    //     })
 
-        if (map.isStyleLoaded()) {
-            addPolylne();
-        } else {
-            const onLoad = () => {
-                addPolylne();
-                map.off('load', onLoad);
-            };
-            map.on('load', onLoad);
-        }
+    //     if (map.isStyleLoaded()) {
+    //         addPolylne();
+    //     } else {
+    //         const onLoad = () => {
+    //             addPolylne();
+    //             map.off('load', onLoad);
+    //         };
+    //         map.on('load', onLoad);
+    //     }
 
-    }, [routeGeoJson])
+    // }, [routeGeoJson])
 
     return <div id="map-container" ref={mapContainer} style={{ width: "70%", height: "80vh" }}/>;
 
