@@ -8,3 +8,5 @@ interface ConfirmationDialogProps {
 export function ConfirmationDialog({open, onOpenChange, title, description, onConfirm} : ConfirmationDialogProps) {
     
 }
+
+// set my contributions email so that they are counted, trying with commit
