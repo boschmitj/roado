@@ -6,7 +6,8 @@ import { coordsToGeoJson } from "@/utils/geoJsonTools";
 const OFF_ROUTE_THRESHOLD = 30;
 const BACKWARD_WINDOW_SIZE = 2;
 const FORWARD_WINDOW_SIZE = 6;
-const HYSTERISIS_COUNT = 2;
+const HYSTERISIS_COUNT_OFFROUTE = 2;
+const HYSTERISIS_COUNT_ONROUTE = 1;
 
 export default function useRouteProgress(
     routeCoords: [number, number][], 
@@ -40,6 +41,7 @@ export default function useRouteProgress(
         let end;
 
         if (consecutiveRef.current.off !== 0 && consecutiveRef.current.off % 10 === 0) {
+            console.log("Multiple of 10 off");
             start = 0;
             end = routeCoords.length;
         } else {
@@ -55,11 +57,19 @@ export default function useRouteProgress(
         const dist = nearest.properties.dist;
         const localIndex = nearest.properties.index;
         const projected: [number, number] = nearest.geometry.coordinates as [number, number];
+        if (consecutiveRef.current.off !== 0 && consecutiveRef.current.off % 10 === 0) {
+            console.log("Projected is " + projected);
+            console.log("Index (global): " + (localIndex + start));
+            console.log("Distance is: " + dist);
+        }
+
+        console.log("Nearest is: " + JSON.stringify(nearest));
         const globalIndex = start + localIndex;
+        const effectiveGlobalIndex = Math.max(globalIndex, snappedIndex);
 
         let distanceToNextPoint = Infinity;
-        if (globalIndex + 1 < routeCoords.length) {
-            const nextPoint = routeCoords[globalIndex + 1];
+        if (effectiveGlobalIndex + 1 < routeCoords.length) {
+            const nextPoint = routeCoords[effectiveGlobalIndex + 1];
             const dx = (nextPoint[0] - position[0]) * 111320 * Math.cos(position[1] * Math.PI / 180);
             const dy = (nextPoint[1] - position[1]) * 110540;
             distanceToNextPoint = Math.sqrt(dx * dx + dy * dy);
@@ -78,12 +88,12 @@ export default function useRouteProgress(
             consecutiveRef.current.on += 1;
             consecutiveRef.current.off = 0;
             
-            if (consecutiveRef.current.on >= HYSTERISIS_COUNT) {
+            if (consecutiveRef.current.on >= HYSTERISIS_COUNT_ONROUTE) {
                 if (isOffRoute) {
                     console.log("Was off Route, now not anymore");
                     newIsOffRoute = false;
                 }
-                newSnappedIndex = globalIndex;
+                newSnappedIndex = effectiveGlobalIndex;
                 newSnappedPoint = projected;
             }
         } else {
@@ -94,7 +104,7 @@ export default function useRouteProgress(
             consecutiveRef.current.off += 1;
             consecutiveRef.current.on = 0;
             
-            if (consecutiveRef.current.off >= HYSTERISIS_COUNT) {
+            if (consecutiveRef.current.off >= HYSTERISIS_COUNT_OFFROUTE) {
                 newIsOffRoute = true;
             }
         }
@@ -120,7 +130,7 @@ export default function useRouteProgress(
             }
         };
 
-        const useIndex = newSnappedPoint ? newSnappedIndex : globalIndex;
+        const useIndex = newSnappedPoint ? newSnappedIndex : effectiveGlobalIndex;
         const useProjected = newSnappedPoint ?? projected;
 
         const completed = [
@@ -167,8 +177,8 @@ export default function useRouteProgress(
 
             // Gefahrene Route (completed) - grau/gestrichelt
             
-            if(globalIndex < lastIndex.current) return;
-            lastIndex.current = globalIndex;
+            if(effectiveGlobalIndex < lastIndex.current) return;
+            lastIndex.current = effectiveGlobalIndex;
 
             // Verbleibende Route (remaining) - pink/original
             safeRemoveLayer(remainingLayerId);

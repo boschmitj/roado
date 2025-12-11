@@ -67,7 +67,7 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
 
     useEffect(() => {
         setPositionList([...positionList, position]);
-        console.log("Background Distance is: " + backgroundDistance);
+        // console.log("Background Distance is: " + backgroundDistance);
     }, [position])
 
     useEffect(() => {
