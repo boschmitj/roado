@@ -20,47 +20,23 @@ interface RouteNavigationProps {
     setPosition: (pos: [number, number]) => void;
     routeGeoJson: RouteGeoJson |  null;
     setRouteGeoJson: (geoJson: RouteGeoJson | null) => void;
-    steps: Step[] | null;
-    currentStepIndex: number
     speed: number | null;
     setSpeed: (speed: number | null) => void;
     isPaused: boolean;
     coords: Position[] | null;
+    onRouteCompleted: () => void;
 }
-
-enum RoutingState {
-    ON_ROUTE,
-    OFF_ROUTE,
-    RETURNING,
-}
-
-
 
 export default function RouteNavigation (props: RouteNavigationProps) {
-    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, steps, currentStepIndex, setSpeed, isPaused, coords} = props;
+    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, setSpeed, isPaused, coords, onRouteCompleted} = props;
 
     const [heading, setHeading] = useState <number | null> (null);
-    const [routingState, setRoutingState] = useState<RoutingState | null> (null);
     const mapContainer = useRef<HTMLDivElement>(null);
     const mapRef = useRef<MtMap | null>(null);
     const markerRef = useRef<Marker | null> (null);
     const watcherRef = useRef<number | null>(null);
-    const line = useRef<ReturnType<typeof lineString> | null>(null);
 
-    useRouteProgress((coords as [number, number][]) ?? [], mapRef.current, position ?? undefined)
-    
-    useEffect(() => {
-        if (!routeGeoJson || !coords) return;
-        line.current = lineString(coords);
-    }, [routeGeoJson, coords]);
-
-    function getProjection(userLng: number, userLat: number) {
-        return nearestPointOnLine(
-            line.current!,
-            [userLng, userLat],
-            { units: "meters"},
-        );
-    }  
+    const {isRouteCompleted} = useRouteProgress((coords as [number, number][]) ?? [], mapRef.current, position ?? undefined);
 
     const simulating = true;
 
@@ -68,6 +44,13 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     if (simulating) {
         useRouteSimulation(routeGeoJson!, setPosition, 1);
     }
+
+    useEffect(() => {
+        if (isRouteCompleted) {
+            onRouteCompleted();
+        }
+    }, [isRouteCompleted]);
+    
     // instantiate the geolocation watcher with callback function
     useEffect(() => {
         const watcher = navigator.geolocation.watchPosition(
@@ -141,42 +124,6 @@ export default function RouteNavigation (props: RouteNavigationProps) {
             mapRef.current.setBearing(heading)
         }
     }, [position, heading])
-
-    useEffect(() => {
-
-    }, [position])
-
-
-    // useEffect when routeGeoJson has changed --> fetch has been successful
-    // display the rote on map
-    // useEffect(() => {
-    //     if (!mapRef.current || !routeGeoJson) return;
-    //     const map = mapRef.current;
-
-    //     console.log("RouteGeoJson is: ");
-    //     console.log(JSON.stringify(routeGeoJson));
-    //     const addPolylne = () => helpers.addPolyline(map, {
-    //         data: routeGeoJson,
-    //         layerId: "route-line",
-    //         outline: true,
-    //         outlineWidth: 6,
-    //         lineWidth: 3,
-    //         outlineColor: "#ff00b3ff",
-    //         outlineBlur: 10,
-    //         lineColor: "#ffffff",
-    //     })
-
-    //     if (map.isStyleLoaded()) {
-    //         addPolylne();
-    //     } else {
-    //         const onLoad = () => {
-    //             addPolylne();
-    //             map.off('load', onLoad);
-    //         };
-    //         map.on('load', onLoad);
-    //     }
-
-    // }, [routeGeoJson])
 
     return <div id="map-container" ref={mapContainer} style={{ width: "70%", height: "80vh" }}/>;
 

@@ -18,6 +18,7 @@ export default function useRouteProgress(
     const [snappedPoint, setSnappedPoint] = useState<[number, number] | null>(null);
     const [isOffRoute, setIsOffRoute] = useState<boolean>(false);
     const [counterOffRoute, setCounterOffRoute] = useState<number>(0);
+    const [isRouteCompleted, setIsRouteCompleted] = useState<boolean>(false);
     
     const offRouteRef = useRef<[number, number][]>([]);
     const consecutiveRef = useRef({on: 0, off: 0});
@@ -60,6 +61,7 @@ export default function useRouteProgress(
 
         const globalIndex = start + localIndex;
         const effectiveGlobalIndex = Math.max(globalIndex, snappedIndex);
+        if (effectiveGlobalIndex === routeCoords.length) setIsRouteCompleted(true);
 
         let distanceToNextPoint = Infinity;
         if (effectiveGlobalIndex + 1 < routeCoords.length) {
@@ -192,5 +194,5 @@ export default function useRouteProgress(
 
     }, [position, routeCoords, map]);
 
-    return { snappedIndex, snappedPoint, isOffRoute };
+    return { snappedIndex, snappedPoint, isOffRoute, isRouteCompleted };
 }

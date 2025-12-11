@@ -60,7 +60,6 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
             setCurrDistance(currDistance + backgroundDistance);
             setBackgroundDistance(0);
         } else {
-            // resetBackgroundCountdown();
             startBackgroundCountdown();
         }
     }, [isPaused])
@@ -96,6 +95,12 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
         }
     }, [speed, currDistance])
 
+    function onFinish() {
+        resetCountdown();
+        // user gets prompted if he wants to end the route
+
+    }
+
     return (
         <>
             <div className="absolute z-10 bottom-2 left-1/2 -translate-x-1/2 w-sm">
@@ -130,7 +135,7 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
                         <RouteControls 
                             onPause={stopCountdown} 
                             onStart={startCountdown} 
-                            onFinish={resetCountdown}
+                            onFinish={onFinish}
                             isPaused={isPaused}
                             setIsPaused={setIsPaused}
                         />

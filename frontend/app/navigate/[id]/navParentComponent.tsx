@@ -24,6 +24,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
     const [currDistance, setCurrDistance] = useState<number> (0);
     const totalDistance = useRef<number>(0);
+    const [isFinishDialogOpen, setIsFinishDialogOpen] = useState<boolean> (false);
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -80,6 +81,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
 
     return (
         <>
+            
             {showInstruction && (distanceLeftToNextStop < 70) && steps && currentStepIndex < steps.length &&
                 <InstructionComponent
                     {...steps[currentStepIndex]}
@@ -96,8 +98,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     setPosition={setPosition}
                     routeGeoJson={routeGeoJson}
                     setRouteGeoJson={setRouteGeoJson}
-                    steps={steps}
-                    currentStepIndex={currentStepIndex}
+                    onRouteCompleted={() => setIsFinishDialogOpen(true)}
                     speed={speed}
                     setSpeed={setSpeed}
                     isPaused={isPaused}
