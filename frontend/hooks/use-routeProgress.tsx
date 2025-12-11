@@ -57,13 +57,7 @@ export default function useRouteProgress(
         const dist = nearest.properties.dist;
         const localIndex = nearest.properties.index;
         const projected: [number, number] = nearest.geometry.coordinates as [number, number];
-        if (consecutiveRef.current.off !== 0 && consecutiveRef.current.off % 10 === 0) {
-            console.log("Projected is " + projected);
-            console.log("Index (global): " + (localIndex + start));
-            console.log("Distance is: " + dist);
-        }
 
-        console.log("Nearest is: " + JSON.stringify(nearest));
         const globalIndex = start + localIndex;
         const effectiveGlobalIndex = Math.max(globalIndex, snappedIndex);
 
@@ -77,9 +71,6 @@ export default function useRouteProgress(
 
         const adaptiveThreshold = distanceToNextPoint > 30 ? OFF_ROUTE_THRESHOLD * 1.5 : OFF_ROUTE_THRESHOLD;
 
-        console.log(JSON.stringify(routeCoords.slice(75, 94)));
-
-
         let newSnappedIndex = snappedIndex;
         let newSnappedPoint = snappedPoint;
         let newIsOffRoute = isOffRoute;
@@ -90,17 +81,12 @@ export default function useRouteProgress(
             
             if (consecutiveRef.current.on >= HYSTERISIS_COUNT_ONROUTE) {
                 if (isOffRoute) {
-                    console.log("Was off Route, now not anymore");
                     newIsOffRoute = false;
                 }
                 newSnappedIndex = effectiveGlobalIndex;
                 newSnappedPoint = projected;
             }
         } else {
-            // console.log("Predicting off Route.");
-            // console.log("Dist: " + dist + ", position: " + position[0]+","+position[1]);
-            // console.log("Nearest: " + nearest);
-            // console.log("Found index " + globalIndex);
             consecutiveRef.current.off += 1;
             consecutiveRef.current.on = 0;
             
@@ -151,6 +137,7 @@ export default function useRouteProgress(
             console.log("Currently off route, removing " + offRouteLayerId);
             offRouteRef.current.push(position);
             
+            // damit mehrere Off Route Segmente gezeichnet werden können. 
             let currOffRouteLayerId;
             if (!counterOffRoute) {
                 currOffRouteLayerId = offRouteLayerId
@@ -175,11 +162,11 @@ export default function useRouteProgress(
                 setCounterOffRoute(counterOffRoute + 1);
             }
 
-            // Gefahrene Route (completed) - grau/gestrichelt
-            
+                       
             if(effectiveGlobalIndex < lastIndex.current) return;
             lastIndex.current = effectiveGlobalIndex;
 
+            // Reihenfolge wichtig der Polylines: letzte ist oben zu sehen -> complete über remaining
             // Verbleibende Route (remaining) - pink/original
             safeRemoveLayer(remainingLayerId);
             helpers.addPolyline(map, {
@@ -191,6 +178,7 @@ export default function useRouteProgress(
                 lineBlur: 3,
             });
 
+            // Gefahrene Route (completed) 
             safeRemoveLayer(completeLayerId);
             helpers.addPolyline(map, {
                 data: coordsToGeoJson(completed),
