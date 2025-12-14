@@ -5,6 +5,8 @@ import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
 import { LineString, Position } from "geojson"
 import haversine from "@/utils/haversine";
 import { TrackingComponent } from "./trackingComponent";
+import { ConfirmationDialog } from "@/components/own/ConfirmationDialog";
+import axios from "@/app/api/axios";
 
 interface NavParentComponentProps {
     id: number;
@@ -79,10 +81,16 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         console.log("Position is: " + position + ", speed: " + speed);
     }, [position])
 
+    function finishRoute(): void {
+        // Send the route Information to the backend
+        // Unload everything and route the user to activity/routeId
+        axios.post(`/activity/${id}/finish`)
+    }
+
     return (
         <>
             
-            {showInstruction && (distanceLeftToNextStop < 70) && steps && currentStepIndex < steps.length &&
+            {showInstruction && (distanceLeftToNextStop < 70) && steps && currentStepIndex < steps.length && !isFinishDialogOpen &&
                 <InstructionComponent
                     {...steps[currentStepIndex]}
                     distanceLeft={distanceLeftToNextStop}
@@ -92,6 +100,17 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     onClose={() => setShowInstruction(false)}
                 />
             }
+
+            <ConfirmationDialog
+                open={isFinishDialogOpen}
+                onOpenChange={() => setIsFinishDialogOpen(false)}
+                title="Finish activity"
+                description="Congrats! You completed the route. Do you want to finish and save your activity now or keep riding?"
+                onConfirm={() => finishRoute()}
+                confirmText="Finish activity"
+                cancelText="Ride on"
+            />
+
             <RouteNavigation
                     id={id}
                     position={position}
@@ -104,7 +123,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     isPaused={isPaused}
                     coords={coords}
             />
-            {position &&  
+            {position && 
             <TrackingComponent 
                 position={position}
                 speed={speed ?? 0}
@@ -113,6 +132,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                 setIsPaused={setIsPaused}
                 currDistance={currDistance}
                 setCurrDistance={setCurrDistance}
+                setIsFinishDialogOpen={setIsFinishDialogOpen}
+                isFinishDialogOpen={isFinishDialogOpen}
             /> }
         </>
     );

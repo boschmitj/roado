@@ -125,7 +125,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
         }
     }, [position, heading])
 
-    return <div id="map-container" ref={mapContainer} style={{ width: "70%", height: "80vh" }}/>;
+    return <div id="map-container" ref={mapContainer} style={{ width: "70%", height: "95vh" }}/>;
 
 }
 

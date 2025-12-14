@@ -9,12 +9,22 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Coordinates;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roado.demo.Config.GeometryConfiguration;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
@@ -35,16 +45,16 @@ public class RouteService {
     private final RouteMapperOwn routeMapper;
     private final AuthenticationService authenticationService;
 
-    @Value("${OPENROUTESEVICES_API_KEY}")
+    @Value("")
     private String OPENROUTESEVICES_API_KEY; 
 
     public RouteService(RouteRepository routeRepository, 
                         UserService userService,
-                        RouteMapperOwn rotueMapper,
+                        RouteMapperOwn routeMapper,
                         AuthenticationService authenticationService) {
         this.routeRepository = routeRepository;
         this.userService = userService;
-        this.routeMapper = rotueMapper;
+        this.routeMapper = routeMapper;
         this.authenticationService = authenticationService;
     }
 
@@ -122,6 +132,46 @@ public class RouteService {
 
         return routes;
     }
+
+    public boolean usedOriginalRoute(Long routeId, Double[][] coordinates) throws ParseException {
+        Route route = routeRepository.findById(routeId).orElse(null);
+        LineString originalRouteLine = getRouteLine(route.getGeoData());
+        LineString recordedRouteLine = 
+    }
+
+    private LineString getRouteLine(String geoData) throws ParseException {
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        GeoJsonReader geoJsonReader = new GeoJsonReader(geometryFactory);
+        Geometry geometry = geoJsonReader.read(geoData);
+
+        return new LineString(new CoordinateArraySequence(geometry.getCoordinates()), geometryFactory);
+    }
+
+    private LineString getRouteLine(Double[][] coords) throws ParseException {
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        GeoJsonReader geoJsonReader = new GeoJsonReader(geometryFactory);
+        Coordinates coordinates = new Coordinates().
+        CoordinateSequence coordinateSequence = new CoordinateArraySequence(coords)
+
+        return new LineString(new )
+    }
+
+
+
+    public boolean corridorCoverageOk(double coverage) {
+        return coverage >= 0.85;
+    }
+
+    public double corridorCoverage(LineString activity, LineString route) {
+        Geometry routeBuffer = route.buffer(50);
+        Geometry inside = activity.intersection(routeBuffer);
+
+        return inside.getLength() / activity.getLength();
+    }
+
+
+
+
 
     
 }

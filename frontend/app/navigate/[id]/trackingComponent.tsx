@@ -6,10 +6,8 @@ import haversine from "@/utils/haversine";
 import { useEffect, useState } from "react";
 import { RouteControls } from "./routeControls";
 import { getHours } from "@/utils/formatter";
-import { get } from "http";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { motion, AnimatePresence, distance } from "framer-motion";
-import { getgid } from "process";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TrackingComponentProps {
     position : [number, number],
@@ -19,9 +17,11 @@ interface TrackingComponentProps {
     setIsPaused: (input: boolean) => void,
     currDistance: number,
     setCurrDistance: (input: number) => void,
+    setIsFinishDialogOpen: (input: boolean) => void;
+    isFinishDialogOpen: boolean
 }
 
-export function TrackingComponent({position, speed, distanceLeft, isPaused, setIsPaused, currDistance, setCurrDistance} : TrackingComponentProps) {
+export function TrackingComponent({position, speed, distanceLeft, isPaused, setIsPaused, currDistance, setCurrDistance, setIsFinishDialogOpen, isFinishDialogOpen} : TrackingComponentProps) {
     const [positionList, setPositionList] = useState<[number, number][]>([]);
     const [speedList, setSpeedList] = useState<number[]>([]);
     const [avgSpeed, setAvgSpeed] = useState<number> (0);
@@ -96,9 +96,8 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
     }, [speed, currDistance])
 
     function onFinish() {
-        resetCountdown();
         // user gets prompted if he wants to end the route
-
+        setIsFinishDialogOpen(true);
     }
 
     return (
@@ -112,7 +111,7 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
                 <Card className="min-w-2xs max-w-2xl w-sm relative">
                     <CardContent>
                         <AnimatePresence initial={false}>
-                            {statisticsShown && (
+                            {statisticsShown && !isFinishDialogOpen && (
                                 <motion.div 
                                     key="stats"
                                     initial={{ height: 0, opacity: 0 }}
