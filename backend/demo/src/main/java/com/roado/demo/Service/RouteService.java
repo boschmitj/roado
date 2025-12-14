@@ -6,14 +6,18 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Coordinates;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.ParseException;
@@ -58,12 +62,17 @@ public class RouteService {
         this.authenticationService = authenticationService;
     }
 
-    public RouteDTO getRoute(Long routeId) {
+    public RouteDTO getRouteDTO(Long routeId) {
         Route route = routeRepository.findById(routeId).orElse(null);        
         if (route != null) {
             return routeMapper.toRouteDTO(route);
         }
         return null;
+    }
+
+    public Route getRoute(Long routeId) {
+        Route route = routeRepository.findById(routeId).orElse(null);
+        return route;
     }
 
     public String getRouteGeoJson(Long id) {
@@ -133,41 +142,7 @@ public class RouteService {
         return routes;
     }
 
-    public boolean usedOriginalRoute(Long routeId, Double[][] coordinates) throws ParseException {
-        Route route = routeRepository.findById(routeId).orElse(null);
-        LineString originalRouteLine = getRouteLine(route.getGeoData());
-        LineString recordedRouteLine = 
-    }
-
-    private LineString getRouteLine(String geoData) throws ParseException {
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        GeoJsonReader geoJsonReader = new GeoJsonReader(geometryFactory);
-        Geometry geometry = geoJsonReader.read(geoData);
-
-        return new LineString(new CoordinateArraySequence(geometry.getCoordinates()), geometryFactory);
-    }
-
-    private LineString getRouteLine(Double[][] coords) throws ParseException {
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        GeoJsonReader geoJsonReader = new GeoJsonReader(geometryFactory);
-        Coordinates coordinates = new Coordinates().
-        CoordinateSequence coordinateSequence = new CoordinateArraySequence(coords)
-
-        return new LineString(new )
-    }
-
-
-
-    public boolean corridorCoverageOk(double coverage) {
-        return coverage >= 0.85;
-    }
-
-    public double corridorCoverage(LineString activity, LineString route) {
-        Geometry routeBuffer = route.buffer(50);
-        Geometry inside = activity.intersection(routeBuffer);
-
-        return inside.getLength() / activity.getLength();
-    }
+    
 
 
 

@@ -41,9 +41,8 @@ public class Activity {
     @JoinColumn(name = "route_id")
     private Route route;
 
-    @Column(name = "activity_type")
-    @Enumerated(EnumType.STRING)
-    private ActivityType activityType;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private Track track;
 
     @Column(name = "distance_m")
     private Double distanceM;
@@ -54,20 +53,16 @@ public class Activity {
     @Column(name = "started_at")
     private LocalDateTime startedAt;
 
+    @Column(name = "ended_at")
+    private LocalDateTime endedAt;
+
     @Column(name = "elevation_gain")
     private Double elevationGain;
 
     @Column(name = "avg_speed")
     private Double avgSpeed;
 
-
-    // cool feature idea: analyse speed in different segments
-    // e.g. km 25-38 avg speed was 34 km/h, km 38-50 avg speed was 40 km/h
-    @Column(name = "max_speed")
-    private Double maxSpeed;
-
-
-
-
+    @Column(name = "matched_route")
+    private boolean matchedRoute;
 
 }

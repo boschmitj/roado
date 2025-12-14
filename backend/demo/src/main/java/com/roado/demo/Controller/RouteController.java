@@ -42,7 +42,7 @@ public class RouteController {
 
     @GetMapping("/routeInfo")
     public ResponseEntity<?> getRouteInfo(@RequestParam Long id) {
-        RouteDTO result = routeService.getRoute(id);
+        RouteDTO result = routeService.getRouteDTO(id);
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
