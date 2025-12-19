@@ -92,12 +92,6 @@
 			<artifactId>jts-core</artifactId>
 			<version>1.20.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.geotools/gt-referencing -->
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-referencing</artifactId>
-			<version>33.2</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.locationtech.jts.io/jts-io-common -->
 		<dependency>
 			<groupId>org.locationtech.jts.io</groupId>
