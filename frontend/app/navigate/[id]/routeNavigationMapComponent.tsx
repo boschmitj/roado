@@ -41,9 +41,8 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     const simulating = true;
 
     
-    if (simulating) {
-        useRouteSimulation(routeGeoJson!, setPosition, 1);
-    }
+    useRouteSimulation(routeGeoJson!, setPosition, 1, simulating);
+    
 
     useEffect(() => {
         if (isRouteCompleted) {

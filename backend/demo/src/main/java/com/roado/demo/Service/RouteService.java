@@ -6,29 +6,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Coordinates;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roado.demo.Config.GeometryConfiguration;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
@@ -37,7 +23,6 @@ import com.roado.demo.Model.Route;
 import com.roado.demo.Model.User;
 import com.roado.demo.Repository.RouteRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -45,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class RouteService {
 
     private final RouteRepository routeRepository;
-    private final UserService userService;
     private final RouteMapperOwn routeMapper;
     private final AuthenticationService authenticationService;
 
@@ -53,11 +37,9 @@ public class RouteService {
     private String OPENROUTESEVICES_API_KEY; 
 
     public RouteService(RouteRepository routeRepository, 
-                        UserService userService,
                         RouteMapperOwn routeMapper,
                         AuthenticationService authenticationService) {
         this.routeRepository = routeRepository;
-        this.userService = userService;
         this.routeMapper = routeMapper;
         this.authenticationService = authenticationService;
     }

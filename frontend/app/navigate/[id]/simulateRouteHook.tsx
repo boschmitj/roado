@@ -2,11 +2,13 @@ import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
 import { extractCoords } from "@/utils/geoJsonTools";
 import { useEffect, useRef } from "react";
 
-export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPosition: (coords: [number, number]) => void, speed = 1) {
+export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPosition: (coords: [number, number]) => void, speed = 1, simulating: boolean) {
     const indexRef = useRef(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+
+        if (!simulating) return;
 
         if(!routeGeoJson) return;
 

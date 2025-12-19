@@ -380,7 +380,7 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
 export default RouteParentComponent;
 
 function computeElevationTotal(elevations : number[]) {
-    let threshold = 2;
+    const threshold = 2;
     const totalElevationGain = elevations.reduce((acc, curr, index, arr) => {
         if (index === 0) {
             return 0;
