@@ -44,5 +44,5 @@ export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPositi
             }
         };
 
-    }, [routeGeoJson, setPosition, speed]);
+    }, [routeGeoJson, setPosition, speed, simulating]);
 }
