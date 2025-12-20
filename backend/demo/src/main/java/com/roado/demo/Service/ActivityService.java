@@ -26,7 +26,6 @@ public class ActivityService {
     private final AuthenticationUtils authUtils;
     private final RouteService routeService;
     private final RouteUtils routeUtils;
-    private final ActivityService activityService;
     private final TrackService trackService;
     private final RouteMatchingService routeMatchingService;
 
@@ -50,7 +49,7 @@ public class ActivityService {
             LineString trackLine = routeUtils.getRouteLine(dto.getRawTrack());
             Track track = trackService.createTrack(trackLine);
 
-            Activity activity = activityService.createBaseActivity(dto, track);
+            Activity activity = createBaseActivity(dto, track);
 
             boolean matched = routeMatchingService
                     .matchesPlannedRoute(dto.getPlannedRouteId(), trackLine);

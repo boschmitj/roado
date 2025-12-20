@@ -12,9 +12,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationUtils {
 
-    private final Authentication authentication;
 
     public User getCurrentlyAuthenticatedUser() {
-        return (User) authentication.getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+            throw new IllegalStateException("No authenticated user");
+        }
+        
+        return user;
     }
 }
