@@ -3,7 +3,6 @@ package com.roado.demo.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nimbusds.jose.proc.SecurityContext;
 import com.roado.demo.DTOs.CoordinateDTO;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
@@ -16,13 +15,12 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.io.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -67,6 +65,8 @@ public class RouteController {
             return ResponseEntity.badRequest().body(enfe.getMessage());
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.badRequest().body("The route id must be null" + iae.getMessage());
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body("The geojson could not be parsed");
         }
     }
 
@@ -95,8 +95,8 @@ public class RouteController {
                 } else {
                     return ResponseEntity.badRequest().body("Failed to add route " + routeDTO.toString());
                 }
-            } catch (EntityNotFoundException enfe) {
-                return ResponseEntity.badRequest().body("The route user could not be found" + enfe.getMessage());
+            } catch (EntityNotFoundException | AuthenticationException | IllegalArgumentException | ParseException enfe) {
+                return ResponseEntity.badRequest().body("Error occured while adding the route");
             }
         
         }

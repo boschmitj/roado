@@ -9,12 +9,14 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
@@ -32,16 +34,19 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final RouteMapperOwn routeMapper;
     private final AuthenticationService authenticationService;
+    private final RouteUtils routeUtils;
 
     @Value("")
     private String OPENROUTESEVICES_API_KEY; 
 
     public RouteService(RouteRepository routeRepository, 
                         RouteMapperOwn routeMapper,
-                        AuthenticationService authenticationService) {
+                        AuthenticationService authenticationService,
+                        RouteUtils routeUtils) {
         this.routeRepository = routeRepository;
         this.routeMapper = routeMapper;
         this.authenticationService = authenticationService;
+        this.routeUtils = routeUtils;
     }
 
     public RouteDTO getRouteDTO(Long routeId) {
@@ -60,12 +65,12 @@ public class RouteService {
     public String getRouteGeoJson(Long id) {
         Route route = routeRepository.findById(id).orElse(null);
         if (route != null) {
-            return route.getGeoData();
+            return routeUtils.geometryToString(route.getGeoData());
         }
         return null;
     }
 
-    public RouteDTO addRoute(RouteDTO routeDTO) throws AuthenticationException {
+    public RouteDTO addRoute(RouteDTO routeDTO) throws AuthenticationException, IllegalArgumentException, ParseException {
         User user = authenticationService.getAuthenticatedUser();
         
         Route route = routeMapper.toRoute(routeDTO, user.getId());

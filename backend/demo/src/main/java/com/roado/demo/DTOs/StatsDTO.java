@@ -1,7 +1,5 @@
 package com.roado.demo.DTOs;
 
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Data;

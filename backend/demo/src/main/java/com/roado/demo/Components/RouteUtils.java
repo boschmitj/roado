@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,7 @@ public class RouteUtils {
     public boolean usedOriginalRoute(Long routeId, LineString rawTrack) throws ParseException {
         Route route = routeRepository.findById(routeId).orElse(null);
         if (route == null) return false;
-        LineString originalRouteLine = getRouteLine(route.getGeoData());
+        LineString originalRouteLine = route.getGeoData();
         
         // null -> default values
         int score = 0;
@@ -94,13 +95,18 @@ public class RouteUtils {
         return Math.abs(origLength - recLength) / Math.max(origLength, recLength);
     }
 
-    private LineString getRouteLine(String geoData) throws ParseException {
+    public LineString routeStringToGeometry(String geoData) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         GeoJsonReader geoJsonReader = new GeoJsonReader(geometryFactory);
         Geometry geometry = geoJsonReader.read(geoData);
 
         return new LineString(new CoordinateArraySequence(geometry.getCoordinates()), geometryFactory);
     }
+
+    public String geometryToString(LineString route) {
+        GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
+        return geoJsonWriter.write(route);
+    }   
 
     public LineString getRouteLine(Coordinate[] coords) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -132,6 +138,7 @@ public class RouteUtils {
         Coordinate[] coordinates = geometrySimplified.getCoordinates();
         return getRouteLine(coordinates);
     }
+
 
 
     

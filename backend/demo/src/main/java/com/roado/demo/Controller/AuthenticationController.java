@@ -1,6 +1,5 @@
 package com.roado.demo.Controller;
 
-import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.roado.demo.DTOs.LoginResponse;
 import com.roado.demo.DTOs.LoginUserDto;
 import com.roado.demo.DTOs.RegisterUserDto;
 import com.roado.demo.Helpers.JwtCookieService;
@@ -20,7 +18,6 @@ import com.roado.demo.Service.AuthenticationService;
 import com.roado.demo.Service.JwtService;
 import com.roado.demo.Service.UserService;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

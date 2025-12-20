@@ -2,18 +2,16 @@ package com.roado.demo.Service;
 
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.nimbusds.jose.proc.SecurityContext;
 import com.roado.demo.Components.AuthenticationUtils;
 import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.FinishRouteDTO;
 import com.roado.demo.Model.Activity;
+import com.roado.demo.Model.ActivityStats;
 import com.roado.demo.Model.Route;
 import com.roado.demo.Model.Track;
 import com.roado.demo.Repository.ActivityRepository;
-import com.roado.demo.Repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +31,17 @@ public class ActivityService {
         Activity activity = new Activity();
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
-        activity.setDistanceM(finishRouteDTO.getStats().getTotalDistance());
-        activity.setDurationS(finishRouteDTO.getStats().getTotalTime());
-        activity.setStartedAt(finishRouteDTO.getStats().getStartDate());
-        activity.setEndedAt(finishRouteDTO.getStats().getEndDate());
-        activity.setElevationGain(finishRouteDTO.getStats().getTotalElevation());
-        activity.setAvgSpeed(finishRouteDTO.getStats().getAvgSpeed());
+
+        ActivityStats activityStats = new ActivityStats();
+        
+        activityStats.setDistanceM(finishRouteDTO.getStats().getTotalDistance());
+        activityStats.setDurationS(finishRouteDTO.getStats().getTotalTime());
+        activityStats.setStartedAt(finishRouteDTO.getStats().getStartDate());
+        activityStats.setEndedAt(finishRouteDTO.getStats().getEndDate());
+        activityStats.setElevationGain(finishRouteDTO.getStats().getTotalElevation());
+        activityStats.setAvgSpeed(finishRouteDTO.getStats().getAvgSpeed());
+
+        activity.setActivityStats(activityStats);
 
         return activity;
     }
@@ -60,7 +63,6 @@ public class ActivityService {
                 Route route = routeService.getRoute(dto.getPlannedRouteId());
                 activity.setRoute(route);
             }
-
 
             activityRepository.save(activity);
         } catch (ParseException pException) {

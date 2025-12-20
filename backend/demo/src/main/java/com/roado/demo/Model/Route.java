@@ -3,6 +3,7 @@ package com.roado.demo.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.geom.LineString;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,8 +48,8 @@ public class Route {
 
     // have to use a appropriate data type or decode the String
     // mby JSON for storing each coordinate point of the polyline
-    @Column(name = "geo_data", columnDefinition = "TEXT", nullable = false) 
-    private String geoData;
+    @Column(columnDefinition = "geometry(LineString, 4326)", nullable = false) 
+    private LineString geoData;
 
     @Column(name = "distance_m")
     private Long distanceM;

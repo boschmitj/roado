@@ -1,6 +1,5 @@
 package com.roado.demo.Service;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
