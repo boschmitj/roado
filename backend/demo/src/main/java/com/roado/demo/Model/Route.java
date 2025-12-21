@@ -48,14 +48,14 @@ public class Route {
 
     // have to use a appropriate data type or decode the String
     // mby JSON for storing each coordinate point of the polyline
-    @Column(columnDefinition = "geometry(LineString, 4326)", nullable = false) 
+    @Column(columnDefinition = "geometry(LineStringZ, 4326)", nullable = false) 
     private LineString geoData;
 
     @Column(name = "distance_m")
     private Long distanceM;
 
     @Column(name = "elevation_profile")
-    private String elevationProfile;
+    private Double[] elevationProfile;
 
     @Column(name = "elevation_gain")
     private Long elevationGain;

@@ -36,7 +36,7 @@ public class RouteService {
     private final AuthenticationService authenticationService;
     private final RouteUtils routeUtils;
 
-    @Value("")
+    @Value("${OPENROUTESEVICES_API_KEY}")
     private String OPENROUTESEVICES_API_KEY; 
 
     public RouteService(RouteRepository routeRepository, 
