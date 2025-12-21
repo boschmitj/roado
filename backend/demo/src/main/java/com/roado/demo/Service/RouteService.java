@@ -50,7 +50,7 @@ public class RouteService {
     }
 
     public RouteDTO getRouteDTO(Long routeId) {
-        Route route = routeRepository.findById(routeId).orElse(null);        
+        Route route = getRoute(routeId);      
         if (route != null) {
             return routeMapper.toRouteDTO(route);
         }
@@ -63,7 +63,7 @@ public class RouteService {
     }
 
     public String getRouteGeoJson(Long id) {
-        Route route = routeRepository.findById(id).orElse(null);
+        Route route = getRoute(id);
         if (route != null) {
             return routeUtils.geometryToString(route.getGeoData());
         }
