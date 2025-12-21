@@ -139,6 +139,17 @@ public class RouteUtils {
         return getRouteLine(coordinates);
     }
 
+    public Double[] extractElevationProfile(LineString geometry) {
+        Coordinate[] coords = geometry.getCoordinates(); 
+        Double[] elevationProfile = new Double[coords.length];
+        for (int i = 0; i < coords.length; i++) {
+            elevationProfile[i] = coords[i].z;
+        }
+        return elevationProfile;
+    }
+
+    
+
 
 
     

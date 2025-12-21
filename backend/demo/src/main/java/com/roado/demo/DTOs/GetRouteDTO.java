@@ -10,7 +10,7 @@ public class GetRouteDTO {
     private String name;
     private String geoData;
     private Long distanceM;
-    private String elevationProfile;
+    private Double[] elevationProfile;
     private Long durationS;
     private String svgPreview;
     private Long elevationGain;

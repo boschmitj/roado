@@ -1,6 +1,7 @@
 package com.roado.demo.Mappers;
 
 
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,6 @@ public class RouteMapperOwn {
             .name(route.getName())
             .geoData(routeUtils.geometryToString(route.getGeoData()))
             .distanceM(route.getDistanceM())
-            .elevationProfile(route.getElevationProfile())
             .durationS(route.getDurationS())
             .svgPreview(route.getSvgPreview())
             .elevationGain(route.getElevationGain())
@@ -49,12 +49,13 @@ public class RouteMapperOwn {
 
     public Route toRoute(RouteDTO routeDTO, Long createdBy) throws IllegalArgumentException, ParseException {
         System.out.println(routeDTO.getGeoData() == null ? "GeoJson ist null" : routeDTO.getGeoData());
+        LineString geometry = routeUtils.routeStringToGeometry(routeDTO.getGeoData()); 
         return Route.builder()
             .createdBy(userRepository.findById(createdBy).orElseThrow(() -> new IllegalArgumentException("Der Nutzer wurde nicht gefunden")))
             .distanceM(routeDTO.getDistanceM())
             .durationS(routeDTO.getDurationS())
-            .elevationProfile(routeDTO.getElevationProfile())
-            .geoData(routeUtils.routeStringToGeometry(routeDTO.getGeoData()))
+            .elevationProfile(routeUtils.extractElevationProfile(geometry))
+            .geoData(geometry)
             .name(routeDTO.getName())
             .svgPreview(routeDTO.getSvgPreview())
             .elevationGain(routeDTO.getElevationGain())
