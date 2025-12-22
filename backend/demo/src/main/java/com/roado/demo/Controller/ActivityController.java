@@ -8,6 +8,9 @@ import com.roado.demo.DTOs.FinishRouteDTO;
 import com.roado.demo.Service.ActivityService;
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +29,11 @@ public class ActivityController {
 
         if (finishRouteDTO == null) return ResponseEntity.badRequest().build();
 
-        activityService.finishRoute(finishRouteDTO);
+        try {
+            activityService.finishRoute(finishRouteDTO);
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
         
         return ResponseEntity.ok().build();
         

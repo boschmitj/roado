@@ -1,5 +1,8 @@
 package com.roado.demo.Service;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
@@ -27,7 +30,7 @@ public class ActivityService {
     private final TrackService trackService;
     private final RouteMatchingService routeMatchingService;
 
-    public Activity createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) {
+    public Activity createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) throws URISyntaxException, IOException, InterruptedException, ParseException {
         Activity activity = new Activity();
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
@@ -47,7 +50,7 @@ public class ActivityService {
     }
 
     @Transactional
-    public void finishRoute(FinishRouteDTO dto) {
+    public void finishRoute(FinishRouteDTO dto) throws URISyntaxException, IOException, InterruptedException {
         try {
             LineString trackLine = routeUtils.getRouteLine(dto.getRawTrack());
             Track track = trackService.createTrack(trackLine);
