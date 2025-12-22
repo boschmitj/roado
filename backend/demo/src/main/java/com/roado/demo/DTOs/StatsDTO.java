@@ -7,9 +7,10 @@ import lombok.Data;
 @Data
 public class StatsDTO {
     Double totalDistance;
-    Long totalTime;
-    Double totalElevation;
+    Long foregroundTime;
+    Long backgroundTime;
     Double avgSpeed;
+    Double[] speedList;
     
     LocalDateTime startDate;
     LocalDateTime endDate;

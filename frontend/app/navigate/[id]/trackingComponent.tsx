@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCountdown } from "@/hooks/use-countdown";
 import haversine from "@/utils/haversine";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { RouteControls } from "./routeControls";
 import { getHours } from "@/utils/formatter";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -18,32 +18,51 @@ interface TrackingComponentProps {
     currDistance: number,
     setCurrDistance: (input: number) => void,
     setIsFinishDialogOpen: (input: boolean) => void;
-    isFinishDialogOpen: boolean
+    isFinishDialogOpen: boolean;
+    stopwatch: number;
+    backgroundStopwatch: number,
+    startCount: () => void;
+    stopCount: () => void;
+    startBackgroundCount: () => void;
+    stopBackgroundCount: () => void;
+    speedList: number[];
+    setSpeedList: Dispatch<SetStateAction<number[]>>;
+    avgSpeed: number,
+    setAvgSpeed: Dispatch<SetStateAction<number>>;
+    setStartDateTime: Dispatch<SetStateAction<Date>>;
 }
 
-export function TrackingComponent({position, speed, distanceLeft, isPaused, setIsPaused, currDistance, setCurrDistance, setIsFinishDialogOpen, isFinishDialogOpen} : TrackingComponentProps) {
+export function TrackingComponent({position, 
+                                    speed, 
+                                    distanceLeft, 
+                                    isPaused, 
+                                    setIsPaused, 
+                                    currDistance, 
+                                    setCurrDistance, 
+                                    setIsFinishDialogOpen, 
+                                    isFinishDialogOpen,
+                                    stopwatch,
+                                    backgroundStopwatch,
+                                    startBackgroundCount,
+                                    stopBackgroundCount,
+                                    startCount,
+                                    stopCount,
+                                    speedList,
+                                    setSpeedList,
+                                    avgSpeed,
+                                    setAvgSpeed,
+                                    setStartDateTime
+} : TrackingComponentProps) {
     const [positionList, setPositionList] = useState<[number, number][]>([]);
-    const [speedList, setSpeedList] = useState<number[]>([]);
-    const [avgSpeed, setAvgSpeed] = useState<number> (0);
+    
+    
     const [backgroundDistance, setBackgroundDistance] = useState<number> (0);
     const [statisticsShown, setStatisticsShown] = useState<boolean> (true);
-
-    const [stopwatch, { startCountdown, stopCountdown, resetCountdown }] =
-    useCountdown({
-      countStart: 0,
-      intervalMs: 1000,
-      isIncrement: true,
-      countStop: Infinity,
-    });
-
-    const [backgroundStopwatch, { startCountdown: startBackgroundCountdown, stopCountdown: stopBackgroundCountdown, resetCountdown: resetBackgroundCountdown }] =
-    useCountdown({
-      countStart: 0,
-      intervalMs: 1000,
-      isIncrement: true,
-      countStop: Infinity,
-    });
     
+    const startRoute = () => {
+        setStartDateTime(new Date());
+        startCount();
+    }
 
     useEffect(() => {
         if (positionList.length < 2) return;
@@ -56,11 +75,11 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
 
     useEffect(() => {
         if (!isPaused) {
-            stopBackgroundCountdown();
+            stopBackgroundCount();
             setCurrDistance(currDistance + backgroundDistance);
             setBackgroundDistance(0);
         } else {
-            startBackgroundCountdown();
+            startBackgroundCount();
         }
     }, [isPaused])
 
@@ -132,8 +151,8 @@ export function TrackingComponent({position, speed, distanceLeft, isPaused, setI
                         </AnimatePresence>
                         
                         <RouteControls 
-                            onPause={stopCountdown} 
-                            onStart={startCountdown} 
+                            onPause={stopCount} 
+                            onStart={startRoute} 
                             onFinish={onFinish}
                             isPaused={isPaused}
                             setIsPaused={setIsPaused}

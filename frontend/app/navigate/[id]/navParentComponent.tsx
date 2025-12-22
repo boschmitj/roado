@@ -7,6 +7,7 @@ import haversine from "@/utils/haversine";
 import { TrackingComponent } from "./trackingComponent";
 import { ConfirmationDialog } from "@/components/own/ConfirmationDialog";
 import axios from "@/app/api/axios";
+import { useCountdown } from "@/hooks/use-countdown";
 
 interface NavParentComponentProps {
     id: number;
@@ -27,6 +28,9 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [currDistance, setCurrDistance] = useState<number> (0);
     const totalDistance = useRef<number>(0);
     const [isFinishDialogOpen, setIsFinishDialogOpen] = useState<boolean> (false);
+    const [speedList, setSpeedList] = useState<number[]>([]);
+    const [avgSpeed, setAvgSpeed] = useState<number> (0);
+    const [startDateTime, setStartDateTime] = useState<Date>(new Date(0));
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -85,8 +89,36 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     function finishRoute(): void {
         // Send the route Information to the backend
         // Unload everything and route the user to activity/routeId
-        axios.post(`/activity/${id}/finish`)
+        axios.post(`/activity/${id}/finish`, {
+            "plannedRouteId": id,
+            "rawTrack": postitionList,
+            "stats": {
+                "totalDistance": currDistance,
+                "foregroundTime": stopwatch,
+                "backgroundTime": backgroundStopwatch,
+                "avgSpeed": avgSpeed,
+                "speedList": speedList,
+                "startDate": startDateTime,
+                "endDate": new Date(),
+            }
+        });
     }
+
+    const [stopwatch, { startCountdown, stopCountdown, resetCountdown }] =
+    useCountdown({
+        countStart: 0,
+        intervalMs: 1000,
+        isIncrement: true,
+        countStop: Infinity,
+    });
+    
+    const [backgroundStopwatch, { startCountdown: startBackgroundCountdown, stopCountdown: stopBackgroundCountdown, resetCountdown: resetBackgroundCountdown }] =
+    useCountdown({
+        countStart: 0,
+        intervalMs: 1000,
+        isIncrement: true,
+        countStop: Infinity,
+    });
 
     return (
         <>
@@ -135,6 +167,17 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                 setCurrDistance={setCurrDistance}
                 setIsFinishDialogOpen={setIsFinishDialogOpen}
                 isFinishDialogOpen={isFinishDialogOpen}
+                stopwatch={stopwatch}
+                backgroundStopwatch={backgroundStopwatch}
+                startCount={startCountdown}
+                stopCount={stopCountdown}
+                startBackgroundCount={startBackgroundCountdown}
+                stopBackgroundCount={stopBackgroundCountdown}
+                speedList={speedList}
+                setSpeedList={setSpeedList}
+                avgSpeed={avgSpeed}
+                setAvgSpeed={setAvgSpeed}
+                setStartDateTime={setStartDateTime}
             /> }
         </>
     );

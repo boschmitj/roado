@@ -35,10 +35,10 @@ public class ActivityService {
         ActivityStats activityStats = new ActivityStats();
         
         activityStats.setDistanceM(finishRouteDTO.getStats().getTotalDistance());
-        activityStats.setDurationS(finishRouteDTO.getStats().getTotalTime());
+        activityStats.setDurationS(finishRouteDTO.getStats().getForegroundTime());
         activityStats.setStartedAt(finishRouteDTO.getStats().getStartDate());
         activityStats.setEndedAt(finishRouteDTO.getStats().getEndDate());
-        activityStats.setElevationGain(finishRouteDTO.getStats().getTotalElevation());
+        activityStats.setElevationGain(routeService.computeElevationGain(routeUtils.getRouteLine(finishRouteDTO.getRawTrack())));
         activityStats.setAvgSpeed(finishRouteDTO.getStats().getAvgSpeed());
 
         activity.setActivityStats(activityStats);
