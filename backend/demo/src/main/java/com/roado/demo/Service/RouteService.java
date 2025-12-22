@@ -22,7 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
@@ -42,7 +41,7 @@ public class RouteService {
     private final AuthenticationService authenticationService;
     private static final Double ELEVATION_THRESHOLD = 2.0;
 
-    @Value("")
+    @Value("${OPENROUTESEVICES_API_KEY}")
     private String OPENROUTESEVICES_API_KEY; 
 
     private ObjectMapper objectMapper;
