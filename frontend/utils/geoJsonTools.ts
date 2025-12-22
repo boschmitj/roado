@@ -10,6 +10,11 @@ export function extractCoords(routeGeoJson : RouteGeoJson) {
     return coords;
 }
 
+export function extractCoordsFromLineString(lineString: LineString) : [number, number][] {
+    const coords = lineString.coordinates;
+    return coords as [number, number][];
+}
+
 
 export function coordsToGeoJson(
     coordinates: [number, number][]

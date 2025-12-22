@@ -1,6 +1,7 @@
 import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
-import { extractCoords } from "@/utils/geoJsonTools";
+import { extractCoordsFromLineString, extractCoords } from "@/utils/geoJsonTools";
 import { useEffect, useRef } from "react";
+import { LineString } from "geojson";
 
 export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPosition: (coords: [number, number]) => void, speed = 1, simulating: boolean) {
     const indexRef = useRef(0);

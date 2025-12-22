@@ -37,6 +37,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         setSteps(extractSteps(routeGeoJson));
         setCoords(extractCoords(routeGeoJson))
         setDistanceLeftTotal(getTotalDistance(routeGeoJson) - currDistance);
+        console.log("Got the following route: " + JSON.stringify(routeGeoJson))
     }, [routeGeoJson])
 
     function getTotalDistance(routeGeoJson: RouteGeoJson) {
