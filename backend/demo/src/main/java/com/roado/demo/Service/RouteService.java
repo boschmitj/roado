@@ -196,11 +196,12 @@ public class RouteService {
     }
 
     public JsonNode enrichLineString3D(LineString trackLine) throws URISyntaxException, IOException, InterruptedException {
+        double[][] coordinates = extractCoordinateArray(trackLine);
         String body = objectMapper.writeValueAsString(Map.of("format_in", "polyline",
                                                             "format_out", "polyline",
-                                                            "dataset", "strm",
-                                                            "geometry", trackLine                                                            
+                                                            "geometry", coordinates                                                           
         ));
+        log.info("body is " + body);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(body); 
         
@@ -222,6 +223,16 @@ public class RouteService {
         }
 
         return geometryNode;
+    }
+
+    private double[][] extractCoordinateArray(LineString trackLine) {
+        double[][] coordinates = new double[trackLine.getCoordinates().length][2];
+        Coordinate[] routeCoords = trackLine.getCoordinates();
+        for (int i = 0; i < routeCoords.length; i++) {
+            coordinates[i][0] = routeCoords[i].x;
+            coordinates[i][1] = routeCoords[i].y; 
+        }
+        return coordinates;
     }
 
     
