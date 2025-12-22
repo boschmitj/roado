@@ -129,7 +129,7 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
     const distanceM = summary?.distance;
     const durationS = summary?.duration;
     const name = routeName;
-    const geoData = JSON.stringify(routeGeoJson);
+    const geoJson = routeGeoJson;
     const elevationProfile = null;
 
     const geometry = routeGeoJson?.features[0].geometry;
@@ -140,7 +140,6 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
 
 
     const sendRoute = async () => {
-        alert("trying")
         if (!routeName) {
             console.log("Route name is empty");
             return;
@@ -155,7 +154,7 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
             const svgPreview = generateRoutePreviewSvg(coordsForPreview);
             const body = {
                 name,
-                geoData,
+                geoJson,
                 distanceM,
                 elevationProfile,
                 durationS,
