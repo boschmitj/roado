@@ -89,6 +89,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     function finishRoute(): void {
         // Send the route Information to the backend
         // Unload everything and route the user to activity/routeId
+        
         axios.post(`/activity/${id}/finish`, {
             "plannedRouteId": id,
             "rawTrack": postitionList,
