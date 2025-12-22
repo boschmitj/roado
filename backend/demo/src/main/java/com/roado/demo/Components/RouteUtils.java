@@ -22,9 +22,11 @@ import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RouteUtils {
 
     
