@@ -29,20 +29,14 @@ public class ActivityService {
     private final RouteUtils routeUtils;
     private final TrackService trackService;
     private final RouteMatchingService routeMatchingService;
+    private final ActivityStatsService activityStatsService;
 
     public Activity createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) throws URISyntaxException, IOException, InterruptedException, ParseException {
         Activity activity = new Activity();
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
 
-        ActivityStats activityStats = new ActivityStats();
-        
-        activityStats.setDistanceM(finishRouteDTO.getStats().getTotalDistance());
-        activityStats.setDurationS(finishRouteDTO.getStats().getForegroundTime());
-        activityStats.setStartedAt(finishRouteDTO.getStats().getStartDate());
-        activityStats.setEndedAt(finishRouteDTO.getStats().getEndDate());
-        activityStats.setElevationGain(routeService.computeElevationGain(routeUtils.getRouteLine(finishRouteDTO.getRawTrack())));
-        activityStats.setAvgSpeed(finishRouteDTO.getStats().getAvgSpeed());
+        ActivityStats activityStats = activityStatsService.createActivityStats(finishRouteDTO);
 
         activity.setActivityStats(activityStats);
 

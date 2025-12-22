@@ -104,15 +104,32 @@ public class RouteUtils {
         return new LineString(new CoordinateArraySequence(geometry.getCoordinates()), geometryFactory);
     }
 
+    
+
     public String geometryToString(LineString route) {
         GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
         return geoJsonWriter.write(route);
-    }   
+    }
+
+    public LineString getRouteLine(double[][] coords) throws ParseException {
+        Coordinate[] coordinateArray = getCoordinateArray(coords);
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        return new LineString(new CoordinateArraySequence(coordinateArray), geometryFactory);
+    }
 
     public LineString getRouteLine(Coordinate[] coords) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         return new LineString(new CoordinateArraySequence(coords), geometryFactory);
-        
+    }
+
+    private Coordinate[] getCoordinateArray(double[][] coords) {
+        Coordinate[] coordinateArray = new Coordinate[coords.length];
+        int dimension = coords[0].length;
+        for (int i = 0; i < coords.length; i++) {
+            if (dimension < 3) coordinateArray[i] = new Coordinate(coords[i][0], coords[i][1]);
+            else coordinateArray[i] = new Coordinate(coords[i][0], coords[i][1], coords[i][2]);
+        }
+        return coordinateArray;
     }
 
 
