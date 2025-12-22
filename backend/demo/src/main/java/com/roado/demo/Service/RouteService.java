@@ -1,7 +1,9 @@
 package com.roado.demo.Service;
 
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -9,6 +11,8 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
@@ -36,17 +40,22 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final RouteMapperOwn routeMapper;
     private final AuthenticationService authenticationService;
+    private static final Double ELEVATION_THRESHOLD = 2.0;
 
-    @Value("${OPENROUTESEVICES_API_KEY}")
+    @Value("")
     private String OPENROUTESEVICES_API_KEY; 
+
+    private ObjectMapper objectMapper;
 
     public RouteService(RouteRepository routeRepository, 
                         RouteMapperOwn routeMapper,
-                        AuthenticationService authenticationService
+                        AuthenticationService authenticationService,
+                        ObjectMapper objectMapper
                         ) {
         this.routeRepository = routeRepository;
         this.routeMapper = routeMapper;
         this.authenticationService = authenticationService;
+        this.objectMapper = objectMapper;
     }
 
     public RouteDTO getRouteDTO(Long routeId) throws JsonMappingException, JsonProcessingException {
@@ -135,6 +144,85 @@ public class RouteService {
         }
 
         return routes;
+    }
+
+    public Double computeElevationGain(LineString trackLine) throws URISyntaxException, IOException, InterruptedException {
+        if (trackLine.hasDimension(3)) {
+            return sumThirdDimension(trackLine);
+        }
+        return sumThirdDimension(enrichLineString3D(trackLine));
+    }
+
+    private Double sumThirdDimension(JsonNode enrichedJson3D) {
+        Double elevation = 0.0;
+        if (enrichedJson3D != null && enrichedJson3D.isArray()) {
+            for (int i = 0; i < enrichedJson3D.size(); i++) {
+                JsonNode coord = enrichedJson3D.get(i);
+
+                double z = coord.get(2).asDouble();
+
+                if (i > 0) {
+                    JsonNode prev = enrichedJson3D.get(i - 1);
+                    double zPrev = prev.get(2).asDouble();
+
+                    double deltaZ = z - zPrev;
+                    if (deltaZ > ELEVATION_THRESHOLD) {
+                        elevation += deltaZ;
+                    }
+                    
+                }
+            }
+        }
+
+        return elevation;
+    }
+
+    private Double sumThirdDimension(LineString enrichedLineString3D) {
+        Double elevation = 0.0;
+        Coordinate[] coords = enrichedLineString3D.getCoordinates();
+        for (int i = 0; i < coords.length; i++) {
+
+            double z = coords[i].z;
+            if (i > 0) {
+                double prevZ = coords[i - 1].z;
+                
+                double deltaZ = z - prevZ;
+                if (deltaZ > ELEVATION_THRESHOLD) {
+                    elevation += deltaZ;
+                }
+            }
+        }
+
+        return elevation;
+    }
+
+    public JsonNode enrichLineString3D(LineString trackLine) throws URISyntaxException, IOException, InterruptedException {
+        String body = objectMapper.writeValueAsString(Map.of("format_in", "polyline",
+                                                            "format_out", "polyline",
+                                                            "dataset", "strm",
+                                                            "geometry", trackLine                                                            
+        ));
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(body); 
+        
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+            .uri(new URI("https://api.openrouteservice.org/elevation/line"))
+            .POST(bodyPublisher)
+            .header("Authorization", OPENROUTESEVICES_API_KEY)
+            .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .build();
+
+        HttpResponse<String> httpResponse = httpClient.send(httpRequest, BodyHandlers.ofString());
+        JsonNode responseJson = objectMapper.readTree(httpResponse.body());
+
+        JsonNode geometryNode = responseJson.path("geometry");
+
+        if (geometryNode.isMissingNode()) {
+            throw new RuntimeException("No geometry returned from elevation API");
+        }
+
+        return geometryNode;
     }
 
     
