@@ -3,6 +3,8 @@ package com.roado.demo.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.roado.demo.DTOs.CoordinateDTO;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
@@ -40,7 +42,12 @@ public class RouteController {
 
     @GetMapping("/routeInfo")
     public ResponseEntity<?> getRouteInfo(@RequestParam Long id) {
-        RouteDTO result = routeService.getRouteDTO(id);
+        RouteDTO result;
+        try {
+            result = routeService.getRouteDTO(id);
+        } catch (JsonProcessingException e) {
+            result = null;
+        }
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
@@ -49,7 +56,7 @@ public class RouteController {
 
     @GetMapping("/routeGeoJson")
     public ResponseEntity<?> getRouteGeoJson(@RequestParam Long id) {
-        String result = routeService.getRouteGeoJson(id);
+        JsonNode result = routeService.getRouteGeoJson(id);
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
@@ -65,7 +72,7 @@ public class RouteController {
             return ResponseEntity.badRequest().body(enfe.getMessage());
         } catch (IllegalArgumentException iae) {
             return ResponseEntity.badRequest().body("The route id must be null" + iae.getMessage());
-        } catch (ParseException e) {
+        } catch (ParseException | JsonProcessingException e) {
             return ResponseEntity.badRequest().body("The geojson could not be parsed");
         }
     }
@@ -95,7 +102,7 @@ public class RouteController {
                 } else {
                     return ResponseEntity.badRequest().body("Failed to add route " + routeDTO.toString());
                 }
-            } catch (EntityNotFoundException | AuthenticationException | IllegalArgumentException | ParseException enfe) {
+            } catch (EntityNotFoundException | AuthenticationException | IllegalArgumentException | ParseException | JsonProcessingException enfe) {
                 return ResponseEntity.badRequest().body("Error occured while adding the route");
             }
         
