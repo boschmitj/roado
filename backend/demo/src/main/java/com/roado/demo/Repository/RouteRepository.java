@@ -5,12 +5,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.roado.demo.Model.Route;
+import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Model.User;
 
 @Repository
-public interface RouteRepository extends JpaRepository<Route, Long> {
+public interface RouteRepository extends JpaRepository<RoutePlan, Long> {
     
-    List<Route> findAllByCreatedBy(User createdBy);
+    List<RoutePlan> findAllByCreatedBy(User createdBy);
 
 }

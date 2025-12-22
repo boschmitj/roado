@@ -23,10 +23,10 @@ public class Track {
     private Long id;
 
     // should be the simplified geometry (with Douglas-Peucker)
-    @Column(columnDefinition = "geometry(LineString, 4326)", nullable = false)
+    @Column(columnDefinition = "geometry(LineStringZ, 4326)", nullable = false)
     private LineString geometry;
 
-    @Column(columnDefinition = "geometry(LineString, 4326)", nullable = true)
+    @Column(columnDefinition = "geometry(LineStringZ, 4326)", nullable = true)
     private LineString geometrySimplified;
 
 }

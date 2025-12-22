@@ -3,7 +3,10 @@ package com.roado.demo.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.geom.LineString;
+import org.hibernate.annotations.Type;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +30,10 @@ import lombok.Setter;
 @Setter
 @Entity
 @Builder
-@Table(name = "routes")
+@Table(name = "route_plans")
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Route {
+public class RoutePlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,8 +52,12 @@ public class Route {
 
     // have to use a appropriate data type or decode the String
     // mby JSON for storing each coordinate point of the polyline
-    @Column(columnDefinition = "geometry(LineStringZ, 4326)", nullable = false) 
-    private LineString geoData;
+    @Type(JsonBinaryType.class)
+    @Column(columnDefinition = "jsonb", nullable = false) 
+    private JsonNode geoJson;
+
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    private Track track;
 
     @Column(name = "distance_m")
     private Long distanceM;

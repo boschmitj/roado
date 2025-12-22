@@ -15,13 +15,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
 import com.roado.demo.Mappers.RouteMapperOwn;
-import com.roado.demo.Model.Route;
+import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Model.User;
 import com.roado.demo.Repository.RouteRepository;
 
@@ -34,48 +36,46 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final RouteMapperOwn routeMapper;
     private final AuthenticationService authenticationService;
-    private final RouteUtils routeUtils;
 
     @Value("${OPENROUTESEVICES_API_KEY}")
     private String OPENROUTESEVICES_API_KEY; 
 
     public RouteService(RouteRepository routeRepository, 
                         RouteMapperOwn routeMapper,
-                        AuthenticationService authenticationService,
-                        RouteUtils routeUtils) {
+                        AuthenticationService authenticationService
+                        ) {
         this.routeRepository = routeRepository;
         this.routeMapper = routeMapper;
         this.authenticationService = authenticationService;
-        this.routeUtils = routeUtils;
     }
 
-    public RouteDTO getRouteDTO(Long routeId) {
-        Route route = getRoute(routeId);      
+    public RouteDTO getRouteDTO(Long routeId) throws JsonMappingException, JsonProcessingException {
+        RoutePlan route = getRoute(routeId);      
         if (route != null) {
             return routeMapper.toRouteDTO(route);
         }
         return null;
     }
 
-    public Route getRoute(Long routeId) {
-        Route route = routeRepository.findById(routeId).orElse(null);
+    public RoutePlan getRoute(Long routeId) {
+        RoutePlan route = routeRepository.findById(routeId).orElse(null);
         return route;
     }
 
-    public String getRouteGeoJson(Long id) {
-        Route route = getRoute(id);
+    public JsonNode getRouteGeoJson(Long id) {
+        RoutePlan route = getRoute(id);
         if (route != null) {
-            return routeUtils.geometryToString(route.getGeoData());
+            return route.getGeoJson();
         }
         return null;
     }
 
-    public RouteDTO addRoute(RouteDTO routeDTO) throws AuthenticationException, IllegalArgumentException, ParseException {
+    public RouteDTO addRoute(RouteDTO routeDTO) throws AuthenticationException, IllegalArgumentException, ParseException, JsonProcessingException {
         User user = authenticationService.getAuthenticatedUser();
         
-        Route route = routeMapper.toRoute(routeDTO, user.getId());
+        RoutePlan route = routeMapper.toRouteWithNewTrack(routeDTO, user.getId());
         route.setCreatedBy(user);
-        Route savedRoute = routeRepository.save(route);
+        RoutePlan savedRoute = routeRepository.save(route);
         
         return routeMapper.toRouteDTO(savedRoute);
     }
@@ -120,7 +120,15 @@ public class RouteService {
     public List<GetRouteDTO> getRoutesForUser(User user) throws Exception{
 
         List<GetRouteDTO> routes = routeRepository.findAllByCreatedBy(user)
-            .stream().map(r -> routeMapper.toGetRouteDTO(r)).toList();
+            .stream().map(r -> {
+                try {
+                    return routeMapper.toGetRouteDTO(r);
+                } catch (JsonMappingException e) {
+                    return null;
+                } catch (JsonProcessingException e) {
+                    return null;
+                }
+            }).toList();
 
         if (routes.isEmpty()) {
             throw new Exception("No routes found");

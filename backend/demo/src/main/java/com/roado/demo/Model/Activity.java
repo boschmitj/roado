@@ -40,7 +40,7 @@ public class Activity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true) // can be optional, if no route is present. 
     @JoinColumn(name = "route_id")
-    private Route route;
+    private RoutePlan route;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Track track;

@@ -1,5 +1,7 @@
 package com.roado.demo.DTOs;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +10,7 @@ import lombok.Data;
 public class GetRouteDTO {
     private Long id;
     private String name;
-    private String geoData;
+    private JsonNode geojson;
     private Long distanceM;
     private Double[] elevationProfile;
     private Long durationS;

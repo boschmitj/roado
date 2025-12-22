@@ -9,7 +9,7 @@ import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.FinishRouteDTO;
 import com.roado.demo.Model.Activity;
 import com.roado.demo.Model.ActivityStats;
-import com.roado.demo.Model.Route;
+import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Model.Track;
 import com.roado.demo.Repository.ActivityRepository;
 
@@ -60,7 +60,7 @@ public class ActivityService {
             activity.setMatchedRoute(matched);
 
             if (matched) {
-                Route route = routeService.getRoute(dto.getPlannedRouteId());
+                RoutePlan route = routeService.getRoute(dto.getPlannedRouteId());
                 activity.setRoute(route);
             }
 

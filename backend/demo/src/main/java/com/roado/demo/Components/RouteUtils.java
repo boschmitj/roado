@@ -17,7 +17,8 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.springframework.stereotype.Component;
 
-import com.roado.demo.Model.Route;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,9 @@ public class RouteUtils {
     private static final Double COVERAGE_PERCENTAGE = 0.85;
 
     public boolean usedOriginalRoute(Long routeId, LineString rawTrack) throws ParseException {
-        Route route = routeRepository.findById(routeId).orElse(null);
+        RoutePlan route = routeRepository.findById(routeId).orElse(null);
         if (route == null) return false;
-        LineString originalRouteLine = route.getGeoData();
+        LineString originalRouteLine = route.getTrack().getGeometry();
         
         // null -> default values
         int score = 0;
@@ -95,10 +96,10 @@ public class RouteUtils {
         return Math.abs(origLength - recLength) / Math.max(origLength, recLength);
     }
 
-    public LineString routeStringToGeometry(String geoData) throws ParseException {
+    public LineString geojsonToGeometry(JsonNode geojson) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         GeoJsonReader geoJsonReader = new GeoJsonReader(geometryFactory);
-        Geometry geometry = geoJsonReader.read(geoData);
+        Geometry geometry = geoJsonReader.read(geojson.toString());
 
         return new LineString(new CoordinateArraySequence(geometry.getCoordinates()), geometryFactory);
     }

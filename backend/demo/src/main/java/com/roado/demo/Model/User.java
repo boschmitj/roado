@@ -1,6 +1,5 @@
 package com.roado.demo.Model;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -63,7 +62,7 @@ public class User implements UserDetails {
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "createdBy", orphanRemoval = true)
-    private List<Route> routes = new ArrayList<>();
+    private List<RoutePlan> routes = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
