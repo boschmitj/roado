@@ -14,6 +14,7 @@ import com.roado.demo.Model.Activity;
 import com.roado.demo.Model.ActivityStats;
 import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Model.Track;
+import com.roado.demo.POJOs.PositionObject;
 import com.roado.demo.Repository.ActivityRepository;
 
 import jakarta.transaction.Transactional;
@@ -31,6 +32,15 @@ public class ActivityService {
     private final RouteMatchingService routeMatchingService;
     private final ActivityStatsService activityStatsService;
 
+    private double[][] convertPositionObjectsToDoubleArray(PositionObject[] positions) {
+        double[][] coordinates = new double[positions.length][2];
+        for (int i = 0; i < positions.length; i++) {
+            coordinates[i][0] = positions[i].getPosition()[0];
+            coordinates[i][1] = positions[i].getPosition()[1];
+        }
+        return coordinates;
+    }
+
     public Activity createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) throws URISyntaxException, IOException, InterruptedException, ParseException {
         Activity activity = new Activity();
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
@@ -46,7 +56,8 @@ public class ActivityService {
     @Transactional
     public void finishRoute(FinishRouteDTO dto) throws URISyntaxException, IOException, InterruptedException {
         try {
-            LineString trackLine = routeUtils.getRouteLine(dto.getRawTrack());
+            double[][] coordinates = convertPositionObjectsToDoubleArray(dto.getRawTrack());
+            LineString trackLine = routeUtils.getRouteLine(coordinates);
             Track track = trackService.createTrack(trackLine);
 
             Activity activity = createBaseActivity(dto, track);

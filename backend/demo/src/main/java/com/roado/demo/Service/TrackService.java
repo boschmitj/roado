@@ -34,7 +34,6 @@ public class TrackService {
         } else {
             track.setGeometry(route);
             track.setGeometrySimplified(routeUtils.simplify(route));
-
         }
         
 
