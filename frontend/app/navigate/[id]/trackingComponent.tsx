@@ -25,11 +25,12 @@ interface TrackingComponentProps {
     stopCount: () => void;
     startBackgroundCount: () => void;
     stopBackgroundCount: () => void;
-    speedList: number[];
-    setSpeedList: Dispatch<SetStateAction<number[]>>;
+    speedList: {"time": number, "speed": number}[];
+    setSpeedList: Dispatch<SetStateAction<{"time": number, "speed": number}[]>>;
     avgSpeed: number,
     setAvgSpeed: Dispatch<SetStateAction<number>>;
     setStartDateTime: Dispatch<SetStateAction<Date>>;
+    startDateTime: Date;
 }
 
 export function TrackingComponent({position, 
@@ -51,7 +52,8 @@ export function TrackingComponent({position,
                                     setSpeedList,
                                     avgSpeed,
                                     setAvgSpeed,
-                                    setStartDateTime
+                                    setStartDateTime,
+                                    startDateTime
 } : TrackingComponentProps) {
     const [positionList, setPositionList] = useState<[number, number][]>([]);
     
@@ -89,12 +91,12 @@ export function TrackingComponent({position,
     }, [position])
 
     useEffect(() => {
-        const updated = [...speedList, speed];
+        const updated = [...speedList, {"time": Date.now() - startDateTime.getTime(), "speed": speed}];
         console.log(updated)
         if (!isPaused) setSpeedList(updated);
 
         let averageSpeed;
-        if (updated.filter((s) => s !== 0).length === 0 && stopwatch) {
+        if (updated.filter((s) => s.speed !== 0).length === 0 && stopwatch) {
             const hours = getHours(stopwatch + backgroundStopwatch);
             averageSpeed = Math.round(((currDistance / 1000) / hours) * 10) / 10;
             setAvgSpeed(averageSpeed)

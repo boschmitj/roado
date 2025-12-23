@@ -22,13 +22,13 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
     const [distanceLeftToNextStop, setDistanceLeftToNextStop] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
-    const [postitionList, setPositionList] = useState<[number, number][]> ([]);
+    const [positionTimeObjList, setPositionList] = useState<{"time": number, "position": [number, number]}[]> ([]);
     const [isPaused, setIsPaused] = useState<boolean>(true);
     const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
     const [currDistance, setCurrDistance] = useState<number> (0);
     const totalDistance = useRef<number>(0);
     const [isFinishDialogOpen, setIsFinishDialogOpen] = useState<boolean> (false);
-    const [speedList, setSpeedList] = useState<number[]>([]);
+    const [speedList, setSpeedList] = useState<{"time": number, "speed": number}[]>([]);
     const [avgSpeed, setAvgSpeed] = useState<number> (0);
     const [startDateTime, setStartDateTime] = useState<Date>(new Date(0));
 
@@ -80,7 +80,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
 
     useEffect(() => {
         if (position) {
-            setPositionList([...postitionList, position])
+            setPositionList([...positionTimeObjList, {"time": Date.now() - startDateTime.getTime(), "position": position }])
 
         }
         console.log("Position is: " + position + ", speed: " + speed);
@@ -92,7 +92,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
         
         axios.post(`/activity/${id}/finish`, {
             "plannedRouteId": id,
-            "rawTrack": postitionList,
+            "rawTrack": positionTimeObjList,
             "stats": {
                 "totalDistance": currDistance,
                 "foregroundTime": stopwatch,
@@ -178,6 +178,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                 setSpeedList={setSpeedList}
                 avgSpeed={avgSpeed}
                 setAvgSpeed={setAvgSpeed}
+                startDateTime={startDateTime}
                 setStartDateTime={setStartDateTime}
             /> }
         </>
