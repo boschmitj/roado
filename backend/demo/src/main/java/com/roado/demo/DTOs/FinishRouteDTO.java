@@ -1,4 +1,6 @@
 package com.roado.demo.DTOs;
+import java.util.List;
+
 import com.roado.demo.POJOs.PositionObject;
 
 import lombok.Data;
@@ -7,7 +9,7 @@ import lombok.Data;
 public class FinishRouteDTO {
     
     private Long plannedRouteId;
-    private PositionObject[] rawTrack;
+    private List<PositionObject> rawTrack;
     private StatsDTO stats;
     
 }

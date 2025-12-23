@@ -10,6 +10,8 @@ import lombok.Setter;
 public class PositionObject {
 
     private Long secondsSinceStart;
-    private Double[] position;
-    
+    private Double lon;
+    private Double lat;
+    private Double altitude;
+        
 }

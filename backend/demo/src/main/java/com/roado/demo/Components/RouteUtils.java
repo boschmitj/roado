@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.roado.demo.Model.RoutePlan;
+import com.roado.demo.POJOs.PositionObject;
 import com.roado.demo.Repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;

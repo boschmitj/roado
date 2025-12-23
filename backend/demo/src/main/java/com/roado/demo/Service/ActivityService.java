@@ -31,12 +31,13 @@ public class ActivityService {
     private final TrackService trackService;
     private final RouteMatchingService routeMatchingService;
     private final ActivityStatsService activityStatsService;
+    private final TimedStatsService timedStatsService;
 
-    private double[][] convertPositionObjectsToDoubleArray(PositionObject[] positions) {
-        double[][] coordinates = new double[positions.length][2];
-        for (int i = 0; i < positions.length; i++) {
-            coordinates[i][0] = positions[i].getPosition()[0];
-            coordinates[i][1] = positions[i].getPosition()[1];
+    private double[][] convertPositionObjectsToDoubleArray(List<PositionObject> positions) {
+        double[][] coordinates = new double[positions.size()][2];
+        for (int i = 0; i < positions.size(); i++) {
+            coordinates[i][0] = positions.get(i).getLon();
+            coordinates[i][1] = positions.get(i).getLat();
         }
         return coordinates;
     }
