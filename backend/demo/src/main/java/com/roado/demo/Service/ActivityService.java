@@ -2,6 +2,7 @@ package com.roado.demo.Service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
@@ -13,6 +14,7 @@ import com.roado.demo.DTOs.FinishRouteDTO;
 import com.roado.demo.Model.Activity;
 import com.roado.demo.Model.ActivityStats;
 import com.roado.demo.Model.RoutePlan;
+import com.roado.demo.Model.TimedStatsEntity;
 import com.roado.demo.Model.Track;
 import com.roado.demo.POJOs.PositionObject;
 import com.roado.demo.Repository.ActivityRepository;
@@ -47,9 +49,15 @@ public class ActivityService {
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
 
-        ActivityStats activityStats = activityStatsService.createActivityStats(finishRouteDTO);
+        LineString linestring = routeUtils.getRouteLine(routeUtils.toArray(finishRouteDTO.getRawTrack()));
+        LineString enrichedLineString = routeUtils.geojsonToGeometry(routeService.enrichLineString3D(linestring));
+        List<PositionObject> positions = routeUtils.addAltitude(finishRouteDTO.getRawTrack(), enrichedLineString);
+
+        ActivityStats activityStats = activityStatsService.createActivityStats(finishRouteDTO, routeService.computeElevationGain(enrichedLineString));
+        List<TimedStatsEntity> timedStatsEntities = timedStatsService.createTimedStatsEntity(positions, finishRouteDTO.getStats().getSpeedList());
 
         activity.setActivityStats(activityStats);
+        activity.setTimedStats(timedStatsEntities);
 
         return activity;
     }

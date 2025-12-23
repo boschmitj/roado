@@ -17,23 +17,18 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ActivityStatsService {
-
-    private final RouteService routeService;
-    private final RouteUtils routeUtils;
+    
     private final ActivityStatsRepository activityStatsRepository;
 
-    public ActivityStats createActivityStats(FinishRouteDTO finishRouteDTO) throws URISyntaxException, IOException, InterruptedException, ParseException {
+    public ActivityStats createActivityStats(FinishRouteDTO finishRouteDTO, Double elevationGain) throws URISyntaxException, IOException, InterruptedException, ParseException {
         ActivityStats activityStats = new ActivityStats();
         
-        LineString linestring = routeUtils.getRouteLine(finishRouteDTO.getRawTrack());
-        LineString enrichedLineString = routeUtils.geojsonToGeometry(routeService.enrichLineString3D(linestring));
         activityStats.setDistanceM(finishRouteDTO.getStats().getTotalDistance());
         activityStats.setDurationS(finishRouteDTO.getStats().getForegroundTime());
         activityStats.setStartedAt(finishRouteDTO.getStats().getStartDate());
         activityStats.setEndedAt(finishRouteDTO.getStats().getEndDate());
-        activityStats.setElevationGain(routeService.computeElevationGain(enrichedLineString));
+        activityStats.setElevationGain(elevationGain);
         activityStats.setAvgSpeed(finishRouteDTO.getStats().getAvgSpeed());
-        activityStats.setSpeedArray(finishRouteDTO.getStats().getSpeedList());
 
         return activityStatsRepository.save(activityStats);
     }

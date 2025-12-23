@@ -114,6 +114,15 @@ public class RouteUtils {
         return geoJsonWriter.write(route);
     }
 
+    public double[][] toArray(List<PositionObject> positions) {
+        double[][] coordinates = new double[positions.size()][2];
+        for (int i = 0; i < positions.size(); i++) {
+            coordinates[i][0] = positions.get(i).getLon();
+            coordinates[i][1] = positions.get(i).getLat();
+        }
+        return coordinates;
+    }
+
     public LineString getRouteLine(double[][] coords) throws ParseException {
         Coordinate[] coordinateArray = getCoordinateArray(coords);
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -167,6 +176,14 @@ public class RouteUtils {
             elevationProfile[i] = coords[i].z;
         }
         return elevationProfile;
+    }
+
+    public List<PositionObject> addAltitude(List<PositionObject> rawTrack, LineString enrichedLineString) {
+        Double[] elevationProfile = extractElevationProfile(enrichedLineString);
+        for (int i = 0; i < rawTrack.size(); i++) {
+            rawTrack.get(i).setAltitude(elevationProfile[i]);
+        }
+        return rawTrack;
     }
 
     
