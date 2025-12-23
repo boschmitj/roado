@@ -2,6 +2,8 @@ package com.roado.demo.DTOs;
 
 import java.time.LocalDateTime;
 
+import com.roado.demo.POJOs.SpeedObject;
+
 import lombok.Data;
 
 @Data
@@ -10,7 +12,7 @@ public class StatsDTO {
     Long foregroundTime;
     Long backgroundTime;
     Double avgSpeed;
-    Double[] speedList;
+    SpeedObject[] speedList;
     
     LocalDateTime startDate;
     LocalDateTime endDate;
