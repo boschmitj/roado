@@ -24,7 +24,7 @@ public class ActivityStatsService {
         ActivityStats activityStats = new ActivityStats();
         
         activityStats.setDistanceM(finishRouteDTO.getStats().getTotalDistance());
-        activityStats.setDurationS(finishRouteDTO.getStats().getForegroundTime());
+        activityStats.setDurationS(finishRouteDTO.getStats().getTotalDuration());
         activityStats.setStartedAt(finishRouteDTO.getStats().getStartDate());
         activityStats.setEndedAt(finishRouteDTO.getStats().getEndDate());
         activityStats.setElevationGain(elevationGain);
