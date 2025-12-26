@@ -22,7 +22,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
     const [distanceLeftToNextStop, setDistanceLeftToNextStop] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
-    const [positionTimeObjList, setPositionList] = useState<{"time": number, "position": [number, number]}[]> ([]);
+    const [positionTimeObjList, setPositionList] = useState<{"time": number, "position": [number, number], "speed": number | null}[]> ([]);
     const [isPaused, setIsPaused] = useState<boolean>(true);
     const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
     const [currDistance, setCurrDistance] = useState<number> (0);
@@ -80,9 +80,10 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
 
     useEffect(() => {
         if (position) {
-            setPositionList([...positionTimeObjList, {"time": Date.now() - startDateTime.getTime(), "position": position }])
+            setPositionList([...positionTimeObjList, {"time": Date.now() - startDateTime.getTime(), "position": position , "speed": speed}])
 
         }
+        
         console.log("Position is: " + position + ", speed: " + speed);
     }, [position])
 
@@ -95,8 +96,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
             "rawTrack": positionTimeObjList,
             "stats": {
                 "totalDistance": currDistance,
-                "foregroundTime": stopwatch,
-                "backgroundTime": backgroundStopwatch,
+                "totalDuration": stopwatch,
+                // "backgroundTime": backgroundStopwatch,
                 "avgSpeed": avgSpeed,
                 "speedList": speedList,
                 "startDate": startDateTime,
