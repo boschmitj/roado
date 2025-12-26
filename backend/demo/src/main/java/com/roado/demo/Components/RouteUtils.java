@@ -115,7 +115,7 @@ public class RouteUtils {
         return geoJsonWriter.write(route);
     }
 
-    public double[][] toArray(List<PositionObject> positions) {
+    public double[][] toArray(List<PositionObject2D> positions) {
         double[][] coordinates = new double[positions.size()][2];
         for (int i = 0; i < positions.size(); i++) {
             coordinates[i][0] = positions.get(i).getLon();
@@ -179,12 +179,14 @@ public class RouteUtils {
         return elevationProfile;
     }
 
-    public List<PositionObject> addAltitude(List<PositionObject> rawTrack, LineString enrichedLineString) {
+    public List<PositionObject3D> addAltitude(List<PositionObject2D> rawTrack, LineString enrichedLineString) {
+        List<PositionObject3D> rawTrack3D = new ArrayList<>();
         Double[] elevationProfile = extractElevationProfile(enrichedLineString);
         for (int i = 0; i < rawTrack.size(); i++) {
-            rawTrack.get(i).setAltitude(elevationProfile[i]);
+            rawTrack3D.add(new PositionObject3D(rawTrack.get(i).getLon(), rawTrack.get(i).getLat(), elevationProfile[i]));
         }
-        return rawTrack;
+        
+        return rawTrack3D;
     }
 
     
