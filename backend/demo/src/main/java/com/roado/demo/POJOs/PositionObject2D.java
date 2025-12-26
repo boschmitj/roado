@@ -1,17 +1,16 @@
 package com.roado.demo.POJOs;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
 @Getter
 @Setter
-public class PositionObject {
-
-    private Long secondsSinceStart;
+public class PositionObject2D {
     private Double lon;
     private Double lat;
-    private Double altitude;
-        
+
+    public PositionObject2D(Double lon, Double lat) {
+        this.lon = lon;
+        this.lat = lat;
+    }
 }
