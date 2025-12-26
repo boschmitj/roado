@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.roado.demo.Model.TimedStatsEntity;
 import com.roado.demo.POJOs.PositionObject;
+import com.roado.demo.POJOs.PositionObject3D;
 import com.roado.demo.POJOs.SpeedObject;
 import com.roado.demo.Repository.TimedStatsRepository;
 
@@ -18,7 +19,7 @@ public class TimedStatsService {
 
     private final TimedStatsRepository timedStatsRepository;
 
-    public List<TimedStatsEntity> createTimedStatsEntity(List<PositionObject> positionList, List<SpeedObject> speedList) {
+    public List<TimedStatsEntity> createTimedStatsEntity(List<PositionObject3D> positionList, List<SpeedObject> speedList) {
 
         List<TimedStatsEntity> timedStats = new ArrayList<>();
 
