@@ -18,9 +18,8 @@ import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.roado.demo.DTOs.PositionDTO;
 import com.roado.demo.Model.RoutePlan;
-import com.roado.demo.POJOs.PositionObject2D;
-import com.roado.demo.POJOs.PositionObject3D;
 import com.roado.demo.Repository.RouteRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -115,7 +114,7 @@ public class RouteUtils {
         return geoJsonWriter.write(route);
     }
 
-    public double[][] toArray(List<PositionObject2D> positions) {
+    public double[][] toArray(List<PositionDTO> positions) {
         double[][] coordinates = new double[positions.size()][2];
         for (int i = 0; i < positions.size(); i++) {
             coordinates[i][0] = positions.get(i).getLon();
@@ -179,14 +178,18 @@ public class RouteUtils {
         return elevationProfile;
     }
 
-    public List<PositionObject3D> addAltitude(List<PositionObject2D> rawTrack, LineString enrichedLineString) {
-        List<PositionObject3D> rawTrack3D = new ArrayList<>();
-        Double[] elevationProfile = extractElevationProfile(enrichedLineString);
-        for (int i = 0; i < rawTrack.size(); i++) {
-            rawTrack3D.add(new PositionObject3D(rawTrack.get(i).getLon(), rawTrack.get(i).getLat(), elevationProfile[i]));
+    public List<PositionDTO> addAltitude(List<PositionDTO> rawTrack, LineString enrichedLineString) {
+        List<PositionDTO> rawTrack3D = new ArrayList<>();
+        if (rawTrack.stream().anyMatch(pos -> pos.getAltitude() == null)) {
+            Double[] elevationProfile = extractElevationProfile(enrichedLineString);
+            for (int i = 0; i < rawTrack.size(); i++) {
+                rawTrack3D.add(new PositionDTO(rawTrack.get(i).getLon(), rawTrack.get(i).getLat(), elevationProfile[i]));
+            }
+
+            return rawTrack3D;
+        } else {
+            return rawTrack;
         }
-        
-        return rawTrack3D;
     }
 
     

@@ -11,14 +11,13 @@ import org.springframework.stereotype.Service;
 import com.roado.demo.Components.AuthenticationUtils;
 import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.FinishRouteDTO;
+import com.roado.demo.DTOs.PositionDTO;
 import com.roado.demo.DTOs.TimedStatsDTO;
 import com.roado.demo.Model.Activity;
 import com.roado.demo.Model.ActivityStats;
 import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Model.TimedStatsEntity;
 import com.roado.demo.Model.Track;
-import com.roado.demo.POJOs.PositionObject2D;
-import com.roado.demo.POJOs.PositionObject3D;
 import com.roado.demo.Repository.ActivityRepository;
 
 import jakarta.transaction.Transactional;
@@ -37,7 +36,7 @@ public class ActivityService {
     private final ActivityStatsService activityStatsService;
     private final TimedStatsService timedStatsService;
 
-    private double[][] convertPositionObjectsToDoubleArray(List<PositionObject2D> positions) {
+    private double[][] convertPositionObjectsToDoubleArray(List<PositionDTO> positions) {
         double[][] coordinates = new double[positions.size()][2];
         for (int i = 0; i < positions.size(); i++) {
             coordinates[i][0] = positions.get(i).getLon();
@@ -69,7 +68,7 @@ public class ActivityService {
     @Transactional
     public void finishRoute(FinishRouteDTO dto) throws URISyntaxException, IOException, InterruptedException {
         try {
-            List<PositionObject2D> rawTrack = dto.getTimedStats().stream().map(TimedStatsDTO::position).toList();
+            List<PositionDTO> rawTrack = dto.getTimedStats().stream().map(TimedStatsDTO::position).toList();
 
             double[][] coordinates = convertPositionObjectsToDoubleArray(rawTrack);
             LineString trackLine = routeUtils.getRouteLine(coordinates);

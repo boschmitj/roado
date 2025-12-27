@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.roado.demo.DTOs.TimedStatsDTO;
 import com.roado.demo.Model.TimedStatsEntity;
-import com.roado.demo.POJOs.PositionObject;
-import com.roado.demo.POJOs.PositionObject3D;
-import com.roado.demo.POJOs.SpeedObject;
 import com.roado.demo.Repository.TimedStatsRepository;
 
 import lombok.RequiredArgsConstructor;
