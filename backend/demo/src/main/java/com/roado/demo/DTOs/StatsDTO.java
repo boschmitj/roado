@@ -7,7 +7,7 @@ import lombok.Data;
 public class StatsDTO {
     Double totalDistance;
     Long totalDuration;
-    Double avgSpeed;   
+    Double avgSpeed;
     LocalDateTime startDate;
     LocalDateTime endDate;
 }
