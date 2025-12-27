@@ -50,14 +50,24 @@ public class ActivityService {
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
 
-        List<PositionObject2D> rawTrack = finishRouteDTO.getTimedStats().stream().map(TimedStatsDTO::position).toList();
+        
+        List<TimedStatsDTO> timedStats = finishRouteDTO.getTimedStats();
+        List<PositionDTO> rawTrack = timedStats.stream().map(TimedStatsDTO::position).toList();
 
         LineString linestring = routeUtils.getRouteLine(routeUtils.toArray(rawTrack));
         LineString enrichedLineString = routeUtils.geojsonToGeometry(routeService.enrichLineString3D(linestring));
-        List<PositionObject3D> positions = routeUtils.addAltitude(rawTrack, enrichedLineString);
+
+        List<PositionDTO> positions = routeUtils.addAltitude(rawTrack, enrichedLineString);
+
+        // because no new positions are created, the positions can be merged with the timedStats
+        List<TimedStatsDTO> positions3DWithTime = new ArrayList<>();
+        for (int i = 0; i < timedStats.size(); i++) {
+            PositionDTO position = positions.get(i);
+            positions3DWithTime.add(new TimedStatsDTO(timedStats.get(i).time(), position, timedStats.get(i).speed()));
+        }
 
         ActivityStats activityStats = activityStatsService.createActivityStats(finishRouteDTO, routeService.computeElevationGain(enrichedLineString));
-        List<TimedStatsEntity> timedStatsEntities = timedStatsService.createTimedStatsEntity(positions, finishRouteDTO.getTimedStats()); // FIXME: Need to fit the NEW 3D positions and the timedStats into one just like the TimedStatsDTO so that seconds since start is in one
+        List<TimedStatsEntity> timedStatsEntities = timedStatsService.createTimedStatsEntity(positions3DWithTime); // FIXME: Need to fit the NEW 3D positions and the timedStats into one just like the TimedStatsDTO so that seconds since start is in one
 
         activity.setActivityStats(activityStats);
         activity.setTimedStats(timedStatsEntities);
