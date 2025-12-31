@@ -1,6 +1,5 @@
 import {
-    Card,
-    CardAction, // Diese Route navigieren
+    Card,    
     CardContent,
     CardDescription, // Infos wie Dauer, Länge
     CardFooter,
@@ -48,11 +47,11 @@ export function RouteCard({ id, name, distanceM, durationS, geoData, elevationGa
         <Card className="w-full max-w-lg">
             <CardHeader>
                 <CardTitle className="text-black">{ name }</CardTitle>
-                <CardAction>
+                
                     <Button variant="default" onClick={() => router.push(`/navigate/${id}`)}> 
                         Navigate
                     </Button>
-                </CardAction>
+                
             </CardHeader>
             <CardContent>
                 <span><p>{ calculateDistance(distanceM) }</p></span>

@@ -8,6 +8,9 @@ import { TrackingComponent } from "./trackingComponent";
 import { ConfirmationDialog } from "@/components/own/ConfirmationDialog";
 import axios from "@/app/api/axios";
 import { useCountdown } from "@/hooks/use-countdown";
+import TimedStatsDTO from "@/app/types/TimedStatsDTO";
+import ActivityCreatedDTO from "@/app/types/ActivityCreatedDTO";
+import { useRouter } from "next/navigation";
 
 interface NavParentComponentProps {
     id: number;
@@ -22,7 +25,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState<number> (0);
     const [distanceLeftToNextStop, setDistanceLeftToNextStop] = useState<number> (Infinity);
     const [showInstruction, setShowInstruction] = useState<boolean> (true);
-    const [positionTimeObjList, setPositionList] = useState<{"time": number, "position": [number, number], "speed": number | null}[]> ([]);
+    const [positionTimeRecords, setPositionTimeRecords] = useState<{"time": number, "position": [number, number], "speed": number | null}[]> ([]);
     const [isPaused, setIsPaused] = useState<boolean>(true);
     const [distanceLeftTotal, setDistanceLeftTotal] = useState<number> (Infinity);
     const [currDistance, setCurrDistance] = useState<number> (0);
@@ -31,6 +34,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [speedList, setSpeedList] = useState<{"time": number, "speed": number}[]>([]);
     const [avgSpeed, setAvgSpeed] = useState<number> (0);
     const [startDateTime, setStartDateTime] = useState<Date>(new Date(0));
+
+    const router = useRouter();
 
     function advanceStep() {
         setCurrentStepIndex(i => i + 1);
@@ -80,30 +85,36 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
 
     useEffect(() => {
         if (position) {
-            setPositionList([...positionTimeObjList, {"time": Date.now() - startDateTime.getTime(), "position": position , "speed": speed}])
-
+            setPositionTimeRecords([...positionTimeRecords, {"time": Date.now() - startDateTime.getTime(), "position": position , "speed": speed}])
         }
         
         console.log("Position is: " + position + ", speed: " + speed);
     }, [position])
 
-    function finishRoute(): void {
-        // Send the route Information to the backend
-        // Unload everything and route the user to activity/routeId
-        
-        axios.post(`/activity/${id}/finish`, {
-            "plannedRouteId": id,
-            "rawTrack": positionTimeObjList,
-            "stats": {
-                "totalDistance": currDistance,
-                "totalDuration": stopwatch,
-                // "backgroundTime": backgroundStopwatch,
-                "avgSpeed": avgSpeed,
-                "speedList": speedList,
-                "startDate": startDateTime,
-                "endDate": new Date(),
-            }
-        });
+    async function finishRoute(): Promise<void> {
+        try {
+            const response = await axios.post(`/activity/${id}/finish`, {
+                "plannedRouteId": id,
+                "timedStats": positionTimeRecords.map(r => ({
+                    time: r.time,
+                    position: { lon: r.position[0], lat: r.position[1] },
+                    speed: r.speed
+                })),
+                "stats": {
+                    "totalDistance": currDistance,
+                    "totalDuration": stopwatch,
+                    "avgSpeed": avgSpeed,
+                    "startDate": startDateTime,
+                    "endDate": new Date(),
+                }
+            });
+
+            const activityId = response.data.activityId;
+            router.push(`/activity/${activityId}`);
+        } catch (error) {
+            console.error("Failed to finish route:", error);
+            // Optionally show error toast/dialog to user
+        }
     }
 
     const [stopwatch, { startCountdown, stopCountdown, resetCountdown }] =
