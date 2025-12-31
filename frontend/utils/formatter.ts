@@ -23,7 +23,7 @@ export function computeDistanceString(distance : number) {
 export function computeDistanceNumber(distance: number) {
     let distanceNumber;
     if (distance > 1000) {
-        distanceNumber = (distance / 1000).toFixed(1)
+        distanceNumber = Math.round((distance / 1000) * 10) / 10;
     } else if (distance > 0) {
         distanceNumber = Math.round(distance)
     } else return 0;
@@ -39,6 +39,21 @@ export function computeDistanceUnit(distance: number) {
         unit = "m"
     } else return "m";
     return unit;
+}
+
+export function formatElapsedTime(seconds: number | undefined): string {
+    if (!seconds) {
+        return "Unknown";
+    }
+    const h = Math.floor(seconds / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    const s = Math.floor(seconds % 60)
+
+    if (h > 0) {
+    return `${h}:${m.toString().padStart(2, "0")}`
+    }
+
+    return `${m}:${s.toString().padStart(2, "0")}`
 }
 
 export function formatDuration(seconds: number): string {
