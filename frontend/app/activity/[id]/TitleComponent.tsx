@@ -44,7 +44,7 @@ export default function TitleComponent({ title, setTitle, onSave }: TitleCompone
     }
 
     return (
-        <div className="w-full h-6 flex items-center gap-2">
+        <div className="w-full flex items-center gap-3">
             {isEditing ? (
                 <>
                     <Input
@@ -52,20 +52,20 @@ export default function TitleComponent({ title, setTitle, onSave }: TitleCompone
                         placeholder={tempTitle}
                         onChange={(e) => setTempTitle(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="text-2xl font-bold h-auto px-3 py-2 border-2"
+                        className="text-2xl font-bold h-auto px-3 py-2 border-2 flex-1"
                         autoFocus
                     />
-                    <Button size="icon" variant="ghost" onClick={handleSave}>
+                    <Button size="icon" variant="ghost" onClick={handleSave} className=" bg-[#BBDAA4] hover:bg-[#a9db82]">
                         <CheckSquare2 className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant={"ghost"} onClick={handleCancel}>
-                        <X className="h-4 w-4" />
+                    <Button size="icon" variant="destructive" onClick={handleCancel}>
+                        <X className="h-4 w-4 " />
                     </Button>
                 </>
             ): (
                 <>
-                    <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-                        {title}
+                    <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight text-balance flex-1">
+                        {!title ? "No title" : title}
                     </h1>
                     <Button 
                         onClick={handleEdit}

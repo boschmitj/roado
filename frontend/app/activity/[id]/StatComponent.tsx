@@ -7,11 +7,10 @@ export interface StatComponentProps {
 }
 export default function StatComponent({unit, value, name} : StatComponentProps) {
     return (
-        <Card className="flex flex-col justify-center items-center min-h-12">
-            <CardContent> 
-                <p className="text-sm">{name}</p>
-                <p className="text-2xl">{value}</p>
-                { unit  && <p className="text-xs">{unit}</p> }          
+        <Card className="flex flex-col justify-center items-center border-0 shadow-none">
+            <CardContent className=""> 
+                <p className="text-sm text-muted-foreground mb-1">{name}</p>
+                <p className="text-2xl font-semibold">{value} {unit && <span className="text-xs font-normal">{unit}</span> }</p>       
             </CardContent>
         </Card>
     )

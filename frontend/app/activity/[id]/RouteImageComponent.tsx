@@ -7,7 +7,7 @@ export function RouteImageComponent({ activityId } : RouteImageComponentProps) {
         <img 
             src={`http://localhost:8080/staticmap/getImage/${activityId}`}
             alt="Route Preview"
-            className='aspect-video h-70 rounded-t-xl object-cover'
+            className='aspect-video w-full object-cover'
         />
     )
 }

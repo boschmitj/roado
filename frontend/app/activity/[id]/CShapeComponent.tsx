@@ -4,10 +4,11 @@ export default function CShapeComponent({ children, comingFromLeft = false, clas
   return (
     <div
       className={`
-        relative min-h-16 w-[80%]
+        relative min-h-16 w-[90%]
         bg-white border border-gray-200 shadow-sm
         flex flex-row justify-evenly items-center 
-        ${comingFromLeft ? 'left-0 rounded-r-full' : 'right-0 rounded-l-full'}
+        py-4
+        ${comingFromLeft ? 'rounded-r-full -ml-8' : 'rounded-l-full -mr-8'}
         ${className}
       `} 
     >
