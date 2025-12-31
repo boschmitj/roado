@@ -1,5 +1,10 @@
 package com.roado.demo.DTOs;
 
-public class ActivityDTO {
+import java.util.List;
 
-}
+public record ActivityDTO(
+    String name,
+    List<TimedStatsDTO> timedStats,
+    StatsDTO stats
+) {
+} 

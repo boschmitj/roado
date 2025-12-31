@@ -12,8 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.roado.demo.Components.AuthenticationUtils;
 import com.roado.demo.Components.RouteUtils;
+import com.roado.demo.DTOs.ActivityCreatedDTO;
+import com.roado.demo.DTOs.ActivityDTO;
+import com.roado.demo.DTOs.ActivityDescriptionDTO;
+import com.roado.demo.DTOs.ActivityTitleDTO;
 import com.roado.demo.DTOs.FinishRouteDTO;
 import com.roado.demo.DTOs.PositionDTO;
+import com.roado.demo.DTOs.StatsDTO;
 import com.roado.demo.DTOs.TimedStatsDTO;
 import com.roado.demo.Model.Activity;
 import com.roado.demo.Model.ActivityStats;
@@ -37,6 +42,17 @@ public class ActivityService {
     private final RouteMatchingService routeMatchingService;
     private final ActivityStatsService activityStatsService;
     private final TimedStatsService timedStatsService;
+    private final StaticMapService staticMapService;
+
+    public static class ActivityWithTimedStats {
+        public final Activity activity;
+        public final List<TimedStatsEntity> timedStats;
+
+        public ActivityWithTimedStats(Activity activity, List<TimedStatsEntity> timedStats) {
+            this.activity = activity;
+            this.timedStats = timedStats;
+        }
+    }
 
     private double[][] convertPositionObjectsToDoubleArray(List<PositionDTO> positions) {
         double[][] coordinates = new double[positions.size()][2];
@@ -47,7 +63,7 @@ public class ActivityService {
         return coordinates;
     }
 
-    public Activity createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) throws URISyntaxException, IOException, InterruptedException, ParseException {
+    public ActivityWithTimedStats createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) throws URISyntaxException, IOException, InterruptedException, ParseException {
         Activity activity = new Activity();
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
@@ -72,13 +88,14 @@ public class ActivityService {
         List<TimedStatsEntity> timedStatsEntities = timedStatsService.createTimedStatsEntity(positions3DWithTime); // FIXME: Need to fit the NEW 3D positions and the timedStats into one just like the TimedStatsDTO so that seconds since start is in one
 
         activity.setActivityStats(activityStats);
-        activity.setTimedStats(timedStatsEntities);
+        // activity.setTimedStats(timedStatsEntities);
 
-        return activity;
+
+        return new ActivityWithTimedStats(activity, timedStatsEntities);
     }
 
     @Transactional
-    public void finishRoute(FinishRouteDTO dto) throws URISyntaxException, IOException, InterruptedException {
+    public ActivityCreatedDTO finishRoute(FinishRouteDTO dto) throws URISyntaxException, IOException, InterruptedException {
         try {
             List<PositionDTO> rawTrack = dto.getTimedStats().stream().map(TimedStatsDTO::position).toList();
 
@@ -86,7 +103,9 @@ public class ActivityService {
             LineString trackLine = routeUtils.getRouteLine(coordinates);
             Track track = trackService.createTrack(trackLine);
 
-            Activity activity = createBaseActivity(dto, track);
+            ActivityWithTimedStats activityWithTimedStats = createBaseActivity(dto, track);
+            Activity activity = activityWithTimedStats.activity;
+            List<TimedStatsEntity> timedStats = activityWithTimedStats.timedStats;
 
             boolean matched = routeMatchingService
                     .matchesPlannedRoute(dto.getPlannedRouteId(), trackLine);
@@ -98,10 +117,47 @@ public class ActivityService {
                 activity.setRoute(route);
             }
 
+            for (TimedStatsEntity timedStatsEntity : timedStats) {
+                timedStatsEntity.setActivity(activity);
+            }
+
+            activity.setTimedStats(timedStats);
             activityRepository.save(activity);
+
+            staticMapService.createImageFromLine(coordinates, activity.getId());
+
+            return new ActivityCreatedDTO(activity.getId(), "Activity created");
         } catch (ParseException pException) {
-            // TODO: handle E
+            return null;
         }
+    }
+
+    public Object putDescription(ActivityDescriptionDTO descriptionDTO) {
+        Activity activity = activityRepository.findById(descriptionDTO.activityId()).orElseThrow();
+        activity.setDescription(descriptionDTO.description());
+        return activityRepository.save(activity);
+    }
+
+    public ActivityDTO getActivity(Long activityId) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow();
+        List<TimedStatsDTO> timedStatsDTOs = new ArrayList<>();
+        for (TimedStatsEntity timedStats : activity.getTimedStats()) {
+            timedStatsDTOs.add(new TimedStatsDTO(timedStats.getTime(), new PositionDTO(timedStats.getLon(), timedStats.getLat()), timedStats.getSpeed()));
+        }
+        StatsDTO statsDTO = new StatsDTO(activity.getActivityStats().getDistanceM(),
+                                        activity.getActivityStats().getDurationS(),
+                                        activity.getActivityStats().getAvgSpeed(),
+                                        activity.getActivityStats().getStartedAt(),
+                                        activity.getActivityStats().getEndedAt(),
+                                        activity.getActivityStats().getElevationGain()
+                                    );
+        return new ActivityDTO(activity.getName(), timedStatsDTOs, statsDTO);
+    }
+
+    public Object putTitle(ActivityTitleDTO titleDTO) {
+        Activity activity = activityRepository.findById(titleDTO.activityId()).orElseThrow();
+        activity.setName(titleDTO.title());
+        return activityRepository.save(activity);
     }
 
 }
