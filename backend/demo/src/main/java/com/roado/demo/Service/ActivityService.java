@@ -10,6 +10,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.roado.demo.Components.AuthenticationUtils;
 import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.ActivityCreatedDTO;
@@ -63,7 +64,7 @@ public class ActivityService {
         return coordinates;
     }
 
-    public ActivityWithTimedStats createBaseActivity(FinishRouteDTO finishRouteDTO, Track track) throws URISyntaxException, IOException, InterruptedException, ParseException {
+    public ActivityWithTimedStats createBaseActivity(FinishRouteDTO finishRouteDTO, Track track, JsonNode enrichedLineStringJson) throws URISyntaxException, IOException, InterruptedException, ParseException {
         Activity activity = new Activity();
         activity.setUser(authUtils.getCurrentlyAuthenticatedUser());
         activity.setTrack(track);
@@ -72,8 +73,7 @@ public class ActivityService {
         List<TimedStatsDTO> timedStats = finishRouteDTO.getTimedStats();
         List<PositionDTO> rawTrack = timedStats.stream().map(TimedStatsDTO::position).toList();
 
-        LineString linestring = routeUtils.getRouteLine(routeUtils.toArray(rawTrack));
-        LineString enrichedLineString = routeUtils.geojsonToGeometry(routeService.enrichLineString3D(linestring));
+        LineString enrichedLineString = routeUtils.geojsonToGeometry(enrichedLineStringJson);
 
         List<PositionDTO> positions = routeUtils.addAltitude(rawTrack, enrichedLineString);
 
@@ -101,9 +101,10 @@ public class ActivityService {
 
             double[][] coordinates = convertPositionObjectsToDoubleArray(rawTrack);
             LineString trackLine = routeUtils.getRouteLine(coordinates);
-            Track track = trackService.createTrack(trackLine);
+            JsonNode enrichedLineString = routeService.enrichLineString3D(trackLine);
+            Track track = trackService.createTrack(trackLine, enrichedLineString);
 
-            ActivityWithTimedStats activityWithTimedStats = createBaseActivity(dto, track);
+            ActivityWithTimedStats activityWithTimedStats = createBaseActivity(dto, track, enrichedLineString);
             Activity activity = activityWithTimedStats.activity;
             List<TimedStatsEntity> timedStats = activityWithTimedStats.timedStats;
 

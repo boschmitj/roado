@@ -84,12 +84,13 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     }, [position])
 
     useEffect(() => {
+        if (!startDateTime) return;
         if (position) {
-            setPositionTimeRecords([...positionTimeRecords, {"time": Date.now() - startDateTime.getTime(), "position": position , "speed": speed}])
+            setPositionTimeRecords([...positionTimeRecords, {"time": (Date.now() - startDateTime.getTime()), "position": position , "speed": speed}])
         }
         
         console.log("Position is: " + position + ", speed: " + speed);
-    }, [position])
+    }, [position, startDateTime])
 
     async function finishRoute(): Promise<void> {
         try {

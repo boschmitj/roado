@@ -101,13 +101,13 @@ public class RouteUtils {
 
     public LineString geojsonToGeometry(JsonNode geojson) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        CoordinateArraySequence coordinateArraySequence = coordsFromgeoJson(geojson);
-        return new LineString(coordinateArraySequence, geometryFactory);
+        Coordinate[] coordinateArray = coordsFromgeoJson(geojson);
+        return new LineString(new CoordinateArraySequence(coordinateArray), geometryFactory);
     }
 
     
 
-    private CoordinateArraySequence coordsFromgeoJson(JsonNode geojson) throws ParseException {
+    private Coordinate[] coordsFromgeoJson(JsonNode geojson) throws ParseException {
         Coordinate[] coordinateArray;
         if (geojson != null && geojson.isArray()) {
             coordinateArray = new Coordinate[geojson.size()];
@@ -116,10 +116,11 @@ public class RouteUtils {
 
                 double lon = coord.get(0).asDouble();
                 double lat = coord.get(1).asDouble();
+                double z = coord.get(2).asDouble();
                 
-                coordinateArray[i] = new Coordinate(lon, lat);
+                coordinateArray[i] = new Coordinate(lon, lat, z);
             }
-            return new CoordinateArraySequence(coordinateArray);
+            return coordinateArray;
         } else {
             throw new ParseException("geojson payload is not an array");
         }
