@@ -1,24 +1,35 @@
-import { redirect } from "next/navigation";
-import { serverFetch } from "@/lib/server-api";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "@/app/api/axios";
 import ActivityParentComponent from "./ActivityParentComponent";
 
 interface ActivityPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default async function ActivityPage({ params }: { params: { id: string } }) {
-    const { id } = await params;
+export default function ActivityPage({ params }: ActivityPageProps) {
+    const [activity, setActivity] = useState(null);
+    const [activityId, setActivityId] = useState<number | null>(null);
+    const router = useRouter();
 
-    const apiUrl = `http://localhost:8080/activity/${id}`;
+    useEffect(() => {
+        async function fetchActivity() {
+            const { id } = await params;
+            const numId = Number(id);
+            setActivityId(numId);
 
-    const res = await serverFetch(apiUrl);
+            const response = await axios.get(`/activity/${id}`);
+            setActivity(response.data);
+        }
+        
+        fetchActivity();
+    }, [params, router]);
 
-    if (res.status === 401) {
-        redirect("/login"); 
+    if (!activity || activityId === null) {
+        return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
     }
 
-    console.log(res);
-
-    
-    return <ActivityParentComponent activity={res} activityId={Number(id)} />;
+    return <ActivityParentComponent activity={activity} activityId={activityId} />;
 }
