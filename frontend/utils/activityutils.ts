@@ -12,8 +12,8 @@ export async function fetchActivityById(id: number) {
 }
 
 export async function updateActivityTitle(id: number, title: string) {
-    const response = await axios.post(`/activity/${id}/title`,
-        { title }
+    const response = await axios.put(`/activity/title`,
+        { "activityId": id, "title": title }
     );
 
     if (!(response.status === 200)) {
@@ -24,9 +24,12 @@ export async function updateActivityTitle(id: number, title: string) {
 }
 
 export async function updateActivityDescription(id: number, description: string) {
-    const response = await axios.post(`/activity/${id}/description`,
-        { description }
+    console.log("Sending request");
+
+    const response = await axios.put(`/activity/description`,
+        { "activityId": id, "description": description }
     );
+
 
     if (!(response.status === 200)) {
         throw new Error("Request failed");

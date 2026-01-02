@@ -24,9 +24,13 @@ export default function ActivityParentComponent({activity, activityId} : Props) 
         updateActivityTitle(activityId, newTitle)
     };
 
-    const handleDescriptionSave = (newDescription: string) => {
+    const handleDescriptionSave = async (newDescription: string) => {
         setDescription(newDescription);
-        updateActivityDescription(activityId, newDescription);
+        try {
+            await updateActivityDescription(activityId, newDescription);
+        } catch (e) {
+            console.error("Failed to update description", e);
+        }
     }
 
     return (

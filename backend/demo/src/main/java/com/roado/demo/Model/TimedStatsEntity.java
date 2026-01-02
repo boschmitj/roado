@@ -1,5 +1,6 @@
 package com.roado.demo.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ public class TimedStatsEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "activity_id", nullable = false)
+    @JsonBackReference
     private Activity activity;
 
     public TimedStatsEntity(Long time, Double elevation, Double speed) {

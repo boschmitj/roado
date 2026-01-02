@@ -22,9 +22,9 @@ export default function DescriptionComponent ({description, onSave} : Descriptio
                 >
                     Make your activity memorizable ✨
                 </Label>
-                <Textarea id={id} className='!bg-background' />
+                <Textarea id={id} className='!bg-background' value={currDescription} onChange={e => setCurrDescription(e.target.value)}/>
             </div>
-            <Button variant={"default"} onClick={() => onSave} > 
+            <Button variant={"default"} onClick={() => onSave(currDescription)} > 
                 Save description
             </Button>
         </div>

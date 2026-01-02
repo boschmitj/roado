@@ -27,6 +27,7 @@ import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Model.TimedStatsEntity;
 import com.roado.demo.Model.Track;
 import com.roado.demo.Repository.ActivityRepository;
+import com.roado.demo.Repository.TimedStatsRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class ActivityService {
     private final ActivityStatsService activityStatsService;
     private final TimedStatsService timedStatsService;
     private final StaticMapService staticMapService;
+    private final TimedStatsRepository timedStatsRepository;
 
     public static class ActivityWithTimedStats {
         public final Activity activity;
@@ -73,7 +75,7 @@ public class ActivityService {
         List<TimedStatsDTO> timedStats = finishRouteDTO.getTimedStats();
         List<PositionDTO> rawTrack = timedStats.stream().map(TimedStatsDTO::position).toList();
 
-        LineString enrichedLineString = routeUtils.geojsonToGeometry(enrichedLineStringJson);
+        LineString enrichedLineString = routeUtils.geojsonToGeometry(enrichedLineStringJson, true);
 
         List<PositionDTO> positions = routeUtils.addAltitude(rawTrack, enrichedLineString);
 
@@ -123,7 +125,9 @@ public class ActivityService {
             }
 
             activity.setTimedStats(timedStats);
+
             activityRepository.save(activity);
+            // timedStatsRepository.saveAll(timedStats); // DIDNT WORK EITHER
 
             staticMapService.createImageFromLine(coordinates, activity.getId());
 
@@ -136,7 +140,8 @@ public class ActivityService {
     public Object putDescription(ActivityDescriptionDTO descriptionDTO) {
         Activity activity = activityRepository.findById(descriptionDTO.activityId()).orElseThrow();
         activity.setDescription(descriptionDTO.description());
-        return activityRepository.save(activity);
+        activityRepository.save(activity);
+        return new ActivityDescriptionDTO(activity.getId(), activity.getDescription());
     }
 
     public ActivityDTO getActivity(Long activityId) {
@@ -158,7 +163,8 @@ public class ActivityService {
     public Object putTitle(ActivityTitleDTO titleDTO) {
         Activity activity = activityRepository.findById(titleDTO.activityId()).orElseThrow();
         activity.setName(titleDTO.title());
-        return activityRepository.save(activity);
+        activityRepository.save(activity);
+        return new ActivityDescriptionDTO(activity.getId(), activity.getDescription());
     }
 
 }

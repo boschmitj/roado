@@ -2,6 +2,9 @@ package com.roado.demo.Model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +41,7 @@ public class Activity {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -46,6 +50,7 @@ public class Activity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true) // can be optional, if no route is present. 
     @JoinColumn(name = "route_id")
+    @JsonBackReference
     private RoutePlan route;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -55,6 +60,7 @@ public class Activity {
     private boolean matchedRoute;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "activity", orphanRemoval = true, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<TimedStatsEntity> timedStats;
 
 }

@@ -10,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -59,6 +61,7 @@ public class User implements UserDetails {
     private String method;
     
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @JsonManagedReference
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "createdBy", orphanRemoval = true)
