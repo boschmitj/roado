@@ -1,6 +1,5 @@
 package com.roado.demo.Model;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -10,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -60,10 +61,11 @@ public class User implements UserDetails {
     private String method;
     
     @OneToMany(mappedBy = "user", orphanRemoval = true)
+    @JsonManagedReference
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "createdBy", orphanRemoval = true)
-    private List<Route> routes = new ArrayList<>();
+    private List<RoutePlan> routes = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

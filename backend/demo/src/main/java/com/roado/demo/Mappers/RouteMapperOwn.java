@@ -1,43 +1,75 @@
 package com.roado.demo.Mappers;
 
-import java.beans.JavaBean;
 
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.io.ParseException;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.roado.demo.Components.RouteUtils;
+import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
-import com.roado.demo.Model.Route;
+import com.roado.demo.Model.RoutePlan;
+import com.roado.demo.Model.Track;
+import com.roado.demo.Repository.TrackRepository;
 import com.roado.demo.Repository.UserRepository;
 
 @Component
 public class RouteMapperOwn {
 
     private final UserRepository userRepository;
+    private final TrackRepository trackRepository;
+    private final RouteUtils routeUtils;
 
-    public RouteMapperOwn(UserRepository userRepository) {
+    public RouteMapperOwn(UserRepository userRepository, RouteUtils routeUtils, TrackRepository trackRepository) {
         this.userRepository = userRepository;
+        this.routeUtils = routeUtils;
+        this.trackRepository = trackRepository;
     }
 
 
-    public RouteDTO toRouteDTO(Route route) {
+    public RouteDTO toRouteDTO(RoutePlan route) throws JsonMappingException, JsonProcessingException {
         return RouteDTO.builder()
-            .createdBy(route.getCreatedBy().getId())
             .name(route.getName())
-            .geoData(route.getGeoData())
+            .geoJson(route.getGeoJson())
             .distanceM(route.getDistanceM())
-            .elevationProfile(route.getElevationProfile())
             .durationS(route.getDurationS())
+            .svgPreview(route.getSvgPreview())
+            .elevationGain(route.getElevationGain())
             .build();
     }
 
-    public Route toRoute(RouteDTO routeDTO) {
-        System.out.println(routeDTO.getGeoData() == null ? "GeoJson ist null" : routeDTO.getGeoData());
-        return Route.builder()
-            .createdBy(userRepository.findById(routeDTO.getCreatedBy()).orElseThrow(() -> new IllegalArgumentException("Der Nutzer wurde nicht gefunden")))
+    public GetRouteDTO toGetRouteDTO(RoutePlan route) throws JsonMappingException, JsonProcessingException {
+        return GetRouteDTO.builder()
+                .id(route.getRouteId())
+                .name(route.getName())
+                .geojson(route.getGeoJson())
+                .distanceM(route.getDistanceM())
+                .elevationGain(route.getElevationGain())
+                .elevationProfile(route.getElevationProfile())
+                .svgPreview(route.getSvgPreview())
+                .durationS(route.getDurationS())
+            .build();
+    }
+
+    public RoutePlan toRouteWithNewTrack(RouteDTO routeDTO, Long createdBy) throws IllegalArgumentException, ParseException, JsonProcessingException {
+        System.out.println(routeDTO.getGeoJson() == null ? "GeoJson ist null" : routeDTO.getGeoJson());
+        LineString geometry = routeUtils.getRouteLine(routeUtils.coordsFromWholeGeoJson(routeDTO.getGeoJson()));
+        Track track = new Track();
+        track.setGeometry(geometry);
+        trackRepository.save(track);
+
+        return RoutePlan.builder()
+            .createdBy(userRepository.findById(createdBy).orElseThrow(() -> new IllegalArgumentException("Der Nutzer wurde nicht gefunden")))
             .distanceM(routeDTO.getDistanceM())
             .durationS(routeDTO.getDurationS())
-            .elevationProfile(routeDTO.getElevationProfile())
-            .geoData(routeDTO.getGeoData())
+            .elevationProfile(routeUtils.extractElevationProfile(geometry))
             .name(routeDTO.getName())
+            .svgPreview(routeDTO.getSvgPreview())
+            .elevationGain(routeDTO.getElevationGain())
+            .geoJson(routeDTO.getGeoJson())
+            .track(track)
             .build();
     }
 }
