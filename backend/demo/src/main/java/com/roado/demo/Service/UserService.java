@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.roado.demo.DTOs.UserDTO;
-import com.roado.demo.Mappers.UserMapper;
 import com.roado.demo.Model.User;
 import com.roado.demo.Repository.UserRepository;
 
@@ -15,12 +13,9 @@ import com.roado.demo.Repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository,
-                        UserMapper userMapper) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
     }
 
     public User getUser(Long id) {

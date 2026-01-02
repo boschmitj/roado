@@ -15,7 +15,7 @@ public class JwtCookieService {
         cookie.setSecure(false); //TODO: Change for production when using https
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "Lax");
-        cookie.setMaxAge(2*60);
+        cookie.setMaxAge(15*60);
         return cookie;
     }
 

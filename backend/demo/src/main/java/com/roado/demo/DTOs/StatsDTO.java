@@ -1,16 +1,17 @@
 package com.roado.demo.DTOs;
 
-import java.time.Duration;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class StatsDTO {
     Double totalDistance;
-    Duration totalTime;
-    Double totalElevation;
-    Integer activityCount;
-    LocalDate startDate;
-    LocalDate endDate;
+    Long totalDuration;
+    Double avgSpeed;
+    ZonedDateTime startDate;
+    ZonedDateTime endDate;
+    Double elevationGain;
 }

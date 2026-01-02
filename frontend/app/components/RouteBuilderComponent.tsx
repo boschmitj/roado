@@ -3,13 +3,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
-import { FeatureCollection, Geometry, GeoJsonProperties } from "geojson";
+import { FeatureCollection, Geometry, GeoJsonProperties, Feature, LineString } from "geojson";
 import Button from "./Button";
 import Input from "./Input";
 
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import './RouteBuilderComponent.css'
 import axios from "../api/axios";
+import { generateRoutePreviewSvg } from "@/utils/routePreview";
+import { computeDistanceString, computeDurationString } from "@/utils/formatter";
 
 config.apiKey = "jgADwIPnUzhtC93OwbQm"
 
@@ -45,7 +47,7 @@ interface RouteProperties {
     summary: RouteSummary;
 }
 
-type RouteGeoJson = FeatureCollection<Geometry, RouteProperties>;
+export type RouteGeoJson = FeatureCollection<Geometry, RouteProperties>;
 
 // read-only
 interface RouteViewerProps {
@@ -126,13 +128,18 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
     console.log(routeGeoJson);
     const distanceM = summary?.distance;
     const durationS = summary?.duration;
-    const createdBy = 1;
     const name = routeName;
-    const geoData = JSON.stringify(routeGeoJson);
+    const geoJson = routeGeoJson;
     const elevationProfile = null;
 
+    const geometry = routeGeoJson?.features[0].geometry;
+    const elevations = (geometry?.type === "LineString") 
+        ? geometry.coordinates.map(coord => coord[2]) 
+        : [];
+    const elevationGain = computeElevationTotal(elevations);
+
+
     const sendRoute = async () => {
-        alert("trying")
         if (!routeName) {
             console.log("Route name is empty");
             return;
@@ -141,13 +148,18 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
             return;
         }
         try {
+            const geom = routeGeoJson.features[0].geometry as LineString;
+            const coordsForPreview = geom.coordinates.map(([lng, lat]) => ({ lat, lng }));
+
+            const svgPreview = generateRoutePreviewSvg(coordsForPreview);
             const body = {
-                createdBy,
                 name,
-                geoData,
+                geoJson,
                 distanceM,
                 elevationProfile,
                 durationS,
+                svgPreview,
+                elevationGain
             }
             console.log("Sending " + JSON.stringify(body));
             const response = await axios.post("/route/addRoute", 
@@ -207,6 +219,7 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
     const mapRef = useRef<MtMap | null>(null);
     const markersRef = useRef<Map<number, Marker>>(new Map());
     const polylineRef = useRef<unknown | null>(null);
+    const [position, setPosition] = useState< [number, number] | null >(null);
 
     // state for stops and routeGeoJson
     const [stops, setStops] = useState<Stop[]>([]);
@@ -219,16 +232,41 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
         console.log("Removed marker with id " + id);
     }   
     
+    useEffect(() => {
+        console.log("Trying to get location")
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const coords : [ number, number ] = [
+                    pos.coords.longitude,
+                    pos.coords.latitude
+                ];
+                console.log(coords);
+                setPosition(coords); 
+            },
+            (err) => {
+                // TODO: do a Toast here
+                console.log("Could not get location", err);
+            }, 
+            
+        );
+    }, []);
+
+    useEffect(() => {
+        if (!mapRef.current || !position) return;
+        const map = mapRef.current;
+        map.setCenter(position);
+    }, [position]);
+
     // effect which runs once to initialize map, set up click handler to add marker
     useEffect(() => {
         if (mapContainer.current && !mapRef.current) {
             console.log("Initializing map");
-            
+            console.log("Position is " + position);
             mapRef.current = new MtMap({
                 container: mapContainer.current,
                 style: MapStyle.OUTDOOR,
-                center: [11, 50],
-                zoom: 3,
+                center: position ?? [11, 50], // 12.325727835509175, 51.3200760306479
+                zoom: 18,
             });
 
             mapRef.current.on("click", (e) => {
@@ -340,31 +378,8 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
 
 export default RouteParentComponent;
 
-
-function computeDurationString(duration: number) {
-    let durationString;
-    if (duration > 3600) {
-        durationString = Math.floor(duration / 3600) + "h" + Math.round(duration) % 60 + "min";
-    } else if (duration > 60) {
-        durationString = Math.round(duration / 60) + "min";
-    } else if (duration > 0) {
-        durationString = duration + "s";
-    } else return null;
-    return durationString;
-}
-
-function computeDistanceString(distance : number) {
-    let distanceString;
-    if (distance > 1000) {
-        distanceString = (distance / 1000).toFixed(1) + "km"
-    } else if (distance > 0) {
-        distanceString = distance + "m"
-    } else return null;
-    return distanceString;
-}
-
 function computeElevationTotal(elevations : number[]) {
-    let threshold = 2;
+    const threshold = 2;
     const totalElevationGain = elevations.reduce((acc, curr, index, arr) => {
         if (index === 0) {
             return 0;

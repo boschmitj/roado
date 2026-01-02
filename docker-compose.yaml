@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:15
+    image: postgis/postgis
     container_name: roado_db
     restart: always
     environment:
