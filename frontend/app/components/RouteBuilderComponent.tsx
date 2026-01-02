@@ -328,6 +328,10 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
                 console.log("This marker was clicked!", marker);
                 removeMarker(id);
             });
+
+            mapRef.current.easeTo({
+                center: [lng, lat],
+            })
         }
     }, [selectedLocation]);
 
