@@ -25,6 +25,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Getter
 @Setter
@@ -75,6 +77,7 @@ public class RoutePlan {
     private String svgPreview;
 
     @OneToMany(mappedBy = "route")
+    @JsonManagedReference
     private List<Activity> activities = new ArrayList<>();
 
     

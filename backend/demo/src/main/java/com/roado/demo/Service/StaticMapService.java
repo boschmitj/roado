@@ -153,9 +153,12 @@ public class StaticMapService {
 
     public Resource getImage(Long id) throws IOException {
         Path imagePath = Path.of(generatedImagesPath).resolve(id + ".png");
+        log.info("Looking for image at: " + imagePath.toAbsolutePath());
+
         if (!Files.exists(imagePath) || !Files.isReadable(imagePath)) {
             throw new IOException("Image not found: " + id);
         }
+
 
         try {
             return new UrlResource(imagePath.toUri());

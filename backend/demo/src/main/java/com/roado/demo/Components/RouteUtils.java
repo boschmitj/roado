@@ -99,15 +99,15 @@ public class RouteUtils {
         return Math.abs(origLength - recLength) / Math.max(origLength, recLength);
     }
 
-    public LineString geojsonToGeometry(JsonNode geojson) throws ParseException {
+    public LineString geojsonToGeometry(JsonNode geojson, boolean is3d) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        Coordinate[] coordinateArray = coordsFromgeoJson(geojson);
+        Coordinate[] coordinateArray = coordsFromOnlyGeometryGeoJson(geojson, is3d);
         return new LineString(new CoordinateArraySequence(coordinateArray), geometryFactory);
     }
 
     
 
-    private Coordinate[] coordsFromgeoJson(JsonNode geojson) throws ParseException {
+    private Coordinate[] coordsFromOnlyGeometryGeoJson(JsonNode geojson, boolean is3d) throws ParseException {
         Coordinate[] coordinateArray;
         if (geojson != null && geojson.isArray()) {
             coordinateArray = new Coordinate[geojson.size()];
@@ -116,16 +116,27 @@ public class RouteUtils {
 
                 double lon = coord.get(0).asDouble();
                 double lat = coord.get(1).asDouble();
-                double z = coord.get(2).asDouble();
-                
-                coordinateArray[i] = new Coordinate(lon, lat, z);
+                if (is3d) {
+                    double z = coord.get(2).asDouble();
+                    coordinateArray[i] = new Coordinate(lon, lat, z);
+                } else {
+                    coordinateArray[i] = new Coordinate(lon, lat);
+                }
             }
             return coordinateArray;
         } else {
             throw new ParseException("geojson payload is not an array");
         }
+    }
 
-        
+    public Coordinate[] coordsFromWholeGeoJson(JsonNode geojson) throws ParseException {
+        Coordinate[] coordinateArray;
+        String geoJsonString = geojson.toString();
+
+        GeoJsonReader geoJsonReader = new GeoJsonReader();
+        Geometry geometry = geoJsonReader.read(geoJsonString);
+        coordinateArray = geometry.getCoordinates();
+        return coordinateArray;
     }
 
     public String geometryToString(LineString route) {

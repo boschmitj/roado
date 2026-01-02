@@ -55,7 +55,7 @@ public class RouteMapperOwn {
 
     public RoutePlan toRouteWithNewTrack(RouteDTO routeDTO, Long createdBy) throws IllegalArgumentException, ParseException, JsonProcessingException {
         System.out.println(routeDTO.getGeoJson() == null ? "GeoJson ist null" : routeDTO.getGeoJson());
-        LineString geometry = routeUtils.geojsonToGeometry(routeDTO.getGeoJson()); 
+        LineString geometry = routeUtils.getRouteLine(routeUtils.coordsFromWholeGeoJson(routeDTO.getGeoJson()));
         Track track = new Track();
         track.setGeometry(geometry);
         trackRepository.save(track);
