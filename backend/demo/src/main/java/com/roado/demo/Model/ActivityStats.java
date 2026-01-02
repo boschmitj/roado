@@ -1,6 +1,6 @@
 package com.roado.demo.Model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,10 +27,10 @@ public class ActivityStats {
     private Long durationS;
 
     @Column(name = "started_at")
-    private LocalDateTime startedAt;
+    private ZonedDateTime startedAt;
 
     @Column(name = "ended_at")
-    private LocalDateTime endedAt;
+    private ZonedDateTime endedAt;
 
     @Column(name = "elevation_gain")
     private Double elevationGain;

@@ -158,8 +158,6 @@ public class StaticMapService {
         if (!Files.exists(imagePath) || !Files.isReadable(imagePath)) {
             throw new IOException("Image not found: " + id);
         }
-
-
         try {
             return new UrlResource(imagePath.toUri());
         } catch (MalformedURLException e) {
