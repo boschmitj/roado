@@ -32,13 +32,12 @@ export function LoginForm({
     
     const formData = new FormData(e.currentTarget);
     const data = {
-      nickname: formData.get("nickname"),
       email: formData.get("email"),
       password: formData.get("password")
     };
 
     try {
-      const response = await axios.post("/auth/register", data);
+      const response = await axios.post("/auth/login", data);
       console.log("Signup successful:", response.data);
       router.push("/home");
 
