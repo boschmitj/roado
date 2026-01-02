@@ -15,8 +15,8 @@ const chartConfig = {
     label: 'Speed',
     color: 'hsl(264, 82%, 70%)',
   },
-  elevation: {
-    label: 'Speed',
+  altitude: {
+    label: 'Altitude',
     color: 'hsl(172, 82%, 60%)',
   },
 } satisfies ChartConfig;
@@ -42,14 +42,14 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 
     return (
       <div className="rounded-lg bg-zinc-800 border border-zinc-700 text-white p-3 shadow-lg">
-        <div className="text-xs text-zinc-400 mb-2">{formatElapsedTime(Number(label))}</div>
+        <div className="text-xs text-zinc-400 mb-2">{formatElapsedTime(Number(label) / 1000)}</div>
         {uniquePayload.map((entry, index) => (
           <div key={index} className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
             <span className="text-sm text-zinc-300">
               {entry.dataKey === 'speed' ? 'Speed' : 'Elevation'}:
             </span>
-            <span className="font-semibold">${entry.value.toFixed(2)}${entry.dataKey === 'speed' ? 'km/h' : 'm'}</span>
+            <span className="font-semibold">{entry.value.toFixed(2)} {entry.dataKey === 'speed' ? 'km/h' : 'm'}</span>
           </div>
         ))}
       </div>
@@ -77,8 +77,19 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
   // const latestData = currentData[currentData.length - 1];
   // const totalValueLocked = latestData.totalDeposits + latestData.totalBorrowed;
 
+  console.log("Chart data:", timedStats?.slice(0, 3)); // Debug: check data structure
+
+  // Transform data to flatten altitude from position.altitude
+  const chartData = timedStats?.map(stat => ({
+    time: stat.time,
+    speed: stat.speed,
+    altitude: stat.position?.altitude
+  })) || [];
+
+  const nrOfPoints = chartData.length;
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 lg:p-8">
+    <div className="flex items-center justify-center p-6 lg:p-8">
       <Card className="w-full rounded-3xl lg:max-w-4xl bg-zinc-950 border-zinc-800 text-white">
         <CardHeader className="min-h-auto gap-5 p-8 border-0">
           <CardHeading className="flex flex-wrap items-end gap-5">
@@ -105,11 +116,11 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
               <div className="space-y-0.5">
                 <div
                   className="text-[11px] font-normal flex items-center gap-1.5"
-                  style={{ color: chartConfig.elevation.color }}
+                  style={{ color: chartConfig.altitude.color }}
                 >
                   <div
                     className="size-1.5 rounded-full "
-                    style={{ backgroundColor: chartConfig.elevation.color }}
+                    style={{ backgroundColor: chartConfig.altitude.color }}
                   />
                   Elevation
                 </div>
@@ -146,7 +157,7 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
               className="h-full w-full overflow-visible [&_.recharts-curve.recharts-tooltip-cursor]:stroke-initial"
             >
               <ComposedChart
-                data={timedStats}
+                data={chartData}
                 margin={{
                   top: 25,
                   right: 25,
@@ -173,9 +184,9 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
                     <stop offset="100%" stopColor={chartConfig.speed.color} stopOpacity="0.02" />
                   </linearGradient>
 
-                  <linearGradient id="elevationAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={chartConfig.elevation.color} stopOpacity="0.3" />
-                    <stop offset="100%" stopColor={chartConfig.elevation.color} stopOpacity="0.02" />
+                  <linearGradient id="altitudeAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={chartConfig.altitude.color} stopOpacity="0.3" />
+                    <stop offset="100%" stopColor={chartConfig.altitude.color} stopOpacity="0.02" />
                   </linearGradient>
 
                   {/* Shadow filters for dots */}
@@ -205,6 +216,18 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
                   tick={{ fontSize: 12, fill: 'rgb(148 163 184)' }}
                   tickMargin={15}
                   minTickGap={40}
+                  tickFormatter={(value) => {
+                    const totalSeconds = Math.floor(Number(value) / 1000);
+                    if (totalSeconds < 3600) {
+                      const mm = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+                      const ss = String(totalSeconds % 60).padStart(2, "0");
+                      return `${mm}:${ss}`;
+                    } else {
+                      const hh = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+                      const mm = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+                      return `${hh}:${mm}`;
+                    }
+                  }}
                 />
 
                 <YAxis
@@ -212,8 +235,8 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
                   tickLine={false}
                   yAxisId={"right"}
                   tick={{ fontSize: 12, fill: 'rgb(148 163 184)' }}
-                  tickFormatter={(value) => `$${value.toFixed(1)} m`}
-                  domain={['dataMin - 0.2', 'dataMax + 0.2']}
+                  tickFormatter={(value) => `${value.toFixed(1)} m`}
+                  domain={['dataMin - 10', 'dataMax + 10']}
                   tickMargin={15}
                   orientation='right'
                 />
@@ -244,9 +267,9 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
                 <Area
                   type="monotone"
                   yAxisId={"right"}
-                  dataKey="elevation"
+                  dataKey="altitude"
                   stroke="transparent"
-                  fill="url(#elevationAreaGradient)"
+                  fill="url(#altitudeAreaGradient)"
                   strokeWidth={0}
                   dot={false}
                 />
@@ -258,7 +281,7 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
                   dataKey="speed"
                   stroke={chartConfig.speed.color}
                   strokeWidth={2}
-                  dot={{
+                  dot={nrOfPoints > 30 ? false : {
                     r: 4,
                     fill: chartConfig.speed.color,
                     stroke: 'white',
@@ -276,20 +299,20 @@ export default function AreaChartElevationSpeed({timedStats} : GraphComponentPro
 
                 <Line
                   type="monotone"
-                  dataKey="elevation"
+                  dataKey="altitude"
                   yAxisId={"right"}
-                  stroke={chartConfig.elevation.color}
+                  stroke={chartConfig.altitude.color}
                   strokeWidth={2}
-                  dot={{
+                  dot={ nrOfPoints > 30 ? false : {
                     r: 4,
-                    fill: chartConfig.elevation.color,
+                    fill: chartConfig.altitude.color,
                     stroke: 'white',
                     strokeWidth: 2,
                     filter: 'url(#dotShadow)',
                   }}
                   activeDot={{
                     r: 6,
-                    fill: chartConfig.elevation.color,
+                    fill: chartConfig.altitude.color,
                     strokeWidth: 2,
                     stroke: 'white',
                     filter: 'url(#activeDotShadow)',

@@ -1,5 +1,7 @@
+import PositionDTO from "./PositionDTO";
+
 export default interface TimedStatsDTO {
     time: number;
-    position: [number, number];
+    position: PositionDTO;
     speed: number | null;
 }
