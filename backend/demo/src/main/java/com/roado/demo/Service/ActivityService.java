@@ -31,9 +31,11 @@ import com.roado.demo.Repository.TimedStatsRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
@@ -99,6 +101,7 @@ public class ActivityService {
     @Transactional
     public ActivityCreatedDTO finishRoute(FinishRouteDTO dto) throws URISyntaxException, IOException, InterruptedException {
         try {
+            dto.getTimedStats().stream().forEach(stat -> log.info(Long.toString(stat.time())));
             List<PositionDTO> rawTrack = dto.getTimedStats().stream().map(TimedStatsDTO::position).toList();
 
             double[][] coordinates = convertPositionObjectsToDoubleArray(rawTrack);
@@ -148,7 +151,7 @@ public class ActivityService {
         Activity activity = activityRepository.findById(activityId).orElseThrow();
         List<TimedStatsDTO> timedStatsDTOs = new ArrayList<>();
         for (TimedStatsEntity timedStats : activity.getTimedStats()) {
-            timedStatsDTOs.add(new TimedStatsDTO(timedStats.getTime(), new PositionDTO(timedStats.getLon(), timedStats.getLat()), timedStats.getSpeed()));
+            timedStatsDTOs.add(new TimedStatsDTO(timedStats.getTime(), new PositionDTO(timedStats.getLon(), timedStats.getLat(), timedStats.getElevation()), timedStats.getSpeed()));
         }
         StatsDTO statsDTO = new StatsDTO(activity.getActivityStats().getDistanceM(),
                                         activity.getActivityStats().getDurationS(),
