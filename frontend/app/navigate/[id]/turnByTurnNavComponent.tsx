@@ -62,10 +62,15 @@ export function InstructionComponent ({type, nextInstruction, nextType, instruct
                             Next {formatInstruction(nextInstruction, nextType)} in {computeDistanceString(nextDistance + distanceLeft)}
                         </p>
                     </CardDescription>
-                    <img src={`/images/nav_icons/${type}.svg`} className="h-38 absolute right-2"/>
                 </CardHeader>
-                <CardContent>   
-                    <p className="max-w-[200px]">{instruction}</p>
+                <CardContent className="min-h-30" >   
+                    <p className="max-w-[200px]">{instruction} <span>
+                            <img 
+                                src={`/images/nav_icons/${type}.svg`} 
+                                className="h-25 absolute pt-2 pb-2 pr-4 right-2 top-1/2 -translate-y-1/2"
+                                alt="Navigation instruction"
+                            />
+                        </span></p>
                     <p className="text-4xl font-extrabold ">{Math.round(distanceLeft) + "m"}</p>
                 </CardContent>
                 <CardFooter>

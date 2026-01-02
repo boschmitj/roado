@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCountdown } from "@/hooks/use-countdown";
 import haversine from "@/utils/haversine";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { RouteControls } from "./routeControls";
 import { getHours } from "@/utils/formatter";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -31,6 +31,7 @@ interface TrackingComponentProps {
     setAvgSpeed: Dispatch<SetStateAction<number>>;
     setStartDateTime: Dispatch<SetStateAction<Date>>;
     startDateTime: Date;
+    setIsStarted: Dispatch<SetStateAction<boolean>>
 }
 
 export function TrackingComponent({position, 
@@ -53,7 +54,8 @@ export function TrackingComponent({position,
                                     avgSpeed,
                                     setAvgSpeed,
                                     setStartDateTime,
-                                    startDateTime
+                                    startDateTime,
+                                    setIsStarted
 } : TrackingComponentProps) {
     const [positionList, setPositionList] = useState<[number, number][]>([]);
     
@@ -64,6 +66,7 @@ export function TrackingComponent({position,
     const startRoute = () => {
         setStartDateTime(new Date());
         startCount();
+        setIsStarted(true);
     }
 
     useEffect(() => {

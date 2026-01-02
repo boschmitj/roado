@@ -34,6 +34,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     const [speedList, setSpeedList] = useState<{"time": number, "speed": number}[]>([]);
     const [avgSpeed, setAvgSpeed] = useState<number> (0);
     const [startDateTime, setStartDateTime] = useState<Date>(new Date(0));
+    const [isStarted, setIsStarted] = useState<boolean>(false);
 
     const router = useRouter();
 
@@ -69,6 +70,10 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     useEffect(() => {
         if (!steps || !coords || !position) return;
         const currentStep = steps[currentStepIndex];
+        if (!currentStep) {
+            setDistanceLeftToNextStop(0);
+            return;
+        }
         const start = currentStep.way_points[0];
         const end = currentStep.way_points[1];
         const stepCoords = coords.slice(start, end + 1);
@@ -86,7 +91,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
     useEffect(() => {
         if (!startDateTime) return;
         if (position) {
-            setPositionTimeRecords([...positionTimeRecords, {"time": (Date.now() - startDateTime.getTime()), "position": position , "speed": speed}])
+            setPositionTimeRecords([...positionTimeRecords, {"time": (startDateTime.getTime() == 0 ? 0 : Date.now() - startDateTime.getTime()), "position": position , "speed": speed}])
         }
         
         console.log("Position is: " + position + ", speed: " + speed);
@@ -105,8 +110,8 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     "totalDistance": currDistance,
                     "totalDuration": stopwatch,
                     "avgSpeed": avgSpeed,
-                    "startDate": startDateTime,
-                    "endDate": new Date(),
+                    "startDate": startDateTime.toISOString(),
+                    "endDate": new Date().toISOString(),
                 }
             });
 
@@ -169,6 +174,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                     setSpeed={setSpeed}
                     isPaused={isPaused}
                     coords={coords}
+                    isStarted={isStarted}
             />
             {position && 
             <TrackingComponent 
@@ -193,6 +199,7 @@ export default function NavParentComponent ({id} : NavParentComponentProps) {
                 setAvgSpeed={setAvgSpeed}
                 startDateTime={startDateTime}
                 setStartDateTime={setStartDateTime}
+                setIsStarted={setIsStarted}
             /> }
         </>
     );

@@ -3,19 +3,20 @@ import { extractCoordsFromLineString, extractCoords } from "@/utils/geoJsonTools
 import { useEffect, useRef } from "react";
 import { LineString } from "geojson";
 
-export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPosition: (coords: [number, number]) => void, speed = 1, simulating: boolean) {
+export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPosition: (coords: [number, number]) => void, speed = 1, simulating: boolean, started: boolean) {
     const indexRef = useRef(0);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-
-        if (!simulating) return;
-
-        if(!routeGeoJson) return;
+        
+        if (!simulating  || !routeGeoJson) return;
 
         const coords = extractCoords(routeGeoJson);
+        if (!started) {
+            setPosition(coords[0]); // FIXME: only for testing
+            
+        }
         
-        // Reset
         indexRef.current = 0;
 
         
@@ -35,8 +36,10 @@ export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPositi
             }
 
             // Move the "user"
-            setPosition(coords[i]);
-            indexRef.current += speed; // 1 index step per tick (modify speed to skip)
+            if (started) {
+                setPosition(coords[i]);
+                indexRef.current += speed; // 1 index step per tick (modify speed to skip)
+            }
         }, 1000); // Tick every second
 
         return () => {
@@ -45,5 +48,5 @@ export default function useRouteSimulation(routeGeoJson: RouteGeoJson, setPositi
             }
         };
 
-    }, [routeGeoJson, setPosition, speed, simulating]);
+    }, [routeGeoJson, setPosition, speed, simulating, started]);
 }

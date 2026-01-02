@@ -25,10 +25,11 @@ interface RouteNavigationProps {
     isPaused: boolean;
     coords: Position[] | null;
     onRouteCompleted: () => void;
+    isStarted: boolean;
 }
 
 export default function RouteNavigation (props: RouteNavigationProps) {
-    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, setSpeed, isPaused, coords, onRouteCompleted} = props;
+    const { id: routeId, position, setPosition, routeGeoJson, setRouteGeoJson, setSpeed, isPaused, coords, onRouteCompleted, isStarted} = props;
 
     const [heading, setHeading] = useState <number | null> (null);
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -41,7 +42,7 @@ export default function RouteNavigation (props: RouteNavigationProps) {
     const simulating = true;
 
     
-    useRouteSimulation(routeGeoJson!, setPosition, 1, simulating);
+    useRouteSimulation(routeGeoJson!, setPosition, 1, simulating, isStarted);
     
 
     useEffect(() => {
