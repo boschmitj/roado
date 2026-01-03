@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation";
-import RouteParentComponent from "../components/RouteBuilderComponent";
+import RouteParentComponent from "../build-route/RouteBuilderComponent";
 import "../map/mapstyle.css"; 
 import "./home.css";
 import { useEffect } from "react";

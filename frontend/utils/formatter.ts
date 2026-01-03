@@ -6,7 +6,7 @@ export function computeDurationString(duration: number) {
         durationString = Math.round(duration / 60) + "min";
     } else if (duration > 0) {
         durationString = duration + "s";
-    } else return null;
+    } else return 0;
     return durationString;
 }
 
@@ -16,7 +16,7 @@ export function computeDistanceString(distance : number) {
         distanceString = (distance / 1000).toFixed(1) + "km"
     } else if (distance > 0) {
         distanceString = Math.round(distance) + "m"
-    } else return null;
+    } else return 0;
     return distanceString;
 }
 
