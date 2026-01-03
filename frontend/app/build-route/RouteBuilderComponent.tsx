@@ -183,15 +183,15 @@ const RouteInfoComponent = ({routeGeoJson} : RouteViewerProps) => {
  
 
  
-export const RouteNameComponent = ({onConfirm}: {onConfirm: () => void}) => {
+export const RouteNameComponent = ({onConfirm, setRouteName}: {onConfirm: () => void, setRouteName: React.Dispatch<React.SetStateAction<string>>}) => {
 
     return (
     <InputButtonProvider className="w-full">
-        <InputButton className="w-full">
+        <InputButton className="w-full" onClick={onConfirm}>
         <InputButtonAction>Enter a name to create your route </InputButtonAction>
         <InputButtonSubmit className="bg-[#BBDAA4] hover:bg-[#91b476] text-zinc-800">Create Route 🚴</InputButtonSubmit>
         </InputButton>
-        <InputButtonInput type="text" placeholder="Your route name" onClick={onConfirm} className="w-full" />
+        <InputButtonInput type="text" placeholder="Your route name" onChange={(e) => setRouteName(e.target.value)} className="w-full" />
     </InputButtonProvider>
     );
 };
@@ -253,7 +253,7 @@ const RouteConfirmComponent = ({routeGeoJson} : RouteViewerProps) => {
 
     return (routeGeoJson && (
             <div className="flex flex-col gap-2 w-full">
-                <RouteNameComponent onConfirm={sendRoute} />
+                <RouteNameComponent onConfirm={sendRoute} setRouteName={setRouteName} />
             </div>
         )
     )
