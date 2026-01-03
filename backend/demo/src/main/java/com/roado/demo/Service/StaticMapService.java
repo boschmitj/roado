@@ -52,7 +52,7 @@ public class StaticMapService {
         try {
             Files.createDirectories(folder);
             Path outputFile = folder.resolve(id + ".png");
-
+            log.info("Creating image at: " + outputFile.toAbsolutePath());
             String base = "https://maps.geoapify.com/v1/staticmap?apiKey=" + apiKey;
             String body = buildRequestBody(coords);
             log.info("Request body: " + body);
