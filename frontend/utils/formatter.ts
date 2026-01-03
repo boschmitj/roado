@@ -73,6 +73,25 @@ export function getHours(seconds: number): number {
     return hrs;
 }
 
+export function durationInHours(duration: number) : number {
+    const hours = Math.round((duration / 3600) * 100) / 100;
+    return hours;
+}
+
+export function formatHydrationL(hydration : number) {
+    console.log("Received hydration: " + hydration);
+    if (hydration < 10) {
+        return {
+            hydration: (hydration * 1000).toFixed(0),
+            hydrationUnit: "ml"
+        }
+    }
+    return {
+        hydration: hydration.toFixed(2),
+        hydrationUnit: "l",
+    }
+}
+
 
 export function formatInstruction(instruction : string, type : number) {
     const threeWordInstructionTypes = [2,3,4,5,11] //mby 7, 8, and 12, 13 too
