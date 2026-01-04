@@ -163,6 +163,10 @@ public class ActivityService {
         return new ActivityDTO(activity.getName(), timedStatsDTOs, statsDTO);
     }
 
+    public Activity findActivity(Long activityId) {
+        return activityRepository.findById(activityId).orElseThrow();
+    }
+
     public Object putTitle(ActivityTitleDTO titleDTO) {
         Activity activity = activityRepository.findById(titleDTO.activityId()).orElseThrow();
         activity.setName(titleDTO.title());
