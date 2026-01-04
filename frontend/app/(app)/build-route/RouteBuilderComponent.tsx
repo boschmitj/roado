@@ -325,7 +325,7 @@ const RouteBuilderComponent: React.FC<RouteBuilderProps> = ({routeGeoJson, setRo
     }, []);
 
     useEffect(() => {
-        if (!mapRef.current || !position) return;
+        if (!mapRef.current || !position || !position[0] || !position[1]) return;
         const map = mapRef.current;
         map.setCenter(position);
     }, [position]);

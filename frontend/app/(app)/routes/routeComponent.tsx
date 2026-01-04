@@ -12,16 +12,17 @@ import { useRouter } from "next/navigation";
 export interface route {
     id: number,
     name: string,
-    geoData: string
     distanceM: number,
     durationS: number,
     elevationGain : number,
-    svgPreview: string
+    trackImageUrl: string,
 }
 
 
 
-export function RouteCard({ id, name, distanceM, durationS, geoData, elevationGain, svgPreview } : route) {
+export function RouteCard({ id, name, distanceM, durationS, elevationGain, trackImageUrl} : route) {
+
+    console.log(trackImageUrl)
 
     const calculateDistance = (distance : number) : number | string => {
         if (distance < 1000) {
@@ -45,19 +46,45 @@ export function RouteCard({ id, name, distanceM, durationS, geoData, elevationGa
     
     return (
         <Card className="w-full max-w-lg">
-            <CardHeader>
+            <CardHeader className="flex ">
                 <CardTitle className="text-black">{ name }</CardTitle>
                 
-                    <Button variant="default" onClick={() => router.push(`/navigate/${id}`)}> 
-                        Navigate
-                    </Button>
+                <Button variant="default" onClick={() => router.push(`/navigate/${id}`)}> 
+                    Navigate
+                </Button>
                 
             </CardHeader>
-            <CardContent>
-                <span><p>{ calculateDistance(distanceM) }</p></span>
-                <span><p>{ calculateDuration(durationS) }</p></span>
-                <span><p>{ elevationGain + "m" }</p></span>
-                <span dangerouslySetInnerHTML={{__html: svgPreview }}></span> 
+            <CardContent className="flex gap-4">
+                {/* Left side - 2x2 grid of statistics */}
+                <div className="grid grid-cols-2 gap-4 flex-1">
+                    <div className="flex flex-col">
+                        <span className="text-sm text-muted-foreground">Distance</span>
+                        <span className="text-lg font-semibold">{ calculateDistance(distanceM) }</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-sm text-muted-foreground">Duration</span>
+                        <span className="text-lg font-semibold">{ calculateDuration(durationS) }</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-sm text-muted-foreground">Elevation</span>
+                        <span className="text-lg font-semibold">{ elevationGain + "m" }</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-sm text-muted-foreground">Speed</span>
+                        <span className="text-lg font-semibold">
+                            { durationS > 0 ? ((distanceM / 1000) / (durationS / 3600)).toFixed(1) + " km/h" : "N/A" }
+                        </span>
+                    </div>
+                </div>
+                
+                {/* Right side - Image spanning full height */}
+                <div className="w-32 h-full flex-shrink-0">
+                    <img 
+                        src={"http://localhost:8080" + trackImageUrl} 
+                        alt={`${name} track preview`}
+                        className=" h-full object-cover rounded-md"
+                    />
+                </div>
             </CardContent>
 
         </Card>
