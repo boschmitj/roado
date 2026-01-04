@@ -21,20 +21,20 @@ const Navbar = ({ navigationData }: { navigationData: NavigationItem }) => {
     <header className='bg-background sticky top-0 z-50'>
       <div className='mx-auto flex max-w-7xl items-center justify-between gap-8 px-4 py-7 sm:px-6'>
         <div className='text-muted-foreground flex flex-1 items-center gap-8 font-medium md:justify-center lg:gap-16'>
-          <a href='#' className='hover:text-primary max-md:hidden'>
+          <a href='/home' className='hover:text-primary max-md:hidden'>
             Home
           </a>
-          <a href='#' className='hover:text-primary max-md:hidden'>
-            Products
+          <a href='/home' className='hover:text-primary max-md:hidden'>
+            New Route
           </a>
           <a href='#'>
             <Logo className='text-foreground gap-3' />
           </a>
-          <a href='#' className='hover:text-primary max-md:hidden'>
-            About Us
+          <a href='/routes' className='hover:text-primary max-md:hidden'>
+            Routes
           </a>
           <a href='#' className='hover:text-primary max-md:hidden'>
-            Contacts
+            Activities
           </a>
         </div>
 

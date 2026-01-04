@@ -1,5 +1,5 @@
 import TimedStatsDTO from "@/app/types/TimedStatsDTO";
-import AreaChartElevationSpeed from "@/app/activity/[id]/areaChartActivityComponent";
+import AreaChartElevationSpeed from "@/app/(app)/activity/[id]/areaChartActivityComponent";
 
 export interface GraphComponentProps {
     timedStats: TimedStatsDTO[];

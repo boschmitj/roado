@@ -1,4 +1,4 @@
-import { RouteGeoJson } from "@/app/build-route/RouteBuilderComponent";
+import { RouteGeoJson } from "@/app/(app)/build-route/RouteBuilderComponent";
 import { extractCoordsFromLineString, extractCoords } from "@/utils/geoJsonTools";
 import { useEffect, useRef } from "react";
 import { LineString } from "geojson";

@@ -1,8 +1,8 @@
 "use client";
 
+import axios from "@/app/api/axios";
 import { RouteCard, route } from "./routeComponent";
 import { Stack } from "@/components/own/Stack";
-import axios from "../api/axios";
 import { useEffect, useState } from "react";
 
 

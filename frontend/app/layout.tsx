@@ -23,31 +23,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const navigationData = [
-    {
-      title: 'Home',
-      href: '#'
-    },
-    {
-      title: 'Products',
-      href: '#'
-    },
-    {
-      title: 'About Us',
-      href: '#'
-    },
-    {
-      title: 'Contacts',
-      href: '#'
-    }
-  ]
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar navigationData={navigationData}/>
         {children}
       </body>
     </html>

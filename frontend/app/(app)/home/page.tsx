@@ -1,10 +1,10 @@
 "use client"
 import { useRouter } from "next/navigation";
 import RouteParentComponent from "../build-route/RouteBuilderComponent";
-import "../map/mapstyle.css"; 
+// import "../map/mapstyle.css"; 
 import "./home.css";
 import { useEffect } from "react";
-import axios from "../api/axios";
+import axios from "../../api/axios";
 export default function Home() {
 
     const router = useRouter();
@@ -26,7 +26,7 @@ export default function Home() {
     }, [router]);
     return (
         <>
-            <main className="home-main bg">
+            <main>
                 <RouteParentComponent />
             </main>
         </>

@@ -4,8 +4,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Map as MtMap, MapStyle, helpers, config, Marker,} from "@maptiler/sdk";
 import { FeatureCollection, Geometry, GeoJsonProperties, Feature, LineString } from "geojson";
-import Button from "../components/Button";
-import Input from "../components/Input";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 import {
   InputButton,
   InputButtonAction,
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/shadcn-io/input-button';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import './RouteBuilderComponent.css'
-import axios from "../api/axios";
+import axios from "../../api/axios";
 import { generateRoutePreviewSvg } from "@/utils/routePreview";
 import { computeDistanceString, computeDurationString } from "@/utils/formatter";
 // import SearchAddress from "@/components/ui/search-address";

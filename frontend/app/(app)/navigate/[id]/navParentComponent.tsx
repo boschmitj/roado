@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import RouteNavigation from "./routeNavigationMapComponent";
 import { Instruction, InstructionComponent, Step } from "./turnByTurnNavComponent";
-import { RouteGeoJson } from "@/app/build-route/RouteBuilderComponent";
+import { RouteGeoJson } from "@/app/(app)/build-route/RouteBuilderComponent";
 import { LineString, Position } from "geojson"
 import haversine from "@/utils/haversine";
 import { TrackingComponent } from "./trackingComponent";
