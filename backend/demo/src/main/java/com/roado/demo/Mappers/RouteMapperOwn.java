@@ -40,16 +40,15 @@ public class RouteMapperOwn {
             .build();
     }
 
-    public GetRouteDTO toGetRouteDTO(RoutePlan route) throws JsonMappingException, JsonProcessingException {
+    public GetRouteDTO toGetRouteDTO(RoutePlan route, Long trackId) throws JsonMappingException, JsonProcessingException {
         return GetRouteDTO.builder()
                 .id(route.getRouteId())
                 .name(route.getName())
-                .geojson(route.getGeoJson())
                 .distanceM(route.getDistanceM())
                 .elevationGain(route.getElevationGain())
                 .elevationProfile(route.getElevationProfile())
-                .svgPreview(route.getSvgPreview())
                 .durationS(route.getDurationS())
+                .trackImageUrl("/staticmap/getImageTrack/" + trackId)
             .build();
     }
 
