@@ -134,25 +134,33 @@ public class RouteService {
         }
     }
 
-    public List<GetRouteDTO> getRoutesForUser(User user) throws Exception{
+    public List<GetRouteDTO> getRoutesForUser(User user, Double x, Double y, Long radius) throws Exception {
 
         List<GetRouteDTO> routes = routeRepository.findAllByCreatedBy(user)
             .stream().map(r -> {
+                log.info("Checking route: " + r.getName());
+                Long trackId = r.getTrack().getId();
+                GetRouteDTO routeDTO;
                 try {
-                    Long trackId = r.getTrack().getId();
-                    log.info("TrackId:" + trackId);
-                    return routeMapper.toGetRouteDTO(r, trackId);
-
-                } catch (JsonMappingException e) {
-                    return null;
+                    routeDTO = routeMapper.toGetRouteDTO(r, trackId);
                 } catch (JsonProcessingException e) {
                     return null;
                 }
-            }).toList();
-
-        if (routes.isEmpty()) {
-            throw new Exception("No routes found");
-        }
+                Coordinate startCoord = r.getTrack().getGeometry().getCoordinates()[0];
+                routeDTO.setStartPoint(new double[]{startCoord.x, startCoord.y});
+                if (x == null || y == null || radius == null) {
+                    log.info("No coordinates provided");
+                    return routeDTO;
+                }
+                double distance = routeUtils.haversine(y, x, startCoord.y, startCoord.x);
+                if (distance > radius) {
+                    log.info("Route is too far from coordinates");
+                    return null;
+                }
+                return routeDTO;
+            })
+            .filter(r -> r != null)
+            .toList();
 
         return routes;
     }

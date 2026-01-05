@@ -13,4 +13,5 @@ public interface RouteRepository extends JpaRepository<RoutePlan, Long> {
     
     List<RoutePlan> findAllByCreatedBy(User createdBy);
 
+
 }
