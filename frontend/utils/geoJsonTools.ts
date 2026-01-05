@@ -1,4 +1,4 @@
-import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
+import { RouteGeoJson } from "@/app/build-route/RouteBuilderComponent";
 import { geometry } from "@turf/turf";
 import { LineString, Feature, FeatureCollection } from "geojson";
 export function extractCoords(routeGeoJson : RouteGeoJson) {
