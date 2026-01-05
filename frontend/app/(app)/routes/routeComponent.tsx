@@ -45,17 +45,20 @@ export function RouteCard({ id, name, distanceM, durationS, elevationGain, track
     // THen use it here to navigate the specific route
     
     return (
-        <Card className="w-full max-w-lg">
+        <Card className="w-full max-w-lg" onClick={() => router.push(`routes/${id}`)}>
             <CardHeader className="flex ">
                 <CardTitle className="text-black">{ name }</CardTitle>
                 
-                <Button variant="default" onClick={() => router.push(`/navigate/${id}`)}> 
+                <Button variant="default" onClick={(e) => {
+                        router.push(`/navigate/${id}`);
+                        e.stopPropagation();
+                    }}
+                > 
                     Navigate
                 </Button>
                 
             </CardHeader>
             <CardContent className="flex gap-4">
-                {/* Left side - 2x2 grid of statistics */}
                 <div className="grid grid-cols-2 gap-4 flex-1">
                     <div className="flex flex-col">
                         <span className="text-sm text-muted-foreground">Distance</span>
@@ -77,7 +80,6 @@ export function RouteCard({ id, name, distanceM, durationS, elevationGain, track
                     </div>
                 </div>
                 
-                {/* Right side - Image spanning full height */}
                 <div className="w-32 h-full flex-shrink-0">
                     <img 
                         src={"http://localhost:8080" + trackImageUrl} 

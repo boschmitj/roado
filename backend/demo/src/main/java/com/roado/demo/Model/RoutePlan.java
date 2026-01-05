@@ -76,6 +76,8 @@ public class RoutePlan {
     @Column(name = "svg_preview", columnDefinition = "TEXT")
     private String svgPreview;
 
+    private boolean isPublic;
+
     @OneToMany(mappedBy = "route")
     @JsonManagedReference
     private List<Activity> activities = new ArrayList<>();
