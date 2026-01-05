@@ -76,6 +76,7 @@ public class RoutePlan {
     @Column(name = "svg_preview", columnDefinition = "TEXT")
     private String svgPreview;
 
+    @Column(name = "is_public")
     private boolean isPublic;
 
     @OneToMany(mappedBy = "route")

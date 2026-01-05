@@ -8,14 +8,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { number } from "framer-motion";
 
 export interface route {
     id: number,
     name: string,
     distanceM: number,
+    geoJson: string,
     durationS: number,
     elevationGain : number,
     trackImageUrl: string,
+    startPoint: [number, number],
 }
 
 
@@ -40,23 +43,32 @@ export function RouteCard({ id, name, distanceM, durationS, elevationGain, track
 
     const router = useRouter();
 
+    if (name.length > 15) {
+        name = name.substring(0, 15) + "...";
+    }
+
 
     // TODO add routeId to the DTO? 
     // THen use it here to navigate the specific route
     
     return (
-        <Card className="w-full max-w-lg" onClick={() => router.push(`routes/${id}`)}>
-            <CardHeader className="flex ">
+        <Card className="w-full max-w-lg">
+            <CardHeader className="flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-black">{ name }</CardTitle>
-                
-                <Button variant="default" onClick={(e) => {
-                        router.push(`/navigate/${id}`);
-                        e.stopPropagation();
-                    }}
-                > 
-                    Navigate
-                </Button>
-                
+                <div className="flex gap-1">
+                    <Button variant="secondary" onClick={(e) => {
+                            router.push(`/routes/${id}/view`);
+                    }}>
+                        View
+                    </Button>
+                    <Button variant="default" onClick={(e) => {
+                            router.push(`/navigate/${id}`);
+                            e.stopPropagation();
+                        }}
+                    > 
+                        Navigate
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="flex gap-4">
                 <div className="grid grid-cols-2 gap-4 flex-1">

@@ -11,9 +11,10 @@ public class GetRouteDTO {
     private Long id;
     private String name;
     private Long distanceM;
+    private String geoJson;
     private Double[] elevationProfile; // TODO: maybe remove this field as it currently is not used
     private Long durationS;
-    private String svgPreview;
     private Long elevationGain;
     private String trackImageUrl;
+    private double[] startPoint;
 }

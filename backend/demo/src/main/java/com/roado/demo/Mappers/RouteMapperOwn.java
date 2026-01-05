@@ -47,6 +47,7 @@ public class RouteMapperOwn {
                 .distanceM(route.getDistanceM())
                 .elevationGain(route.getElevationGain())
                 .elevationProfile(route.getElevationProfile())
+                .geoJson(route.getGeoJson().toString())
                 .durationS(route.getDurationS())
                 .trackImageUrl("/staticmap/getImageTrack/" + trackId)
             .build();

@@ -115,16 +115,16 @@ public class RouteController {
     }    
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllRoutesForUser(@RequestParam String sortBy) {
+    public ResponseEntity<?> getAllRoutesForUser(@RequestParam(required = false) Double x, @RequestParam(required = false) Double y, @RequestParam(defaultValue = "10000", required = false) Long radius) {
         try {
             User user = authenticationService.getAuthenticatedUser();
-            List<GetRouteDTO> routes =  routeService.getRoutesForUser(user, sortBy);
+            List<GetRouteDTO> routes =  routeService.getRoutesForUser(user, x, y, radius);
             return ResponseEntity.ok(routes);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Unauthorized: " +  e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(500)
                 .body(e.getMessage());
         }
     }
