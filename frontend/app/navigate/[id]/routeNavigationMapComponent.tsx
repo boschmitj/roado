@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import axios from "@/app/api/axios";
 import { Map as MtMap, MapStyle, helpers, config, Marker, Feature,} from "@maptiler/sdk";
 import '@maptiler/sdk/dist/maptiler-sdk.css';
-import { RouteGeoJson } from "@/app/build-route/RouteBuilderComponent";
+import '@/app/components/RouteBuilderComponent.css'
+import { RouteGeoJson } from "@/app/components/RouteBuilderComponent";
 import useRouteSimulation from "./simulateRouteHook";
 import { lineString, nearestPointOnLine } from "@turf/turf";
 import { extractCoords } from "@/utils/geoJsonTools";
