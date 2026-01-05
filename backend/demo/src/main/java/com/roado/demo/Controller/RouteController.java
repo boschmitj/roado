@@ -115,10 +115,10 @@ public class RouteController {
     }    
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllRoutesForUser(@RequestParam String sortBy) {
+    public ResponseEntity<?> getAllRoutesForUser() {
         try {
             User user = authenticationService.getAuthenticatedUser();
-            List<GetRouteDTO> routes =  routeService.getRoutesForUser(user, sortBy);
+            List<GetRouteDTO> routes =  routeService.getRoutesForUser(user);
             return ResponseEntity.ok(routes);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

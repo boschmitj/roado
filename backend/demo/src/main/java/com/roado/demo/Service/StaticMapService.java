@@ -1,6 +1,5 @@
 package com.roado.demo.Service;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roado.demo.DTOs.CoordinateDTO;
-import com.roado.demo.Repository.ActivityRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,23 +40,19 @@ public class StaticMapService {
     ObjectMapper mapper;
 
     private final PolylineEncoderService polylineEncoderService;
-    private final ActivityRepository activityRepository;
     
-    public StaticMapService(ObjectMapper mapper, 
-            PolylineEncoderService polylineEncoderService, 
-            ActivityRepository activityRepository) {
+    public StaticMapService(ObjectMapper mapper, PolylineEncoderService polylineEncoderService) {
         this.polylineEncoderService = polylineEncoderService;
         this.mapper = new ObjectMapper();
-        this.activityRepository = activityRepository;
     }
 
     
-    public ResponseEntity<?> createImageFromLine(double[][] coords, Long trackId) {
+    public ResponseEntity<?> createImageFromLine(double[][] coords, Long id) {
         Path folder = Path.of(generatedImagesPath);
         try {
             Files.createDirectories(folder);
-            Path outputFile = folder.resolve(trackId + ".png");
-            log.info("Creating image at: " + outputFile.toAbsolutePath());
+            Path outputFile = folder.resolve(id + ".png");
+
             String base = "https://maps.geoapify.com/v1/staticmap?apiKey=" + apiKey;
             String body = buildRequestBody(coords);
             log.info("Request body: " + body);
@@ -101,12 +95,7 @@ public class StaticMapService {
         }
     }
 
-
-    public Long getTrackIdFromActivityId(Long activityId) {
-        return activityRepository.findById(activityId).orElseThrow().getTrack().getId();
-    }
-
-    public ResponseEntity<?> createImageFromLine(CoordinateDTO coordinateDTO, Long trackId) {
+    public ResponseEntity<?> createImageFromLine(CoordinateDTO coordinateDTO, Long id) {
 
         double[][] coords = new double[coordinateDTO.getCoordinates().size()][];
         for (int i = 0; i < coordinateDTO.getCoordinates().size(); i++) {
@@ -114,7 +103,8 @@ public class StaticMapService {
             coords[i][1] = coordinateDTO.getCoordinates().get(i).get(1);
         }
         
-        return createImageFromLine(coords, trackId);
+
+        return createImageFromLine(coords, id);
     }
 
     private String buildRequestBody(double[][] coords) throws JsonProcessingException {
@@ -166,7 +156,7 @@ public class StaticMapService {
         log.info("Looking for image at: " + imagePath.toAbsolutePath());
 
         if (!Files.exists(imagePath) || !Files.isReadable(imagePath)) {
-            throw new FileNotFoundException("Image not found: " + id);
+            throw new IOException("Image not found: " + id);
         }
         try {
             return new UrlResource(imagePath.toUri());

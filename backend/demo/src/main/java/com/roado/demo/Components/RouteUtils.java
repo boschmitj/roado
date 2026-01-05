@@ -174,15 +174,6 @@ public class RouteUtils {
         return coordinateArray;
     }
 
-    public double[][] getCoordinateArray(Coordinate[] coordinates) {
-        double[][] coords = new double[coordinates.length][2];
-        for (int i = 0; i< coordinates.length; i++) {
-            coords[i][0] = coordinates[i].x;
-            coords[i][1] = coordinates[i].y;
-        }
-        return coords;
-    }
-
 
 
     private boolean corridorCoverageOk(double coverage, Double coveragePercentage) {

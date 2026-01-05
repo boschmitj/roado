@@ -22,7 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roado.demo.Components.RouteUtils;
 import com.roado.demo.DTOs.GetRouteDTO;
 import com.roado.demo.DTOs.RouteDTO;
 
@@ -40,8 +39,6 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final RouteMapperOwn routeMapper;
     private final AuthenticationService authenticationService;
-    private final StaticMapService staticMapService;
-    private final RouteUtils routeUtils;
     private static final Double ELEVATION_THRESHOLD = 2.0;
 
     @Value("${OPENROUTESEVICES_API_KEY}")
@@ -52,16 +49,12 @@ public class RouteService {
     public RouteService(RouteRepository routeRepository, 
                         RouteMapperOwn routeMapper,
                         AuthenticationService authenticationService,
-                        ObjectMapper objectMapper,
-                        StaticMapService staticMapService,
-                        RouteUtils routeUtils
+                        ObjectMapper objectMapper
                         ) {
         this.routeRepository = routeRepository;
         this.routeMapper = routeMapper;
         this.authenticationService = authenticationService;
         this.objectMapper = objectMapper;
-        this.staticMapService = staticMapService;
-        this.routeUtils = routeUtils;
     }
 
     public RouteDTO getRouteDTO(Long routeId) throws JsonMappingException, JsonProcessingException {
@@ -91,8 +84,6 @@ public class RouteService {
         RoutePlan route = routeMapper.toRouteWithNewTrack(routeDTO, user.getId());
         route.setCreatedBy(user);
         RoutePlan savedRoute = routeRepository.save(route);
-
-        staticMapService.createImageFromLine(routeUtils.getCoordinateArray(route.getTrack().getGeometry().getCoordinates()), route.getTrack().getId());
         
         return routeMapper.toRouteDTO(savedRoute);
     }
@@ -139,10 +130,7 @@ public class RouteService {
         List<GetRouteDTO> routes = routeRepository.findAllByCreatedBy(user)
             .stream().map(r -> {
                 try {
-                    Long trackId = r.getTrack().getId();
-                    log.info("TrackId:" + trackId);
-                    return routeMapper.toGetRouteDTO(r, trackId);
-
+                    return routeMapper.toGetRouteDTO(r);
                 } catch (JsonMappingException e) {
                     return null;
                 } catch (JsonProcessingException e) {

@@ -6,7 +6,7 @@ export function computeDurationString(duration: number) {
         durationString = Math.round(duration / 60) + "min";
     } else if (duration > 0) {
         durationString = duration + "s";
-    } else return 0;
+    } else return null;
     return durationString;
 }
 
@@ -16,7 +16,7 @@ export function computeDistanceString(distance : number) {
         distanceString = (distance / 1000).toFixed(1) + "km"
     } else if (distance > 0) {
         distanceString = Math.round(distance) + "m"
-    } else return 0;
+    } else return null;
     return distanceString;
 }
 
@@ -71,25 +71,6 @@ export function formatDuration(seconds: number): string {
 export function getHours(seconds: number): number {
     const hrs = seconds/3600;
     return hrs;
-}
-
-export function durationInHours(duration: number) : number {
-    const hours = Math.round((duration / 3600) * 100) / 100;
-    return hours;
-}
-
-export function formatHydrationL(hydration : number) {
-    console.log("Received hydration: " + hydration);
-    if (hydration < 10) {
-        return {
-            hydration: (hydration * 1000).toFixed(0),
-            hydrationUnit: "ml"
-        }
-    }
-    return {
-        hydration: hydration.toFixed(2),
-        hydrationUnit: "l",
-    }
 }
 
 
