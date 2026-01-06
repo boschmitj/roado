@@ -103,15 +103,15 @@ public class RouteService {
         log.info("Waypoints are " + waypoints);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String coordinates;
+        String body;
         try {
-            coordinates = objectMapper.writeValueAsString(Map.of("coordinates", waypoints, "elevation", elevation));
+            body = objectMapper.writeValueAsString(Map.of("coordinates", waypoints, "elevation", elevation, "extra_info", List.of("surface")));
         } catch (JsonProcessingException e) {
             return null;
         }
 
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(coordinates);
+        HttpRequest.BodyPublisher bodyPublisher = HttpRequest.BodyPublishers.ofString(body);
         
         try {
             
