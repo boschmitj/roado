@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { number } from "framer-motion";
 
-export interface route {
+export interface Route {
     id: number,
     name: string,
     distanceM: number,
@@ -23,7 +23,7 @@ export interface route {
 
 
 
-export function RouteCard({ id, name, distanceM, durationS, elevationGain, trackImageUrl} : route) {
+export function RouteCard({ id, name, distanceM, durationS, elevationGain, trackImageUrl} : Route) {
 
     console.log(trackImageUrl)
 

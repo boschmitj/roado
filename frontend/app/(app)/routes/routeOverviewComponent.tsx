@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "@/app/api/axios";
-import { RouteCard, route } from "./routeComponent";
+import { RouteCard, Route } from "./routeComponent";
 import { Stack } from "@/components/own/Stack";
 import { use, useEffect, useState, useMemo } from "react";
 import SelectSorting from "./SelectSorting";
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 
 
 export function RouteOverview() {
-    const [routes, setRoutes] = useState<route[]>([]);
+    const [routes, setRoutes] = useState<Route[]>([]);
     const [selectedSorting, setSelectedSorting] = useState<string>("proximity");
     const [selectedProximity, setSelectedProximity] = useState<number>(5000);
     const [hoveredRouteId, setHoveredRouteId] = useState<number | null>(null);

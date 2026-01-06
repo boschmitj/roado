@@ -4,8 +4,9 @@ export interface StatComponentProps {
     name: string;
     unit: string;
     value: number | string;
+    furtherInfo?: React.ReactNode
 }
-export default function StatComponent({unit, value, name} : StatComponentProps) {
+export default function StatComponent({unit, value, name, furtherInfo} : StatComponentProps) {
     return (
         <Card className="flex flex-col justify-center items-center border-0 shadow-none">
             <CardContent className=""> 
