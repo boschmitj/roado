@@ -35,3 +35,9 @@ export function coordsToGeoJson(
         ]
     };
 }
+
+export function extractElevationProfile(routeGeoJson : RouteGeoJson) {
+    const geometry =  routeGeoJson.features[0].geometry as LineString;
+    
+    return geometry.coordinates.map(coord => coord[2]);
+}
