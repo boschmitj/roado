@@ -18,6 +18,7 @@ import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.roado.demo.DTOs.ElevationDistanceDTO;
 import com.roado.demo.DTOs.PositionDTO;
 import com.roado.demo.Model.RoutePlan;
 import com.roado.demo.Repository.RouteRepository;
@@ -230,6 +231,26 @@ public class RouteUtils {
             return rawTrack;
         }
     }
+
+    public Double[] computeCenterOfGeometry(LineString geometry) {
+        Point centroid = geometry.getCentroid();
+        return new Double[]{centroid.getX(), centroid.getY()};
+    }
+
+    public List<ElevationDistanceDTO> computeElevationDistance(JsonNode geojson) throws ParseException  { 
+        List<ElevationDistanceDTO> elevationDistances = new ArrayList<>();
+        Coordinate[] coords = coordsFromWholeGeoJson(geojson);
+        if (Double.isNaN(coords[0].getZ())) throw new ParseException("geojson payload is not 3D");
+        Double distance = 0.0;
+        elevationDistances.add(new ElevationDistanceDTO(coords[0].getZ(), 0));
+        for (int i = 1; i < coords.length; i++) {
+            distance += haversine(coords[i-1].getY(), coords[i-1].getX(), coords[i].getY(), coords[i].getX());
+            elevationDistances.add(new ElevationDistanceDTO(coords[i].getZ(), distance));
+        }
+
+        return elevationDistances;
+    }
+
 
     public double haversine(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371; // Radius of the earth in km
