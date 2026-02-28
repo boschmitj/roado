@@ -13,7 +13,7 @@ import "@maptiler/geocoding-control/style.css";
 
 
 
-config.apiKey = "jgADwIPnUzhtC93OwbQm" // API for MapTiler FIXME: temporary
+config.apiKey = process.env.MAPTILER_API_KEY;
 
 
 const MapComponent: React.FC = () => {
